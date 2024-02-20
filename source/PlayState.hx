@@ -63,7 +63,7 @@ class PlayState extends FlxState
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
-		chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/unbeatable/charts/normal.json'));
+		chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/bopeebo/charts/hard.json'));
 		noteGroup.memberAdded.add(function(note)
 		{
 			@:privateAccess {
@@ -79,21 +79,27 @@ class PlayState extends FlxState
 			note.noteData = i.index;
 			note.strumTime = i.strumTime;
 			note.strumTracker = strum;
+			note.sustainLength = i.length;
 			strum.notes.push(note);
 			note.rgb.copy(strum.rgb);
 			noteQueue.push(note);
 		}
-		FlxG.sound.playMusic('assets/songs/unbeatable/Inst.ogg', 0);
-		vocals = new FlxSound().loadEmbedded('assets/songs/unbeatable/Voices.ogg');
+		FlxG.sound.playMusic('assets/songs/bopeebo/Inst.ogg', 0);
+		vocals = new FlxSound().loadEmbedded('assets/songs/bopeebo/Voices.ogg');
 		FlxG.sound.list.add(vocals);
 		vocals.play();
-		FlxG.sound.music.time = vocals.time = 11000;
+		FlxG.sound.music.time = vocals.time = 0;
 		FlxG.sound.music.volume = 1;
 	}
 
 	override public function update(elapsed:Float)
 	{
-		Conductor.time = FlxG.sound.music.time;
+		Conductor.time += elapsed * 1000;
+		if (FlxG.sound.music != null && FlxG.sound.music.playing)
+		{
+			if (Math.abs(Conductor.time - FlxG.sound.music.time) > 12)
+				Conductor.time = FlxG.sound.music.time;
+		}
 		super.update(elapsed);
 		for (note in noteQueue)
 		{

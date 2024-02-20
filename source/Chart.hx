@@ -8,6 +8,7 @@ typedef ChartNote =
 {
 	strumTime:Float,
 	index:Int,
+	?length:Float,
 	?isPlayer:Bool
 }
 
@@ -32,7 +33,12 @@ class ChartConverter
 					_pla = !_pla;
 					_ind = _ind % max;
 				}
-				result.notes.push({strumTime: note[0], index: _ind, isPlayer: _pla});
+				result.notes.push({
+					strumTime: note[0],
+					index: _ind,
+					length: note[2],
+					isPlayer: _pla
+				});
 			}
 		}
 		result.speed = data.speed;

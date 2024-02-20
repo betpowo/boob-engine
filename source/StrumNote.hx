@@ -14,6 +14,11 @@ class StrumNote extends Note
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
 
+	override function set_sustainLength(v:Float):Float
+	{
+		return sustainLength = 0;
+	}
+
 	public function new(?noteData:Int = 2)
 	{
 		super(noteData);
@@ -116,10 +121,27 @@ class StrumNote extends Note
 
 				for (note in notes)
 				{
-					if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hit == 0)
+					if (note.sustainLength < 100)
 					{
-						animation.play('confirm', true);
-						note.kill();
+						if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hitAmount == 0)
+						{
+							animation.play('confirm', true);
+							note.hit();
+						}
+					}
+				}
+			}
+			else if (FlxG.keys.anyPressed(inputs))
+			{
+				for (note in notes)
+				{
+					if (note.sustainLength > 100)
+					{
+						if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hitAmount < 1)
+						{
+							animation.play('confirm', true);
+							note.hit();
+						}
 					}
 				}
 			}
@@ -133,11 +155,11 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					if (note.strumTime <= Conductor.time && note.hit == 0)
+					if (note.strumTime <= Conductor.time && note.hitAmount != 1)
 					{
 						animation.play('confirm', true);
-						confirmTime = 0.125;
-						note.kill();
+						confirmTime = 0.123;
+						note.hit();
 					}
 				}
 				if (confirmTime > 0)
