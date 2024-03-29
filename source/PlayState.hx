@@ -19,7 +19,8 @@ class PlayState extends FlxState
 			{strumTime: 3500, index: 1},
 			{strumTime: 4000, index: 2},
 			{strumTime: 6000, index: 4, isPlayer: true}
-		]
+		],
+		bpm: 60
 	};
 
 	var noteGroup:NoteGroup = new NoteGroup();
@@ -79,7 +80,8 @@ class PlayState extends FlxState
 			note.noteData = i.index;
 			note.strumTime = i.strumTime;
 			note.strumTracker = strum;
-			note.sustainLength = i.length;
+			note.sustain.length = i.length;
+			note.speed = chart.speed;
 			strum.notes.push(note);
 			note.rgb.copy(strum.rgb);
 			noteQueue.push(note);
@@ -107,6 +109,12 @@ class PlayState extends FlxState
 			{
 				noteGroup.add(noteQueue.shift());
 			}
+		}
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			FlxG.sound.music.stop();
+			vocals.stop();
+			FlxG.switchState(new ChartingState(chart));
 		}
 	}
 }

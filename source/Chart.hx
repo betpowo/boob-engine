@@ -1,5 +1,6 @@
 typedef Chart =
 {
+	var bpm:Float;
 	var notes:Array<ChartNote>;
 	var speed:Float;
 }
@@ -17,7 +18,7 @@ class ChartConverter
 	public static function convert(_data:String):Dynamic
 	{
 		var data:SwagSong = cast haxe.Json.parse(_data).song;
-		var result:Chart = {notes: [], speed: 1};
+		var result:Chart = {notes: [], speed: 1, bpm: 60};
 		for (bruh in data.notes)
 		{
 			for (note in bruh.sectionNotes)
@@ -42,6 +43,7 @@ class ChartConverter
 			}
 		}
 		result.speed = data.speed;
+		result.bpm = data.bpm;
 		return result;
 	}
 }

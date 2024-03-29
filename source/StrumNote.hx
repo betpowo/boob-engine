@@ -13,15 +13,12 @@ class StrumNote extends Note
 	public var inputs:Array<FlxKey> = null;
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
-
-	override function set_sustainLength(v:Float):Float
-	{
-		return sustainLength = 0;
-	}
+	public var blocked:Bool = false;
 
 	public function new(?noteData:Int = 2)
 	{
 		super(noteData);
+		sustain = null;
 		shader = strumRGB.shader;
 		strumRGB.set(0x87a3ad, -1, 0);
 		dumpRGB.set(FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15), -1, 0x201e31);
@@ -32,8 +29,8 @@ class StrumNote extends Note
 		blurSpr.visible = false;
 		createFilterFrames(blurSpr, new BlurFilter(58, 58));
 
-		animation.addByIndices('confirm', 'idle', [0, 0, 0], '', false);
-		animation.addByIndices('press', 'idle', [0, 0, 0], '', false);
+		animation.addByIndices('confirm', 'idle', [0, 0, 0], '', 24, false);
+		animation.addByIndices('press', 'idle', [0, 0, 0], '', 24, false);
 		animation.callback = function(a, b, c)
 		{
 			if (a == 'confirm')
@@ -115,33 +112,16 @@ class StrumNote extends Note
 
 		if (inputs is Array && inputs != null)
 		{
-			if (FlxG.keys.anyJustPressed(inputs))
+			if (FlxG.keys.anyJustPressed(inputs) && !blocked)
 			{
 				animation.play('press', true);
 
 				for (note in notes)
 				{
-					if (note.sustainLength < 100)
+					if (Math.abs(note.strumTime - Conductor.time) <= 100 && !note.hit)
 					{
-						if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hitAmount == 0)
-						{
-							animation.play('confirm', true);
-							note.hit();
-						}
-					}
-				}
-			}
-			else if (FlxG.keys.anyPressed(inputs))
-			{
-				for (note in notes)
-				{
-					if (note.sustainLength > 100)
-					{
-						if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hitAmount < 1)
-						{
-							animation.play('confirm', true);
-							note.hit();
-						}
+						animation.play('confirm', true);
+						note.kill();
 					}
 				}
 			}
@@ -155,17 +135,15 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					if (note.strumTime <= Conductor.time && note.hitAmount != 1)
+					if (note.strumTime <= Conductor.time && !note.hit)
 					{
 						animation.play('confirm', true);
 						confirmTime = 0.123;
-						note.hit();
+						note.kill();
 					}
 				}
 				if (confirmTime > 0)
-				{
 					confirmTime -= elapsed;
-				}
 				else
 				{
 					animation.play('idle', true);
