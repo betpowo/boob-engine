@@ -13,11 +13,19 @@ class Note extends VaryingSprite
 	public var speedMult:Float = 1.0;
 	public var noteData(default, set):Int = 2;
 	public var aocondc:Bool = true; // stands for: angleOffset change on noteData change
-	public var hit:Bool = false; // its a float cus of sustain notes which will be added later
+	public var hit(default, set):Float = -1;
 	public var scrollAngle:Float = 0;
 	public var sustain:Sustain;
 
 	var parentGroup:FlxTypedGroup<Note>;
+
+	public function set_hit(v:Float):Float
+	{
+		hit = v;
+		if (hit >= 1)
+			kill();
+		return v;
+	}
 
 	public function set_noteData(v:Int):Int
 	{
@@ -57,17 +65,41 @@ class Note extends VaryingSprite
 
 	override function draw()
 	{
-		if (sustain != null && sustain.length >= Sustain.minLength)
+		if (sustain != null && sustain.length >= 40)
 			sustain.draw();
-		super.draw();
+		if (hit == -1)
+			super.draw();
 	}
 
 	override function kill()
 	{
-		hit = true;
 		super.kill();
 		if (parentGroup != null)
 			parentGroup.remove(this);
+	}
+
+	public var _shouldDoHit:Bool = false;
+
+	var _origLen:Float = -1;
+
+	function doHit()
+	{
+		if (sustain != null && sustain.length >= 10)
+		{
+			if (_shouldDoHit)
+			{
+				if (_origLen == -1)
+					_origLen = sustain.length;
+
+				strumTime = Conductor.time;
+				sustain.length -= FlxG.elapsed * 1000;
+				hit = 0;
+			}
+		}
+		else
+		{
+			hit = 1;
+		}
 	}
 
 	var copyProps = {
@@ -102,8 +134,6 @@ class Note extends VaryingSprite
 
 class Sustain extends VaryingSprite
 {
-	public static inline var minLength = 100;
-
 	public var length:Float = 0;
 	public var parent:Note = null;
 

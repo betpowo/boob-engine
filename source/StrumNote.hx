@@ -99,6 +99,7 @@ class StrumNote extends Note
 	}
 
 	var confirmTime:Float = 0.0;
+	var pressingNote = false;
 
 	override function update(elapsed:Float)
 	{
@@ -112,22 +113,43 @@ class StrumNote extends Note
 
 		if (inputs is Array && inputs != null)
 		{
-			if (FlxG.keys.anyJustPressed(inputs) && !blocked)
+			if (FlxG.keys.anyPressed(inputs) && !blocked)
 			{
-				animation.play('press', true);
-
 				for (note in notes)
 				{
-					if (Math.abs(note.strumTime - Conductor.time) <= 100 && !note.hit)
+					// sustain notes
+					if ((note.hit >= 0 && note._shouldDoHit))
 					{
-						animation.play('confirm', true);
-						note.kill();
+						note._shouldDoHit = true;
+						note.doHit();
+						if (note.hit < 1)
+							pressingNote = true;
 					}
 				}
 			}
 
+			if (FlxG.keys.anyJustPressed(inputs) && !blocked)
+			{
+				for (note in notes)
+				{
+					// nomal notes
+					if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hit == -1)
+					{
+						if (note.sustain.length > 40)
+							note._shouldDoHit = true;
+						note.doHit();
+						pressingNote = true;
+					}
+				}
+
+				animation.play(pressingNote ? 'confirm' : 'press', true);
+			}
+
 			if (FlxG.keys.anyJustReleased(inputs))
+			{
+				pressingNote = false;
 				animation.play('idle', true);
+			}
 		}
 		else
 		{
@@ -135,11 +157,14 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					if (note.strumTime <= Conductor.time && !note.hit)
+					if (note.strumTime <= Conductor.time && note.hit < 1)
 					{
-						animation.play('confirm', true);
-						confirmTime = 0.123;
-						note.kill();
+						if (note.hit == -1)
+							animation.play('confirm', true);
+
+						confirmTime = 0.13;
+						note._shouldDoHit = true;
+						note.doHit();
 					}
 				}
 				if (confirmTime > 0)
