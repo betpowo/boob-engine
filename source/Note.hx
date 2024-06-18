@@ -13,16 +13,16 @@ class Note extends VaryingSprite
 	public var speedMult:Float = 1.0;
 	public var noteData(default, set):Int = 2;
 	public var aocondc:Bool = true; // stands for: angleOffset change on noteData change
-	public var hit(default, set):Float = -1;
+	public var hit(default, set):NoteHitState = NONE;
 	public var scrollAngle:Float = 0;
 	public var sustain:Sustain;
 
 	var parentGroup:FlxTypedGroup<Note>;
 
-	public function set_hit(v:Float):Float
+	public function set_hit(v:NoteHitState):NoteHitState
 	{
 		hit = v;
-		if (hit >= 1)
+		if (hit == HIT)
 			kill();
 		return v;
 	}
@@ -33,6 +33,8 @@ class Note extends VaryingSprite
 			angleOffset = angles[FlxMath.wrap(v, 0, angles.length - 1)];
 		return noteData = v;
 	}
+
+	var originalOffsets = [0.0, 0.0];
 
 	public function new(?noteData:Int = 2)
 	{
@@ -50,6 +52,8 @@ class Note extends VaryingSprite
 
 		shader = rgb.shader;
 		rgb.set(0x717171, -1, 0x333333);
+
+		originalOffsets = [offset.x, offset.y]; // for fun anim
 	}
 
 	override function update(elapsed:Float)
@@ -65,10 +69,9 @@ class Note extends VaryingSprite
 
 	override function draw()
 	{
-		if (sustain != null && sustain.length >= 40)
+		if (sustain != null && sustain.length >= 10)
 			sustain.draw();
-		if (hit == -1)
-			super.draw();
+		super.draw();
 	}
 
 	override function kill()
@@ -84,7 +87,7 @@ class Note extends VaryingSprite
 
 	function doHit()
 	{
-		if (sustain != null && sustain.length >= 10)
+		if (sustain != null && sustain.length > 0)
 		{
 			if (_shouldDoHit)
 			{
@@ -92,13 +95,18 @@ class Note extends VaryingSprite
 					_origLen = sustain.length;
 
 				strumTime = Conductor.time;
-				sustain.length -= FlxG.elapsed * 1000;
-				hit = 0;
+				sustain.length -= Conductor.delta;
+				hit = HELD;
+
+				// fun anim !!! :3
+				blend = ADD;
+				offset.x = originalOffsets[0] + FlxG.random.float(-1, 1) * 7;
+				offset.y = originalOffsets[1] + FlxG.random.float(-1, 1) * 7;
 			}
 		}
 		else
 		{
-			hit = 1;
+			hit = HIT;
 		}
 	}
 
@@ -150,7 +158,6 @@ class Sustain extends VaryingSprite
 
 		antialiasing = true;
 		moves = false;
-		alphaMult = 0.6;
 	}
 
 	override function update(elapsed:Float)
@@ -163,23 +170,18 @@ class Sustain extends VaryingSprite
 	var copyProps = {
 		x: true,
 		y: true,
-		scrollAngle: true,
 		alpha: true
 	};
 
 	function followNote(strum:Note, ?speed:Float = 1)
 	{
 		if (copyProps.x)
-		{
-			x = strum.x + (strum.width / 2);
-			x -= width / 2;
-		}
+			x = (strum.getMidpoint().x - width * 0.5);
 
 		if (copyProps.y)
-			y = strum.y + 50;
+			y = strum.y + 55;
 
-		if (copyProps.scrollAngle)
-			angle = strum.scrollAngle;
+		angle = strum.scrollAngle;
 
 		if (copyProps.alpha)
 			alpha = strum.alpha;
@@ -193,7 +195,7 @@ class Sustain extends VaryingSprite
 
 	private function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
 	{
-		animation.play('tail', true);
+		animation.play('hold', true);
 		setGraphicSize(Std.int(width), Std.int(l * 0.475 * s * m));
 		updateHitbox();
 	}
@@ -205,15 +207,24 @@ class Sustain extends VaryingSprite
 
 		var bruh = height;
 		super.draw();
-		y += bruh;
 		scale.y = 0.7;
 		updateHitbox();
-		animation.play('hold', true);
+		y += bruh;
+		animation.play('tail', true);
 		super.draw();
 		y -= bruh;
+
 		if (parent != null)
 			updateVisual(length, parent.speed, parent.speedMult);
 		else
 			updateVisual(length);
 	}
+}
+
+// floats aren't worth it
+enum NoteHitState
+{
+	NONE;
+	HELD;
+	HIT;
 }

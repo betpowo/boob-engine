@@ -1,3 +1,4 @@
+import Note.NoteHitState;
 import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
 import flixel.graphics.frames.FlxFilterFrames;
@@ -14,6 +15,11 @@ class StrumNote extends Note
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
 	public var blocked:Bool = false;
+
+	public override function set_hit(v:NoteHitState):NoteHitState
+	{
+		return hit = NONE;
+	}
 
 	public function new(?noteData:Int = 2)
 	{
@@ -47,7 +53,7 @@ class StrumNote extends Note
 					case 1:
 						blurSpr.colorTransform.redOffset = blurSpr.colorTransform.greenOffset = blurSpr.colorTransform.blueOffset = 0;
 					case 2:
-						var mult = 1.1;
+						var mult = 1.06;
 						blurSpr.alphaMult = 0.75;
 						scaleMult.set(mult, mult);
 				}
@@ -99,7 +105,7 @@ class StrumNote extends Note
 	}
 
 	var confirmTime:Float = 0.0;
-	var pressingNote = false;
+	var pressingNote:Note = null;
 
 	override function update(elapsed:Float)
 	{
@@ -118,12 +124,12 @@ class StrumNote extends Note
 				for (note in notes)
 				{
 					// sustain notes
-					if ((note.hit >= 0 && note._shouldDoHit))
+					if ((note.hit == HELD && note._shouldDoHit))
 					{
 						note._shouldDoHit = true;
 						note.doHit();
-						if (note.hit < 1)
-							pressingNote = true;
+						if (note.hit != HIT)
+							pressingNote = note;
 					}
 				}
 			}
@@ -133,21 +139,27 @@ class StrumNote extends Note
 				for (note in notes)
 				{
 					// nomal notes
-					if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hit == -1)
+					if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hit == NONE)
 					{
 						if (note.sustain.length > 40)
 							note._shouldDoHit = true;
 						note.doHit();
-						pressingNote = true;
+						pressingNote = note;
 					}
 				}
 
-				animation.play(pressingNote ? 'confirm' : 'press', true);
+				animation.play((pressingNote != null) ? 'confirm' : 'press', true);
 			}
 
 			if (FlxG.keys.anyJustReleased(inputs))
 			{
-				pressingNote = false;
+				for (note in notes)
+				{
+					// sustain notes
+					note._shouldDoHit = false;
+				}
+
+				pressingNote = null;
 				animation.play('idle', true);
 			}
 		}
@@ -157,9 +169,9 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					if (note.strumTime <= Conductor.time && note.hit < 1)
+					if (note.strumTime <= Conductor.time && note.hit != HIT)
 					{
-						if (note.hit == -1)
+						if (note.hit == NONE)
 							animation.play('confirm', true);
 
 						confirmTime = 0.13;

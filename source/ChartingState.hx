@@ -10,13 +10,14 @@ class ChartingState extends FlxState
 		this.chart = chart;
 
 		strumLine.spacing = strumLine.members[0].width;
-		strumLine.screenCenter(X);
 		strumLine.y = 50;
 
 		var last = strumLine.members[strumLine.members.length - 1];
 		var bg = new FlxSprite().makeGraphic(1, 1, -1);
 		bg.scale.set(last.x + last.width, FlxG.height * 1.5);
 		bg.screenCenter();
+
+		strumLine.screenCenter(X);
 
 		add(bg);
 		add(strumLine);

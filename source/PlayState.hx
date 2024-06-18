@@ -64,7 +64,7 @@ class PlayState extends FlxState
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
-		chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/bopeebo/charts/hard.json'));
+		chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/unbeatable/charts/normal.json'));
 		noteGroup.memberAdded.add(function(note)
 		{
 			@:privateAccess {
@@ -85,9 +85,11 @@ class PlayState extends FlxState
 			strum.notes.push(note);
 			note.rgb.copy(strum.rgb);
 			noteQueue.push(note);
+
+			// note.scrollAngle = FlxG.random.float(-1, 1) * 45;
 		}
-		FlxG.sound.playMusic('assets/songs/bopeebo/Inst.ogg', 0);
-		vocals = new FlxSound().loadEmbedded('assets/songs/bopeebo/Voices.ogg');
+		FlxG.sound.playMusic('assets/songs/unbeatable/Inst.ogg', 0);
+		vocals = new FlxSound().loadEmbedded('assets/songs/unbeatable/Voices.ogg');
 		FlxG.sound.list.add(vocals);
 		vocals.play();
 		FlxG.sound.music.time = vocals.time = 0;
