@@ -89,6 +89,12 @@ class Note extends VaryingSprite
 	{
 		if (sustain != null && sustain.length > 0)
 		{
+			if (_origLen == -1)
+			{
+				var diff = strumTime - Conductor.time;
+				sustain.length += diff;
+			}
+
 			if (_shouldDoHit)
 			{
 				if (_origLen == -1)
@@ -120,7 +126,9 @@ class Note extends VaryingSprite
 
 	function followStrum(strum:StrumNote)
 	{
-		var grah = scrollAngle * (Math.PI / -180);
+		var totalAngle = scrollAngle + strum.scrollAngle;
+
+		var grah = totalAngle * (Math.PI / -180);
 		var distance = (strumTime - Conductor.time) * 0.45 * speed;
 
 		if (copyProps.x)

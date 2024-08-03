@@ -10,11 +10,13 @@ class StrumNote extends Note
 
 	private var dumpRGB:RGBPalette = new RGBPalette();
 	var blurSpr:Note;
+	var holdSpr:FlxSprite = new FlxSprite();
 
 	public var inputs:Array<FlxKey> = null;
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
 	public var blocked:Bool = false;
+	public var hitWindow:Float = 123.0;
 
 	public override function set_hit(v:NoteHitState):NoteHitState
 	{
@@ -34,6 +36,19 @@ class StrumNote extends Note
 		blurSpr.alpha = 0.75;
 		blurSpr.visible = false;
 		createFilterFrames(blurSpr, new BlurFilter(58, 58));
+
+		holdSpr.frames = FlxAtlasFrames.fromSparrow('assets/hold.png', 'assets/hold.xml');
+		holdSpr.animation.addByPrefix('start', 'start', 12, false);
+		holdSpr.animation.addByPrefix('hold', 'hold', 24, true);
+		holdSpr.animation.play('hold', true);
+		holdSpr.updateHitbox();
+		holdSpr.animation.finishCallback = function(a)
+		{
+			if (a == 'start')
+				holdSpr.animation.play('hold', true);
+		}
+		holdSpr.shader = rgb.shader;
+		holdSpr.visible = false;
 
 		animation.addByIndices('confirm', 'idle', [0, 0, 0], '', 24, false);
 		animation.addByIndices('press', 'idle', [0, 0, 0], '', 24, false);
@@ -96,11 +111,20 @@ class StrumNote extends Note
 
 	override function draw()
 	{
-		if (visible && alpha != 0)
+		blurSpr.camera = holdSpr.camera = camera;
+		if (visible && alpha > 0)
 		{
 			super.draw();
-			if (blurSpr.visible && blurSpr.alpha != 0)
+			if (blurSpr.visible && blurSpr.alpha >= 0)
 				blurSpr.draw();
+
+			if (holdSpr.visible && holdSpr.alpha >= 0)
+			{
+				holdSpr.x = getMidpoint().x - holdSpr.width * 0.5;
+				holdSpr.y = getMidpoint().y - holdSpr.height * 0.5;
+				holdSpr.centerOffsets();
+				holdSpr.draw();
+			}
 		}
 	}
 
@@ -115,6 +139,8 @@ class StrumNote extends Note
 		blurSpr.alpha = alpha;
 		blurSpr.scale.copyFrom(scale);
 		blurSpr.scaleMult.copyFrom(scaleMult);
+		blurSpr.update(elapsed);
+		holdSpr.update(elapsed);
 		dumpRGB.r = FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15);
 
 		if (inputs is Array && inputs != null)
@@ -130,6 +156,8 @@ class StrumNote extends Note
 						note.doHit();
 						if (note.hit != HIT)
 							pressingNote = note;
+						else
+							holdSpr.visible = false;
 					}
 				}
 			}
@@ -138,11 +166,15 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					// nomal notes
-					if (Math.abs(note.strumTime - Conductor.time) <= 100 && note.hit == NONE)
+					// normal notes
+					if (Math.abs(note.strumTime - Conductor.time) <= hitWindow && note.hit == NONE)
 					{
-						if (note.sustain.length > 40)
+						if (note.sustain.length > 60)
+						{
 							note._shouldDoHit = true;
+							holdSpr.visible = true;
+							holdSpr.animation.play('start', true);
+						}
 						note.doHit();
 						pressingNote = note;
 					}
@@ -157,6 +189,7 @@ class StrumNote extends Note
 				{
 					// sustain notes
 					note._shouldDoHit = false;
+					holdSpr.visible = false;
 				}
 
 				pressingNote = null;
@@ -172,7 +205,14 @@ class StrumNote extends Note
 					if (note.strumTime <= Conductor.time && note.hit != HIT)
 					{
 						if (note.hit == NONE)
+						{
 							animation.play('confirm', true);
+							if (note.sustain.length > 60)
+							{
+								holdSpr.visible = true;
+								holdSpr.animation.play('start', true);
+							}
+						}
 
 						confirmTime = 0.13;
 						note._shouldDoHit = true;
@@ -185,6 +225,7 @@ class StrumNote extends Note
 				{
 					animation.play('idle', true);
 					confirmTime = 0;
+					holdSpr.visible = false;
 				}
 			}
 		}
