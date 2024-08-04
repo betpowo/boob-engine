@@ -31,6 +31,8 @@ class PlayState extends FlxState
 
 	var options:Options;
 
+	var not:Note;
+
 	override public function create()
 	{
 		super.create();
@@ -47,14 +49,21 @@ class PlayState extends FlxState
 
 		playerStrums.setPosition(FlxG.width - playerStrums.width - 50, 50);
 		add(playerStrums);
+		playerStrums.autoHit = true;
 
 		add(noteGroup);
+
+		not = new Note(2);
+		not.sustain.length = 500;
+		not.screenCenter();
+		not.rgb.set(0x6600ff, -1, 0x000066);
+		add(not);
 
 		var index = 0;
 		for (keys in [[LEFT, A], [DOWN, S], [UP, K], [RIGHT, L]])
 		{
 			var strum = playerStrums.members[index];
-			strum.inputs = keys;
+			// strum.inputs = keys;
 			index += 1;
 		}
 
@@ -63,7 +72,7 @@ class PlayState extends FlxState
 			for (strum in str.members)
 			{
 				var rgbs = options.noteColors;
-				var que = rgbs[strum.ID];
+				var que = rgbs[strum.ID] ?? {base: 0x87a3ad, outline: 0x000000};
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
@@ -95,18 +104,21 @@ class PlayState extends FlxState
 				FlxG.camera.zoom += 0.03;
 		});
 
-		Conductor.stepHit.add(() ->
+		for (i in opponentStrums.members)
 		{
-			for (i in opponentStrums.members)
-			{
-				i.angle = FlxMath.fastSin(Conductor.beatFl * Math.PI) * 4;
-			}
-		});
+			i.scrollAngle = -25;
+		}
+
+		for (i in playerStrums.members)
+		{
+			i.scrollAngle = 25;
+		}
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		not.scrollAngle += elapsed * 25;
 		for (idx => note in chart.notes)
 		{
 			if (Conductor.time >= note.strumTime - (3000 / chart.speed) && !note.spawned)

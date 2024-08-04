@@ -124,10 +124,17 @@ class Note extends VaryingSprite
 		alpha: true
 	};
 
+	public var totalAngle(get, never):Float;
+
+	public function get_totalAngle():Float
+	{
+		if (strumTracker != null && strumTracker is Note)
+			return scrollAngle + strumTracker.scrollAngle;
+		return scrollAngle;
+	}
+
 	function followStrum(strum:StrumNote)
 	{
-		var totalAngle = scrollAngle + strum.scrollAngle;
-
 		var grah = totalAngle * (Math.PI / -180);
 		var distance = (strumTime - Conductor.time) * 0.45 * speed;
 
@@ -171,14 +178,13 @@ class Sustain extends VaryingSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (parent != null)
-			followNote(parent);
 	}
 
 	var copyProps = {
 		x: true,
 		y: true,
-		alpha: true
+		alpha: true,
+		scrollAngle: true
 	};
 
 	function followNote(strum:Note, ?speed:Float = 1)
@@ -189,7 +195,8 @@ class Sustain extends VaryingSprite
 		if (copyProps.y)
 			y = strum.y + 55;
 
-		angle = strum.scrollAngle;
+		if (copyProps.scrollAngle)
+			angle = strum.totalAngle;
 
 		if (copyProps.alpha)
 			alpha = strum.alpha;
@@ -206,26 +213,40 @@ class Sustain extends VaryingSprite
 		animation.play('hold', true);
 		setGraphicSize(Std.int(width), Std.int(l * 0.475 * s * m));
 		updateHitbox();
+		origin.y = 0;
 	}
 
 	override public function draw()
 	{
+		if (parent != null)
+			followNote(parent);
+
 		if (shader == null)
 			shader = parent.shader;
 
 		var bruh = height;
+		y -= bruh * 0.5;
 		super.draw();
 		scale.y = 0.7;
 		updateHitbox();
-		y += bruh;
+		y += bruh * 0.5;
+		offset.y = origin.y = bruh * -1;
+		// y += bruh * 2;
 		animation.play('tail', true);
 		super.draw();
-		y -= bruh;
-
 		if (parent != null)
 			updateVisual(length, parent.speed, parent.speedMult);
 		else
 			updateVisual(length);
+	}
+
+	function doRotate()
+	{
+		if (parent != null)
+		{
+			var gwa = FlxPoint.weak(x, y).pivotDegrees(FlxPoint.weak(parent.getMidpoint().x, parent.getMidpoint().y), parent.totalAngle);
+			setPosition(gwa.x, gwa.y);
+		}
 	}
 }
 

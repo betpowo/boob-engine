@@ -26,12 +26,14 @@ class Options extends DefaultOptions
 		// will be made later
 		if (true)
 		{
-			noteColors = [
-				{base: 0x996666, outline: 0x660033},
-				{base: 0x996666, outline: 0x660033},
-				{base: 0x009999, outline: 0x000066},
-				{base: 0x009999, outline: 0x000066}
-			];
+			/*
+				noteColors = [
+					{base: 0x996666, outline: 0x660033},
+					{base: 0x996666, outline: 0x660033},
+					{base: 0x009999, outline: 0x000066},
+					{base: 0x009999, outline: 0x000066}
+				];
+			 */
 			return true;
 		}
 		return false;
