@@ -7,6 +7,8 @@ class Conductor extends FlxBasic
 
 	public static var time(default, set):Float = 0;
 	public static var bpm:Float = 60;
+	public static var rate:Float = 1;
+
 	public static var crochet(get, never):Float;
 	public static var crochetSec(get, never):Float;
 
@@ -85,7 +87,7 @@ class Conductor extends FlxBasic
 		super.update(elapsed);
 		if (!paused)
 		{
-			time += elapsed * 1000;
+			time += elapsed * (1000 * rate);
 			if (FlxG.sound.music != null && FlxG.sound.music.playing)
 			{
 				if (Math.abs(time - FlxG.sound.music.time) > 30)

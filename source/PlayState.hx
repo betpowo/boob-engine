@@ -209,7 +209,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.pressed.DOWN)
 			not.sustain.length += 20;
 
-		timeNum.number = Conductor.time * 0.001;
+		timeNum.number = Math.floor(Conductor.time * 0.001);
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();

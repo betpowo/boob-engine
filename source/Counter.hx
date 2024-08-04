@@ -1,11 +1,40 @@
+import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 
 class Counter extends FlxSprite
 {
-	public var number:Float = 0;
+	public var number(default, set):Float = 0;
+	public var display(default, set):CounterDisplay = INT;
+
+	public function set_number(v:Float):Float
+	{
+		if (number != v)
+		{
+			number = v;
+			schedule();
+		}
+		return v;
+	}
+
+	public function set_display(v:CounterDisplay):CounterDisplay
+	{
+		if (display != v)
+		{
+			display = v;
+			schedule();
+		}
+		return v;
+	}
+
+	function schedule()
+	{
+		displit = getDisplay(number).split('');
+	}
+
 	public var separator:Float = 4;
 	public var alignment:FlxTextAlign = LEFT;
-	public var display:CounterDisplay = INT;
+
+	var displit:Array<String> = [];
 
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
@@ -18,12 +47,14 @@ class Counter extends FlxSprite
 
 		antialiasing = true;
 		moves = false;
+
+		schedule();
 	}
 
-	override public function draw()
+	override public function drawComplex(cam:FlxCamera)
 	{
 		var ogx = x;
-		var spli = getDisplay(number).split('');
+		var spli = displit;
 		if (alignment == RIGHT)
 		{
 			x -= (frameWidth + separator) * scale.x * spli.length;
@@ -51,7 +82,7 @@ class Counter extends FlxSprite
 					num = Std.parseInt(waaa);
 			}
 			animation.play('num', true, false, num);
-			super.draw();
+			super.drawComplex(cam);
 			x += (frameWidth + separator) * scale.x;
 		}
 		x = ogx;
