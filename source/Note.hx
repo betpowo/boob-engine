@@ -228,11 +228,10 @@ class Sustain extends VaryingSprite
 		y -= bruh * 0.5;
 		super.draw();
 		scale.y = 0.7;
-		updateHitbox();
 		y += bruh * 0.5;
-		offset.y = origin.y = bruh * -1;
-		// y += bruh * 2;
 		animation.play('tail', true);
+		updateHitbox();
+		offset.y = origin.y = (parent != null ? Std.int(length * 0.475 * parent.speed * parent.speedMult) : Std.int(length * 0.475)) * (FlxMath.SQUARE_ROOT_OF_TWO * -1);
 		super.draw();
 		if (parent != null)
 			updateVisual(length, parent.speed, parent.speedMult);

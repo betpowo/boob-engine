@@ -3,6 +3,7 @@ import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
 import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 class StrumNote extends Note
 {
@@ -131,6 +132,9 @@ class StrumNote extends Note
 	var confirmTime:Float = 0.0;
 	var pressingNote:Note = null;
 
+	public var noteHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var noteHeld:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -154,6 +158,8 @@ class StrumNote extends Note
 					{
 						note._shouldDoHit = true;
 						note.doHit();
+						noteHeld.dispatch(note);
+
 						if (note.hit != HIT)
 							pressingNote = note;
 						else
@@ -177,6 +183,7 @@ class StrumNote extends Note
 						}
 						note.doHit();
 						pressingNote = note;
+						noteHit.dispatch(note);
 					}
 				}
 
@@ -212,11 +219,20 @@ class StrumNote extends Note
 								holdSpr.visible = true;
 								holdSpr.animation.play('start', true);
 							}
+							else
+							{
+								noteHit.dispatch(note);
+							}
 						}
 
 						confirmTime = 0.13;
 						note._shouldDoHit = true;
 						note.doHit();
+
+						if (note.hit == HELD)
+						{
+							noteHeld.dispatch(note);
+						}
 					}
 				}
 				if (confirmTime > 0)

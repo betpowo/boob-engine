@@ -33,6 +33,18 @@ class PlayState extends FlxState
 
 	var not:Note;
 
+	var health(default, set):Float = 0.5;
+	var score:Int = 0;
+	var scoreNum:ComboCounter = new ComboCounter();
+	var healthBar:HealthBar = new HealthBar();
+
+	function set_health(v:Float):Float
+	{
+		health = FlxMath.bound(v, 0, 1);
+		healthBar.value = health;
+		return health;
+	}
+
 	override public function create()
 	{
 		super.create();
@@ -49,7 +61,7 @@ class PlayState extends FlxState
 
 		playerStrums.setPosition(FlxG.width - playerStrums.width - 50, 50);
 		add(playerStrums);
-		playerStrums.autoHit = true;
+		// playerStrums.autoHit = true;
 
 		add(noteGroup);
 
@@ -57,13 +69,13 @@ class PlayState extends FlxState
 		not.sustain.length = 500;
 		not.screenCenter();
 		not.rgb.set(0x6600ff, -1, 0x000066);
-		add(not);
+		// add(not);
 
 		var index = 0;
 		for (keys in [[LEFT, A], [DOWN, S], [UP, K], [RIGHT, L]])
 		{
 			var strum = playerStrums.members[index];
-			// strum.inputs = keys;
+			strum.inputs = keys;
 			index += 1;
 		}
 
@@ -104,15 +116,30 @@ class PlayState extends FlxState
 				FlxG.camera.zoom += 0.03;
 		});
 
-		for (i in opponentStrums.members)
-		{
-			i.scrollAngle = -25;
-		}
-
 		for (i in playerStrums.members)
 		{
-			i.scrollAngle = 25;
+			i.noteHit.add(noteHit);
 		}
+
+		add(scoreNum);
+		scoreNum.scale.set(0.5, 0.5);
+		scoreNum.updateHitbox();
+		scoreNum.x = FlxG.width - 50;
+		scoreNum.y = FlxG.height - scoreNum.height - 50;
+		scoreNum.rightToLeft = true;
+
+		add(healthBar);
+		healthBar.x = 50;
+		healthBar.y = FlxG.height - healthBar.height - 50;
+		healthBar.rightToLeft = true;
+	}
+
+	function noteHit(note:Note)
+	{
+		var gwa = 0.01;
+		score += 5;
+		health += gwa;
+		scoreNum.number = score;
 	}
 
 	override public function update(elapsed:Float)
@@ -134,6 +161,10 @@ class PlayState extends FlxState
 			vocals.stop();
 			FlxG.switchState(new ChartingState(chart));
 		}
+		if (FlxG.keys.pressed.UP)
+			not.sustain.length -= 20;
+		if (FlxG.keys.pressed.DOWN)
+			not.sustain.length += 20;
 	}
 
 	function spawnNote(i:ChartNote):Note
