@@ -10,8 +10,8 @@ typedef NoteGroup = FlxTypedGroup<Note>;
 
 class PlayState extends FlxState
 {
-	var opponentStrums:StrumLine = new StrumLine(4);
-	var playerStrums:StrumLine = new StrumLine(4);
+	var opponentStrums:StrumLine;
+	var playerStrums:StrumLine;
 
 	public static var chart:Chart = {
 		speed: 1,
@@ -74,13 +74,15 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
-		super.create();
-
 		options = Options.instance;
+		FlxG.plugins.add(new Conductor());
+
+		super.create();
 
 		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.4);
 
-		FlxG.plugins.add(new Conductor());
+		opponentStrums = new StrumLine(4);
+		playerStrums = new StrumLine(4);
 
 		opponentStrums.setPosition(50, 50);
 		add(opponentStrums);
@@ -208,6 +210,9 @@ class PlayState extends FlxState
 			not.sustain.length += 20;
 
 		timeNum.number = Conductor.time * 0.001;
+
+		if (FlxG.keys.justPressed.F5)
+			FlxG.resetState();
 	}
 
 	function spawnNote(i:ChartNote):Note
