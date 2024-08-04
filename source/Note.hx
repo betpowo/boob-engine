@@ -76,9 +76,14 @@ class Note extends VaryingSprite
 
 	override function kill()
 	{
-		super.kill();
 		if (parentGroup != null)
 			parentGroup.remove(this);
+		if (sustain != null)
+			sustain.kill();
+		if (strumTracker != null)
+			strumTracker.notes.remove(this);
+
+		super.kill();
 	}
 
 	public var _shouldDoHit:Bool = false;
@@ -113,6 +118,7 @@ class Note extends VaryingSprite
 		else
 		{
 			hit = HIT;
+			kill();
 		}
 	}
 

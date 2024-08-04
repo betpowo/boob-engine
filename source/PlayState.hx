@@ -2,6 +2,8 @@ package;
 
 import Chart.ChartNote;
 import flixel.input.keyboard.FlxKey;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 
 typedef NoteGroup = FlxTypedGroup<Note>;
@@ -34,15 +36,40 @@ class PlayState extends FlxState
 	var not:Note;
 
 	var health(default, set):Float = 0.5;
-	var score:Int = 0;
-	var scoreNum:ComboCounter = new ComboCounter();
+	var score(default, set):Int = 0;
 	var healthBar:HealthBar = new HealthBar();
+	var scoreNum:Counter = new Counter();
+	var timeNum:Counter = new Counter();
 
 	function set_health(v:Float):Float
 	{
 		health = FlxMath.bound(v, 0, 1);
 		healthBar.value = health;
 		return health;
+	}
+
+	function set_score(v:Int):Int
+	{
+		var oldScore = score;
+		var diff = v - oldScore;
+
+		scoreNum.number = v;
+
+		scoreNum.updateHitbox();
+
+		FlxTween.cancelTweensOf(scoreNum);
+		FlxTween.cancelTweensOf(scoreNum.colorTransform);
+
+		scoreNum.offset.y += 7;
+		if (diff > 0)
+			scoreNum.setColorTransform(1, 1, 1, 1, 20, 125, 90);
+		else if (diff < 0)
+			scoreNum.setColorTransform(1, 0.8, 0.9, 1, 125, 0, 90);
+
+		FlxTween.tween(scoreNum, {"offset.y": scoreNum.offset.y - 7}, 0.4, {ease: FlxEase.elasticOut});
+		FlxTween.tween(scoreNum.colorTransform, {redOffset: 0, greenOffset: 0, blueOffset: 0}, 1, {ease: FlxEase.expoOut});
+
+		return score = v;
 	}
 
 	override public function create()
@@ -59,7 +86,7 @@ class PlayState extends FlxState
 		add(opponentStrums);
 		opponentStrums.autoHit = true;
 
-		playerStrums.setPosition(FlxG.width - playerStrums.width - 50, 50);
+		playerStrums.setPosition(FlxG.width - playerStrums.width - 100, 50);
 		add(playerStrums);
 		// playerStrums.autoHit = true;
 
@@ -119,27 +146,41 @@ class PlayState extends FlxState
 		for (i in playerStrums.members)
 		{
 			i.noteHit.add(noteHit);
+			i.noteMiss.add(noteMiss);
 		}
-
-		add(scoreNum);
-		scoreNum.scale.set(0.5, 0.5);
-		scoreNum.updateHitbox();
-		scoreNum.x = FlxG.width - 50;
-		scoreNum.y = FlxG.height - scoreNum.height - 50;
-		scoreNum.rightToLeft = true;
 
 		add(healthBar);
 		healthBar.x = 50;
 		healthBar.y = FlxG.height - healthBar.height - 50;
 		healthBar.rightToLeft = true;
+
+		add(scoreNum);
+		scoreNum.scale.set(0.5, 0.5);
+		scoreNum.updateHitbox();
+		scoreNum.x = 50;
+		scoreNum.y = healthBar.y - scoreNum.height - 15;
+
+		add(timeNum);
+		timeNum.scale.set(0.25, 0.25);
+		timeNum.updateHitbox();
+		timeNum.x = scoreNum.x;
+		timeNum.y = scoreNum.y - timeNum.height - 15;
+		timeNum.display = TIME;
+		timeNum.setColorTransform(-1, -1, -1, 1, 255, 255, 255);
 	}
 
 	function noteHit(note:Note)
 	{
 		var gwa = 0.01;
-		score += 5;
+		score += 100;
 		health += gwa;
-		scoreNum.number = score;
+	}
+
+	function noteMiss(note:Note)
+	{
+		var gwa = 0.02;
+		score -= 10;
+		health -= gwa;
 	}
 
 	override public function update(elapsed:Float)
@@ -165,6 +206,8 @@ class PlayState extends FlxState
 			not.sustain.length -= 20;
 		if (FlxG.keys.pressed.DOWN)
 			not.sustain.length += 20;
+
+		timeNum.number = Conductor.time * 0.001;
 	}
 
 	function spawnNote(i:ChartNote):Note

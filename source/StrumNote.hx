@@ -96,6 +96,7 @@ class StrumNote extends Note
 				shader = strumRGB.shader;
 			}
 		}
+		Conductor.stepHit.add(stepHit);
 	}
 
 	function createFilterFrames(sprite:FlxSprite, filter:BitmapFilter)
@@ -131,9 +132,11 @@ class StrumNote extends Note
 
 	var confirmTime:Float = 0.0;
 	var pressingNote:Note = null;
+	var enableStepConfirm:Bool = false;
 
 	public var noteHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 	public var noteHeld:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var noteMiss:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
 
 	override function update(elapsed:Float)
 	{
@@ -149,6 +152,16 @@ class StrumNote extends Note
 
 		if (inputs is Array && inputs != null)
 		{
+			for (note in notes)
+			{
+				// sustain notes
+				if (Conductor.time >= note.strumTime + 300)
+				{
+					noteMiss.dispatch(note);
+					note.kill();
+				}
+			}
+
 			if (FlxG.keys.anyPressed(inputs) && !blocked)
 			{
 				for (note in notes)
@@ -163,7 +176,10 @@ class StrumNote extends Note
 						if (note.hit != HIT)
 							pressingNote = note;
 						else
+						{
 							holdSpr.visible = false;
+							enableStepConfirm = false;
+						}
 					}
 				}
 			}
@@ -180,6 +196,7 @@ class StrumNote extends Note
 							note._shouldDoHit = true;
 							holdSpr.visible = true;
 							holdSpr.animation.play('start', true);
+							enableStepConfirm = true;
 						}
 						note.doHit();
 						pressingNote = note;
@@ -196,8 +213,10 @@ class StrumNote extends Note
 				{
 					// sustain notes
 					note._shouldDoHit = false;
-					holdSpr.visible = false;
 				}
+
+				holdSpr.visible = false;
+				enableStepConfirm = false;
 
 				pressingNote = null;
 				animation.play('idle', true);
@@ -209,29 +228,38 @@ class StrumNote extends Note
 			{
 				for (note in notes)
 				{
-					if (note.strumTime <= Conductor.time && note.hit != HIT)
+					if (note.strumTime <= Conductor.time)
 					{
-						if (note.hit == NONE)
+						if (note.hit != HIT)
 						{
-							animation.play('confirm', true);
-							if (note.sustain.length > 60)
+							if (note.hit == NONE)
 							{
-								holdSpr.visible = true;
-								holdSpr.animation.play('start', true);
+								animation.play('confirm', true);
+								if (note.sustain.length > 60)
+								{
+									holdSpr.visible = true;
+									holdSpr.animation.play('start', true);
+								}
+								else
+								{
+									noteHit.dispatch(note);
+								}
 							}
-							else
+
+							confirmTime = 0.13;
+							note._shouldDoHit = true;
+							note.doHit();
+
+							if (note.hit == HELD)
 							{
-								noteHit.dispatch(note);
+								noteHeld.dispatch(note);
+								enableStepConfirm = true;
 							}
-						}
-
-						confirmTime = 0.13;
-						note._shouldDoHit = true;
-						note.doHit();
-
-						if (note.hit == HELD)
-						{
-							noteHeld.dispatch(note);
+							else if (note.hit == HIT)
+							{
+								holdSpr.visible = false;
+								enableStepConfirm = false;
+							}
 						}
 					}
 				}
@@ -242,8 +270,18 @@ class StrumNote extends Note
 					animation.play('idle', true);
 					confirmTime = 0;
 					holdSpr.visible = false;
+					enableStepConfirm = false;
 				}
 			}
+		}
+	}
+
+	function stepHit()
+	{
+		if (enableStepConfirm)
+		{
+			animation.play('confirm', true);
+			confirmTime = 0.13;
 		}
 	}
 }
