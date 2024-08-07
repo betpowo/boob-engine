@@ -214,7 +214,7 @@ class Sustain extends VaryingSprite
 		speedMult: 1
 	}
 
-	private function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
+	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
 	{
 		animation.play('hold', true);
 		setGraphicSize(Std.int(width), Std.int(l * 0.475 * s * m));

@@ -10,7 +10,7 @@ typedef ChartNote =
 	strumTime:Float,
 	index:Int,
 	?length:Float,
-	?isPlayer:Bool,
+	?strum:Int,
 	?spawned:Bool // for playstate
 }
 
@@ -36,7 +36,7 @@ class ChartConverter
 					strumTime: bruh.t,
 					index: Std.int(bruh.d % 4),
 					length: bruh.l,
-					isPlayer: bruh.d < 4
+					strum: (bruh.d < 4) ? 1 : 0
 				});
 			}
 			else
@@ -61,7 +61,7 @@ class ChartConverter
 						strumTime: note[0],
 						index: _ind,
 						length: note[2],
-						isPlayer: _pla
+						strum: _pla ? 1 : 0
 					});
 					idx += 1;
 				}

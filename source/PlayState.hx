@@ -10,9 +10,6 @@ typedef NoteGroup = FlxTypedGroup<Note>;
 
 class PlayState extends FlxState
 {
-	var opponentStrums:StrumLine;
-	var playerStrums:StrumLine;
-
 	public static var chart:Chart = {
 		speed: 1,
 		notes: [
@@ -21,19 +18,18 @@ class PlayState extends FlxState
 			{strumTime: 3000, index: 2},
 			{strumTime: 3500, index: 1},
 			{strumTime: 4000, index: 2},
-			{strumTime: 6000, index: 4, isPlayer: true}
+			{strumTime: 6000, index: 4, strum: 1}
 		],
 		bpm: 60
 	};
 
+	var strumGroup = new FlxTypedGroup<StrumLine>();
 	var noteGroup:NoteGroup = new NoteGroup();
 	var vocals:FlxSound;
 
 	var noteQueue:Array<Note> = [];
 
 	var options:Options;
-
-	var not:Note;
 
 	var health(default, set):Float = 0.5;
 	var score(default, set):Int = 0;
@@ -81,27 +77,22 @@ class PlayState extends FlxState
 
 		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.4);
 
-		opponentStrums = new StrumLine(4);
-		playerStrums = new StrumLine(4);
+		var opponentStrums = new StrumLine(4);
+		var playerStrums = new StrumLine(4);
 
 		opponentStrums.setPosition(50, 50);
-		add(opponentStrums);
+		strumGroup.add(opponentStrums);
 		opponentStrums.autoHit = true;
 
 		playerStrums.setPosition(FlxG.width - playerStrums.width - 100, 50);
-		add(playerStrums);
+		strumGroup.add(playerStrums);
 		// playerStrums.autoHit = true;
 
+		add(strumGroup);
 		add(noteGroup);
 
-		not = new Note(2);
-		not.sustain.length = 500;
-		not.screenCenter();
-		not.rgb.set(0x6600ff, -1, 0x000066);
-		// add(not);
-
 		var index = 0;
-		for (keys in [[LEFT, A], [DOWN, S], [UP, K], [RIGHT, L]])
+		for (keys in options.keys)
 		{
 			var strum = playerStrums.members[index];
 			strum.inputs = keys;
@@ -188,7 +179,6 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		not.scrollAngle += elapsed * 25;
 		for (idx => note in chart.notes)
 		{
 			if (Conductor.time >= note.strumTime - (3000 / chart.speed) && !note.spawned)
@@ -198,18 +188,14 @@ class PlayState extends FlxState
 			}
 		}
 		FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, 1, elapsed * 2.5);
+		timeNum.number = Math.floor(Conductor.time * 0.001);
+
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new ChartingState(chart));
 		}
-		if (FlxG.keys.pressed.UP)
-			not.sustain.length -= 20;
-		if (FlxG.keys.pressed.DOWN)
-			not.sustain.length += 20;
-
-		timeNum.number = Math.floor(Conductor.time * 0.001);
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
@@ -217,7 +203,7 @@ class PlayState extends FlxState
 
 	function spawnNote(i:ChartNote):Note
 	{
-		var group = i.isPlayer ? playerStrums : opponentStrums;
+		var group = strumGroup.members[i.strum] ?? strumGroup.members[0];
 		var strum = group.members[i.index % group.members.length];
 
 		var note = noteGroup.recycle(Note);
@@ -228,6 +214,10 @@ class PlayState extends FlxState
 		note.speed = chart.speed;
 		strum.notes.push(note);
 		note.rgb.copy(strum.rgb);
+
+		// var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.4, 1), FlxG.random.float(0.3, 1));
+		// note.rgb.set(clor, -1, clor.getDarkened(0.66));
+
 		noteGroup.add(note);
 		note.y -= 2000;
 		note.sustain.x -= 2000;

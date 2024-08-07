@@ -114,6 +114,7 @@ class StrumNote extends Note
 	override function draw()
 	{
 		blurSpr.camera = holdSpr.camera = camera;
+		blurSpr.shader = holdSpr.shader = (pressingNote ?? this).rgb.shader;
 		if (visible && alpha > 0)
 		{
 			super.draw();
@@ -248,6 +249,7 @@ class StrumNote extends Note
 
 							confirmTime = 0.13;
 							note._shouldDoHit = true;
+							pressingNote = note;
 							note.doHit();
 
 							if (note.hit == HELD)
