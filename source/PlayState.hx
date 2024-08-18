@@ -12,14 +12,7 @@ class PlayState extends FlxState
 {
 	public static var chart:Chart = {
 		speed: 1,
-		notes: [
-			{strumTime: 1000, index: 3},
-			{strumTime: 2000, index: 0},
-			{strumTime: 3000, index: 2},
-			{strumTime: 3500, index: 1},
-			{strumTime: 4000, index: 2},
-			{strumTime: 6000, index: 4, strum: 1}
-		],
+		notes: [{time: 0, index: 0}],
 		bpm: 60
 	};
 
@@ -181,7 +174,7 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		for (idx => note in chart.notes)
 		{
-			if (Conductor.time >= note.strumTime - (3000 / chart.speed) && !note.spawned)
+			if (Conductor.time >= note.time - (3000 / chart.speed) && !note.spawned)
 			{
 				note.spawned = true;
 				spawnNote(note);
@@ -197,18 +190,25 @@ class PlayState extends FlxState
 			FlxG.switchState(new ChartingState(chart));
 		}
 
+		if (FlxG.keys.justPressed.THREE)
+		{
+			FlxG.sound.music.stop();
+			vocals.stop();
+			FlxG.switchState(new AlphabetTestState());
+		}
+
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
 	}
 
 	function spawnNote(i:ChartNote):Note
 	{
-		var group = strumGroup.members[i.strum] ?? strumGroup.members[0];
+		var group = strumGroup.members[i.lane] ?? strumGroup.members[0];
 		var strum = group.members[i.index % group.members.length];
 
 		var note = noteGroup.recycle(Note);
-		note.noteData = i.index;
-		note.strumTime = i.strumTime;
+		note.strumIndex = i.index;
+		note.strumTime = i.time;
 		note.strumTracker = strum;
 		note.sustain.length = i.length;
 		note.speed = chart.speed;

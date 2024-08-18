@@ -1,3 +1,5 @@
+import flixel.math.FlxMath;
+
 typedef Chart =
 {
 	var bpm:Float;
@@ -7,10 +9,10 @@ typedef Chart =
 
 typedef ChartNote =
 {
-	strumTime:Float,
+	time:Float,
 	index:Int,
 	?length:Float,
-	?strum:Int,
+	?lane:Int,
 	?spawned:Bool // for playstate
 }
 
@@ -33,10 +35,10 @@ class ChartConverter
 			if (data.generatedBy != null)
 			{
 				result.notes.push({
-					strumTime: bruh.t,
+					time: bruh.t,
 					index: Std.int(bruh.d % 4),
 					length: bruh.l,
-					strum: (bruh.d < 4) ? 1 : 0
+					lane: (bruh.d < 4) ? 1 : 0
 				});
 			}
 			else
@@ -58,10 +60,10 @@ class ChartConverter
 						_ind = _ind % max;
 					}
 					result.notes.push({
-						strumTime: note[0],
+						time: note[0],
 						index: _ind,
 						length: note[2],
-						strum: _pla ? 1 : 0
+						lane: _pla ? 1 : 0
 					});
 					idx += 1;
 				}

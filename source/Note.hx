@@ -11,8 +11,8 @@ class Note extends VaryingSprite
 	public var strumTracker:StrumNote;
 	public var speed:Float = 1.0;
 	public var speedMult:Float = 1.0;
-	public var noteData(default, set):Int = 2;
-	public var aocondc:Bool = true; // stands for: angleOffset change on noteData change
+	public var strumIndex(default, set):Int = 2;
+	public var aocondc:Bool = true; // stands for: angleOffset change on strumIndex change
 	public var hit(default, set):NoteHitState = NONE;
 	public var scrollAngle:Float = 0;
 	public var sustain:Sustain;
@@ -27,20 +27,20 @@ class Note extends VaryingSprite
 		return v;
 	}
 
-	public function set_noteData(v:Int):Int
+	public function set_strumIndex(v:Int):Int
 	{
 		if (aocondc)
 			angleOffset = angles[FlxMath.wrap(v, 0, angles.length - 1)];
-		return noteData = v;
+		return strumIndex = v;
 	}
 
 	var originalOffsets = [0.0, 0.0];
 
-	public function new(?noteData:Int = 2)
+	public function new(?strumIndex:Int = 2)
 	{
 		super();
 		sustain = new Sustain(this);
-		this.noteData = noteData;
+		this.strumIndex = strumIndex;
 		frames = FlxAtlasFrames.fromSparrow('assets/note.png', 'assets/note.xml');
 		animation.addByPrefix('idle', 'idle', 24, false);
 		animation.play('idle', true);
@@ -199,7 +199,7 @@ class Sustain extends VaryingSprite
 			x = (strum.getMidpoint().x - width * 0.5);
 
 		if (copyProps.y)
-			y = strum.y + 55;
+			y = strum.y + 55 * strum.scale.y;
 
 		if (copyProps.scrollAngle)
 			angle = strum.totalAngle;
@@ -225,10 +225,15 @@ class Sustain extends VaryingSprite
 	override public function draw()
 	{
 		if (parent != null)
+		{
 			followNote(parent);
-
-		if (shader == null)
 			shader = parent.shader;
+		}
+
+		if (parent != null)
+			updateVisual(length, parent.speed, parent.speedMult);
+		else
+			updateVisual(length);
 
 		var bruh = height;
 		y -= bruh * 0.5;
@@ -239,10 +244,6 @@ class Sustain extends VaryingSprite
 		updateHitbox();
 		offset.y = origin.y = (parent != null ? Std.int(length * 0.475 * parent.speed * parent.speedMult) : Std.int(length * 0.475)) * (FlxMath.SQUARE_ROOT_OF_TWO * -1);
 		super.draw();
-		if (parent != null)
-			updateVisual(length, parent.speed, parent.speedMult);
-		else
-			updateVisual(length);
 	}
 
 	function doRotate()

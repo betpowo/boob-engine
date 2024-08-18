@@ -24,14 +24,14 @@ class StrumNote extends Note
 		return hit = NONE;
 	}
 
-	public function new(?noteData:Int = 2)
+	public function new(?strumIndex:Int = 2)
 	{
-		super(noteData);
+		super(strumIndex);
 		sustain = null;
 		shader = strumRGB.shader;
 		strumRGB.set(0x87a3ad, -1, 0);
 		dumpRGB.set(FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15), -1, 0x201e31);
-		blurSpr = new Note(noteData);
+		blurSpr = new Note(strumIndex);
 		blurSpr.shader = rgb.shader;
 		blurSpr.blend = ADD;
 		blurSpr.alpha = 0.75;

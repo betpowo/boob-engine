@@ -36,12 +36,9 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
-
-	<!--In case you want to use the addons package-->
-	<!--<haxelib name="flixel-addons" />-->
-
-	<!--In case you want to use the ui package-->
-	<!--<haxelib name="flixel-ui" />-->
+	<haxelib name="hscript" />
+	<haxelib name="flixel-ui" />
+	<haxelib name="flixel-addons" />
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->

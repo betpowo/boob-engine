@@ -81,6 +81,16 @@ class Conductor extends FlxBasic
 
 	public static var beatHit:FlxSignal = new FlxSignal();
 	public static var stepHit:FlxSignal = new FlxSignal();
+	public static var tracker(get, default):FlxSound;
+
+	public static function get_tracker():FlxSound
+	{
+		if (tracker != null)
+			return tracker;
+		return FlxG.sound.music;
+	}
+
+	public static var threshold:Float = 20;
 
 	override public function update(elapsed:Float)
 	{
@@ -88,10 +98,10 @@ class Conductor extends FlxBasic
 		if (!paused)
 		{
 			time += elapsed * (1000 * rate);
-			if (FlxG.sound.music != null && FlxG.sound.music.playing)
+			if (tracker.playing)
 			{
-				if (Math.abs(time - FlxG.sound.music.time) > 30)
-					time = FlxG.sound.music.time;
+				if (Math.abs(time - tracker.time) > threshold)
+					time = tracker.time;
 			}
 			if (last.step != step)
 			{
