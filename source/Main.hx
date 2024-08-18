@@ -21,6 +21,10 @@ class Main extends Sprite
 		opts._load();
 		// trace(Reflect.fields(opts));
 
+		addChild(new FlxGame(0, 0, PlayState, 175, 175));
+		addChild(new openfl.display.FPS(5, 5, -1));
+
+		FlxG.plugins.addPlugin(new Conductor());
 		FlxG.signals.preStateSwitch.add(() ->
 		{
 			Conductor.beatHit.removeAll();
@@ -28,9 +32,6 @@ class Main extends Sprite
 			Conductor.paused = true;
 			Conductor.time = 0;
 		});
-
-		addChild(new FlxGame(0, 0, PlayState, 175, 175));
-		addChild(new openfl.display.FPS(5, 5, -1));
 
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 	}

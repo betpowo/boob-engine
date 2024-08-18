@@ -199,7 +199,7 @@ class Sustain extends VaryingSprite
 			x = (strum.getMidpoint().x - width * 0.5);
 
 		if (copyProps.y)
-			y = strum.y + 55 * strum.scale.y;
+			y = strum.getMidpoint().y;
 
 		if (copyProps.scrollAngle)
 			angle = strum.totalAngle;
@@ -217,7 +217,7 @@ class Sustain extends VaryingSprite
 	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
 	{
 		animation.play('hold', true);
-		setGraphicSize(Std.int(width), Std.int(l * 0.475 * s * m));
+		setGraphicSize(width, (l * 0.475 * s * m) + 2);
 		updateHitbox();
 		origin.y = 0;
 	}
@@ -240,6 +240,7 @@ class Sustain extends VaryingSprite
 		super.draw();
 		scale.y = 0.7;
 		y += bruh * 0.5;
+		y += 1.8;
 		animation.play('tail', true);
 		updateHitbox();
 		offset.y = origin.y = (parent != null ? Std.int(length * 0.475 * parent.speed * parent.speedMult) : Std.int(length * 0.475)) * (FlxMath.SQUARE_ROOT_OF_TWO * -1);

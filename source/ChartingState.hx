@@ -3,7 +3,7 @@ import flixel.addons.display.FlxGridOverlay;
 
 class ChartingState extends FlxState
 {
-	final GRID_SIZE:Float = 110;
+	var GRID_SIZE:Float = 110;
 
 	var chart = null;
 	var strumLine:StrumLine;
@@ -14,6 +14,7 @@ class ChartingState extends FlxState
 	var layer(default, set):Int = -1;
 	var inst:FlxSound;
 	var grid:FlxBackdrop;
+	var gridShader:RGBPalette;
 
 	function set_layer(v:Int):Int
 	{
@@ -37,25 +38,27 @@ class ChartingState extends FlxState
 		strumLine.spacing = GRID_SIZE;
 		strumLine.forEach((n) ->
 		{
-			n.setGraphicSize(GRID_SIZE, GRID_SIZE);
+			n.setGraphicSize(GRID_SIZE);
 			n.updateHitbox();
 		});
 		strumLine.y = 50;
 
-		grid = new FlxBackdrop(FlxGridOverlay.createGrid(1, 1, 4, 2, true, 0x33ff0000, 0x330000ff), Y);
+		grid = new FlxBackdrop(FlxGridOverlay.createGrid(1, 1, 4, 2, true, 0x66bb0000, 0x660000bb), Y);
 		grid.scale.set(GRID_SIZE, GRID_SIZE);
 		grid.updateHitbox();
 		grid.screenCenter(X);
 		grid.y = strumLine.y;
 		add(grid);
 
+		gridShader = new RGBPalette();
+		grid.shader = gridShader.shader;
+
 		strumLine.screenCenter(X);
 
 		add(strumLine);
 
 		add(note = new ChartingNoteGroup(chart, strumLine, [{base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}]));
-		note.setGraphicSize(GRID_SIZE, GRID_SIZE);
-		note.updateHitbox();
+		note.gridSize = GRID_SIZE;
 
 		timeNum = new Counter();
 		timeNum.x = timeNum.y = 50;
@@ -82,6 +85,8 @@ class ChartingState extends FlxState
 		Conductor.tracker = inst;
 
 		FlxG.sound.playMusic('assets/music/chartEditorLoop.ogg', 0);
+
+		changeLayer(0);
 	}
 
 	override function update(elapsed:Float)
@@ -108,7 +113,7 @@ class ChartingState extends FlxState
 		if (FlxG.keys.anyJustPressed([D, RIGHT]))
 			changeLayer(1);
 
-		grid.y = strumLine.y + (((Conductor.time) / 0.45) * Conductor.crochetSec * -1);
+		grid.y = strumLine.y + stepFromMS(Conductor.time) * GRID_SIZE * -1;
 
 		timeNum.number = FlxMath.roundDecimal(Conductor.time * 0.001, 2);
 
@@ -150,6 +155,20 @@ class ChartingState extends FlxState
 			layer += ch;
 			layer = FlxMath.wrap(layer, -1, maxLayers - 1);
 		}
+		if (layer != -1)
+		{
+			var target:RGBPalette = note.rgbs[layer];
+			gridShader.copy(target);
+		}
+		else
+		{
+			gridShader.set(0xeeeeff, -1, 0x808099);
+		}
+	}
+
+	public static function stepFromMS(ms:Float):Float
+	{
+		return ms / Conductor.stepCrochet;
 	}
 }
 
@@ -159,8 +178,16 @@ class ChartingNoteGroup extends Note
 	var strumLine:StrumLine;
 
 	public var layer:Int = -1;
+	public var gridSize(default, set):Float = 110;
 
-	var rgbs = [];
+	public function set_gridSize(v:Float):Float
+	{
+		setGraphicSize(v);
+		updateHitbox();
+		return v;
+	}
+
+	public var rgbs = [];
 
 	public function new(chart, strumLine, laneColors:Array<{base:Int, outline:Int}>)
 	{
@@ -186,7 +213,7 @@ class ChartingNoteGroup extends Note
 				var gwa = rgbs[bruh.lane] ?? rgbs[0];
 				shader = gwa.shader;
 				alpha = 1;
-				y = ((bruh.time - Conductor.time) / 0.45) * Conductor.crochetSec;
+				y = ChartingState.stepFromMS(bruh.time - Conductor.time) * gridSize;
 				if (!Conductor.paused && ((Conductor.time >= bruh.time)) || (layer != -1 && bruh.lane != layer))
 				{
 					alpha = 0.3;
@@ -195,7 +222,7 @@ class ChartingNoteGroup extends Note
 				y += strumLine.members[bruh.index].y;
 				x = strumLine.members[bruh.index].x;
 				strumIndex = bruh.index;
-				sustain.length = bruh.length;
+				sustain.length = ChartingState.stepFromMS(bruh.length) * gridSize;
 				if (shouldDraw)
 					super.draw();
 			}

@@ -9,6 +9,8 @@ class Conductor extends FlxBasic
 	public static var bpm:Float = 60;
 	public static var rate:Float = 1;
 
+	// for muscle memory purposes - i didnt wanna actually add stepCrochet lol
+	public static var stepCrochet(get, never):Float;
 	public static var crochet(get, never):Float;
 	public static var crochetSec(get, never):Float;
 
@@ -31,6 +33,11 @@ class Conductor extends FlxBasic
 		last_time = time;
 		time = v;
 		return v;
+	}
+
+	public static function get_stepCrochet():Float
+	{
+		return crochet / 4;
 	}
 
 	public static function get_crochet():Float
@@ -98,7 +105,7 @@ class Conductor extends FlxBasic
 		if (!paused)
 		{
 			time += elapsed * (1000 * rate);
-			if (tracker.playing)
+			if (tracker != null && tracker.playing)
 			{
 				if (Math.abs(time - tracker.time) > threshold)
 					time = tracker.time;

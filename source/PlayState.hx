@@ -64,7 +64,6 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		options = Options.instance;
-		FlxG.plugins.add(new Conductor());
 
 		super.create();
 
@@ -122,7 +121,7 @@ class PlayState extends FlxState
 
 		Conductor.bpm = chart.bpm;
 		Conductor.paused = false;
-
+		Conductor.tracker = FlxG.sound.music;
 		Conductor.beatHit.add(() ->
 		{
 			if (Conductor.beat % 4 == 0)
