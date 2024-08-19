@@ -17,6 +17,8 @@ class Note extends VaryingSprite
 	public var scrollAngle:Float = 0;
 	public var sustain:Sustain;
 
+	public var editor:Bool = false;
+
 	var parentGroup:FlxTypedGroup<Note>;
 
 	public function set_hit(v:NoteHitState):NoteHitState
@@ -217,7 +219,7 @@ class Sustain extends VaryingSprite
 	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
 	{
 		animation.play('hold', true);
-		setGraphicSize(width, (l * 0.475 * s * m) + 2);
+		setGraphicSize(width, (l * 0.48 * s * m) + 2);
 		updateHitbox();
 		origin.y = 0;
 	}
@@ -240,10 +242,10 @@ class Sustain extends VaryingSprite
 		super.draw();
 		scale.y = 0.7;
 		y += bruh * 0.5;
-		y += 1.8;
+		y -= 2.5;
 		animation.play('tail', true);
 		updateHitbox();
-		offset.y = origin.y = (parent != null ? Std.int(length * 0.475 * parent.speed * parent.speedMult) : Std.int(length * 0.475)) * (FlxMath.SQUARE_ROOT_OF_TWO * -1);
+		offset.y = origin.y = (bruh) * (-1 / scale.y);
 		super.draw();
 	}
 

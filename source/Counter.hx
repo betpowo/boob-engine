@@ -1,4 +1,3 @@
-import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 
 class Counter extends FlxSprite
@@ -51,7 +50,7 @@ class Counter extends FlxSprite
 		schedule();
 	}
 
-	override public function drawComplex(cam:FlxCamera)
+	override public function draw()
 	{
 		var ogx = x;
 		var spli = displit;
@@ -82,7 +81,7 @@ class Counter extends FlxSprite
 					num = Std.parseInt(waaa);
 			}
 			animation.play('num', true, false, num);
-			super.drawComplex(cam);
+			super.draw();
 			x += (frameWidth + separator) * scale.x;
 		}
 		x = ogx;
