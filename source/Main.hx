@@ -21,7 +21,7 @@ class Main extends Sprite
 		opts._load();
 		// trace(Reflect.fields(opts));
 
-		addChild(new FlxGame(0, 0, PlayState, 175, 175));
+		addChild(new FlxGame(0, 0, TitleState, 175, 175));
 		addChild(new openfl.display.FPS(5, 5, -1));
 
 		FlxG.plugins.addPlugin(new Conductor());

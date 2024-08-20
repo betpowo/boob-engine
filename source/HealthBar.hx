@@ -1,5 +1,7 @@
 import flixel.system.FlxAssets.FlxShader;
 
+// is this useful ????
+
 class HealthBar extends FlxSprite
 {
 	public var bshad = new HealthBarShader();
@@ -7,7 +9,7 @@ class HealthBar extends FlxSprite
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
 		super(x, y);
-		loadGraphic('assets/bar.png');
+		loadGraphic(Paths.image('ui/bar'));
 		antialiasing = true;
 		moves = false;
 

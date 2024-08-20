@@ -100,33 +100,32 @@ class PlayState extends FlxState
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
-		chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/darnell/charts/chart.json'));
 		noteGroup.memberAdded.add(function(note)
 		{
 			@:privateAccess {
 				note.parentGroup = noteGroup;
 			}
 		});
-		FlxG.sound.playMusic('assets/songs/darnell/Inst.ogg', 0);
-		vocals = new FlxSound().loadEmbedded('assets/songs/darnell/Voices-Play.ogg');
+		FlxG.sound.playMusic(Paths.song('darnell'), 0);
+		vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Play'));
 		FlxG.sound.list.add(vocals);
 		vocals.play();
 
-		var _vocals = new FlxSound().loadEmbedded('assets/songs/darnell/Voices-Opp.ogg');
+		var _vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Opp'));
 		FlxG.sound.list.add(_vocals);
 		_vocals.play();
 
 		FlxG.sound.music.time = vocals.time = _vocals.time = 0;
 		FlxG.sound.music.volume = 1;
 
+		for (i in chart.notes)
+		{
+			i.spawned = false;
+		}
 		Conductor.bpm = chart.bpm;
 		Conductor.paused = false;
 		Conductor.tracker = FlxG.sound.music;
-		Conductor.beatHit.add(() ->
-		{
-			if (Conductor.beat % 4 == 0)
-				FlxG.camera.zoom += 0.03;
-		});
+		Conductor.beatHit.add(beatHit);
 
 		for (i in playerStrums.members)
 		{
@@ -152,6 +151,17 @@ class PlayState extends FlxState
 		timeNum.y = scoreNum.y - timeNum.height - 15;
 		timeNum.display = TIME;
 		timeNum.setColorTransform(-1, -1, -1, 1, 255, 255, 255);
+	}
+
+	function beatHit()
+	{
+		/*strumGroup.members[0].forEach((n) ->
+			{
+				n.scrollAngle = Conductor.beat % 2 == 0 ? -15 : 15;
+		});*/
+
+		if (Conductor.beat % 4 == 0)
+			FlxG.camera.zoom += 0.03;
 	}
 
 	function noteHit(note:Note)

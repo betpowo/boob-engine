@@ -1,6 +1,7 @@
 import Note.NoteHitState;
 import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
+import flixel.VaryingSprite;
 import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -10,8 +11,8 @@ class StrumNote extends Note
 	public var strumRGB:RGBPalette = new RGBPalette();
 
 	private var dumpRGB:RGBPalette = new RGBPalette();
-	var blurSpr:Note;
-	var holdSpr:FlxSprite = new FlxSprite();
+	var blurSpr:VaryingSprite;
+	var holdSpr:FlxSprite;
 
 	public var inputs:Array<FlxKey> = null;
 	public var notes:Array<Note> = [];
@@ -31,14 +32,18 @@ class StrumNote extends Note
 		shader = strumRGB.shader;
 		strumRGB.set(0x87a3ad, -1, 0);
 		dumpRGB.set(FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15), -1, 0x201e31);
-		blurSpr = new Note(strumIndex);
+
+		blurSpr = new VaryingSprite();
+		blurSpr.frames = Paths.sparrow('ui/note');
+		blurSpr.animation.addByPrefix('idle', 'blur', 24, true);
+		blurSpr.animation.play('idle', true);
+		blurSpr.updateHitbox();
 		blurSpr.shader = rgb.shader;
 		blurSpr.blend = ADD;
-		blurSpr.alpha = 0.75;
 		blurSpr.visible = false;
-		createFilterFrames(blurSpr, new BlurFilter(58, 58));
 
-		holdSpr.frames = FlxAtlasFrames.fromSparrow('assets/hold.png', 'assets/hold.xml');
+		holdSpr = new FlxSprite();
+		holdSpr.frames = Paths.sparrow('ui/holdEffect');
 		holdSpr.animation.addByPrefix('start', 'start', 12, false);
 		holdSpr.animation.addByPrefix('hold', 'hold', 24, true);
 		holdSpr.animation.play('hold', true);
@@ -65,7 +70,8 @@ class StrumNote extends Note
 						scaleMult.set(mult, mult);
 						blurSpr.visible = true;
 						blurSpr.alphaMult = 1;
-						blurSpr.colorTransform.redOffset = blurSpr.colorTransform.greenOffset = blurSpr.colorTransform.blueOffset = 30;
+						blurSpr.colorTransform.redOffset = 50;
+						blurSpr.colorTransform.greenOffset = blurSpr.colorTransform.blueOffset = -50;
 					case 1:
 						blurSpr.colorTransform.redOffset = blurSpr.colorTransform.greenOffset = blurSpr.colorTransform.blueOffset = 0;
 					case 2:
@@ -99,18 +105,6 @@ class StrumNote extends Note
 		Conductor.stepHit.add(stepHit);
 	}
 
-	function createFilterFrames(sprite:FlxSprite, filter:BitmapFilter)
-	{
-		var filterFrames = FlxFilterFrames.fromFrames(sprite.frames, 64, 64, [filter]);
-		updateFilter(sprite, filterFrames);
-		return filterFrames;
-	}
-
-	function updateFilter(spr:FlxSprite, sprFilter:FlxFilterFrames)
-	{
-		sprFilter.applyToSprite(spr, false, true);
-	}
-
 	override function draw()
 	{
 		blurSpr.camera = holdSpr.camera = camera;
@@ -119,7 +113,12 @@ class StrumNote extends Note
 		{
 			super.draw();
 			if (blurSpr.visible && blurSpr.alpha >= 0)
+			{
+				blurSpr.x = getMidpoint().x - blurSpr.width * 0.5;
+				blurSpr.y = getMidpoint().y - blurSpr.height * 0.5;
+				blurSpr.centerOffsets();
 				blurSpr.draw();
+			}
 
 			if (holdSpr.visible && holdSpr.alpha >= 0)
 			{
@@ -144,8 +143,10 @@ class StrumNote extends Note
 		super.update(elapsed);
 		blurSpr.setPosition(x, y);
 		blurSpr.angle = angle;
+		blurSpr.angleOffset = angleOffset;
 		blurSpr.alpha = alpha;
 		blurSpr.scale.copyFrom(scale);
+		blurSpr.updateHitbox();
 		blurSpr.scaleMult.copyFrom(scaleMult);
 		blurSpr.update(elapsed);
 		holdSpr.update(elapsed);

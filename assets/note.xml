@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="note.png">
-	<SubTexture name="idle0000" x="2" y="2" width="157" height="154"/>
-	<SubTexture name="tail" x="161" y="2" width="50" height="64"/>
-	<SubTexture name="hold" x="213" y="4" width="50" height="4"/>
-</TextureAtlas>

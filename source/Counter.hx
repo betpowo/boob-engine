@@ -38,8 +38,8 @@ class Counter extends FlxSprite
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
 		super(x, y);
-		loadGraphic('assets/num.png');
-		loadGraphic('assets/num.png', true, Std.int(width / 7), Std.int(height / 2));
+		loadGraphic(Paths.image('ui/num'));
+		loadGraphic(Paths.image('ui/num'), true, Std.int(width / 7), Std.int(height / 2));
 		animation.add('num', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 0, true);
 		animation.play('num', true);
 		updateHitbox();

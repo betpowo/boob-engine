@@ -14,7 +14,7 @@ class HscriptHandler
 	public static var _STOP:Int = 0;
 	public static var _CONTINUE:Int = 1;
 
-	public function new(file:String)
+	public function new(file:String, ?root:String = 'data/scripts')
 	{
 		parser.line = 1;
 		parser.allowJSON = true;
@@ -39,7 +39,7 @@ class HscriptHandler
 		});
 
 		#if desktop
-		readOrSomething(sys.io.File.getContent(file));
+		readOrSomething(sys.io.File.getContent(Paths.script(file, root)));
 		this.file = file;
 		#end
 	}

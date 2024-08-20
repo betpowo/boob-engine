@@ -43,7 +43,7 @@ class Note extends VaryingSprite
 		super();
 		sustain = new Sustain(this);
 		this.strumIndex = strumIndex;
-		frames = FlxAtlasFrames.fromSparrow('assets/note.png', 'assets/note.xml');
+		frames = Paths.sparrow('ui/note');
 		animation.addByPrefix('idle', 'idle', 24, false);
 		animation.play('idle', true);
 		scale.set(0.7, 0.7);
@@ -115,6 +115,7 @@ class Note extends VaryingSprite
 				blend = ADD;
 				offset.x = originalOffsets[0] + FlxG.random.float(-1, 1) * 7;
 				offset.y = originalOffsets[1] + FlxG.random.float(-1, 1) * 7;
+				color = 0x808080; // ???
 			}
 		}
 		else
@@ -172,7 +173,7 @@ class Sustain extends VaryingSprite
 	{
 		super();
 		this.parent = parent;
-		frames = FlxAtlasFrames.fromSparrow('assets/note.png', 'assets/note.xml');
+		frames = Paths.sparrow('ui/note');
 		animation.addByPrefix('hold', 'hold', 24, false);
 		animation.addByPrefix('tail', 'tail', 24, false);
 		animation.play('tail', true);
@@ -231,7 +232,6 @@ class Sustain extends VaryingSprite
 			followNote(parent);
 			shader = parent.shader;
 		}
-
 		if (parent != null)
 			updateVisual(length, parent.speed, parent.speedMult);
 		else

@@ -25,19 +25,18 @@ class Alphabet extends FlxSprite
 
 	public var separator:Float = 4;
 	public var alignment:FlxTextAlign = LEFT;
+	public var rgb = new RGBPalette();
 
 	var displit:Array<String> = [];
-
 	var script:HscriptHandler;
-	var rgb = new RGBPalette();
 
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
 		super(x, y);
 		if (script == null)
-			script = new HscriptHandler('assets/alphabet.hx');
+			script = new HscriptHandler('alphabet', 'images/ui');
 
-		frames = FlxAtlasFrames.fromSparrow('assets/alphabet.png', 'assets/alphabet.xml');
+		frames = Paths.sparrow('ui/alphabet');
 		animation.addByPrefix('idle', ':FALLBACK', 0, true);
 		animation.play('idle', true);
 		updateHitbox();
