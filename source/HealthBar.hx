@@ -1,135 +1,85 @@
-import flixel.system.FlxAssets.FlxShader;
+import flixel.math.FlxRect;
 
 // is this useful ????
-
 class HealthBar extends FlxSprite
 {
-	public var bshad = new HealthBarShader();
+	public var emptySprite:FlxSprite;
+	public var empty:FlxColor;
+	public var fill:FlxColor;
+	public var percent(default, set):Float;
+	public var rightToLeft:Bool;
 
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
 		super(x, y);
 		loadGraphic(Paths.image('ui/bar'));
+		updateHitbox();
+
+		clipRect = new FlxRect(0, 0, width, height);
 		antialiasing = true;
 		moves = false;
 
-		shader = bshad.shader;
+		emptySprite = new FlxSprite().loadGraphic(Paths.image('ui/bar'));
+		emptySprite.updateHitbox();
+
+		setColors(0xff0000, 0x66ff33);
 	}
 
-	public var empty(default, set):FlxColor;
-	public var fill(default, set):FlxColor;
-	public var value(default, set):Float;
-	public var rightToLeft(default, set):Bool;
-
-	private function set_empty(color:FlxColor)
+	override public function draw()
 	{
-		bshad.empty = color;
-		return color;
+		//             ...                      ..        .
+		//
+		//
+		//
+		//                  .:-===+====-:..
+		//               .:=+***######*****++=:. .   ......
+		//          .::.-+*****##%#############*-.. . .....
+		//        ..=++++++**********++***##*###*+:.      .
+		//        .=+++*##*++++***+**#####%%*+##*+=-..    .
+		//        :+*%@@@@@@*++****%@@@@@%%%#%%@%*+-. .....
+		//       .=+%@@#%@@@#*****#%#@@@@@@%%###%#+-.  ....
+		//       .-+*@@@@@%#***####%@@@@@@%%%%*+**=:.  ...
+		//      .:=++**##*####%%%%####%%%%%%%*++++=-......
+		//     ..:=+++*****###%@@%##*###%%%###+==++=-:.....
+		//     ..:==++====+++*####*****#%%%##*+==**+=:.....
+		//      ..:======---=**##%*****#####*+++**+=-:.....
+		//       ...:-------==+***+++++++++++++**+=-:......
+		// ...    ....:--================++++****+-:.......
+		//   ... ......:=+#%%%#***####*++++*####*+-:.......
+		//  ...........:-=*##%%%%%%%%%%#%#######*+-::......
+		// .   .. ......:-=+*#######%%%%%%%####**=-:...  ..
+		// .  ...........::-=+*######%########*+=-::...  ..
+		//   .....  .. ....::-=+*###########**+=-::........
+		// ........ .   .....::-=++**#####**++=-:::........
+
+		emptySprite.setPosition(x, y);
+		emptySprite.scale.copyFrom(scale);
+		emptySprite.angle = angle;
+		emptySprite.alpha = alpha;
+		emptySprite.color = empty;
+		emptySprite.antialiasing = antialiasing;
+		if (emptySprite.visible)
+			emptySprite.draw();
+
+		color = fill;
+
+		// bro
+		clipRect.set((rightToLeft ? frameWidth : 0) * (1 - percent), 0, frameWidth * percent, frameHeight);
+		clipRect = clipRect;
+		super.draw();
 	}
 
-	private function set_fill(color:FlxColor)
-	{
-		bshad.fill = color;
-		return color;
-	}
-
-	private function set_value(f:Float)
+	private function set_percent(f:Float):Float
 	{
 		f = FlxMath.bound(f, 0, 1);
-		bshad.value = f;
+		percent = f;
 		return f;
 	}
 
-	private function set_rightToLeft(b:Bool)
+	// useless
+	public function setColors(?_empty:FlxColor = 0xff0000, ?_fill:FlxColor = 0x66ff33)
 	{
-		bshad.rightToLeft = b;
-		return b;
-	}
-
-	public function set(?_empty:FlxColor, ?_fill:FlxColor)
-	{
-		bshad.set(_empty, _fill);
-	}
-}
-
-class HealthBarShader
-{
-	public var shader(default, null):HealthBarShaderShader = new HealthBarShaderShader();
-	public var empty(default, set):FlxColor;
-	public var fill(default, set):FlxColor;
-	public var value(default, set):Float;
-	public var rightToLeft(default, set):Bool;
-
-	public function set(?_empty:FlxColor, ?_fill:FlxColor)
-	{
-		if (_empty == null)
-			_empty = 0xff0000;
-		if (_fill == null)
-			_fill = 0x66ff33;
-
 		empty = _empty;
 		fill = _fill;
-	};
-
-	private function set_empty(color:FlxColor)
-	{
-		empty = color;
-		shader.empty.value = [color.redFloat, color.greenFloat, color.blueFloat];
-		return color;
-	}
-
-	private function set_fill(color:FlxColor)
-	{
-		fill = color;
-		shader.fill.value = [color.redFloat, color.greenFloat, color.blueFloat];
-		return color;
-	}
-
-	private function set_value(f:Float)
-	{
-		f = FlxMath.bound(f, 0, 1);
-		value = f;
-		shader.value.value = [f];
-		return f;
-	}
-
-	private function set_rightToLeft(b:Bool)
-	{
-		rightToLeft = b;
-		shader.rtl.value = [b];
-		return b;
-	}
-
-	public function new()
-	{
-		set(0xFFFF0000, 0xFF66FF33);
-		value = 0.5;
-		rightToLeft = false;
-	}
-}
-
-class HealthBarShaderShader extends FlxShader
-{
-	@:glFragmentSource('
-		#pragma header
-
-        uniform vec3 empty;
-        uniform vec3 fill;
-        uniform float value;
-        uniform bool rtl;
-
-		void main() {
-			vec4 dump = flixel_texture2D(bitmap, openfl_TextureCoordv);
-            if (rtl) {
-                dump.rgb *= (openfl_TextureCoordv.x >= (1 - value)) ? fill.xyz : empty.xyz;
-            } else {
-                dump.rgb *= (openfl_TextureCoordv.x >= value) ? fill.xyz : empty.xyz;
-            }
-            gl_FragColor = dump;
-		}
-    ')
-	public function new()
-	{
-		super();
 	}
 }

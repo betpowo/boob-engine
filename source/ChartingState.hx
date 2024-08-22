@@ -257,7 +257,7 @@ class ChartingState extends FlxState
 				else
 				{
 					var shakeTime = 0.0;
-					FlxG.sound.play(Paths.sound('ui/cancel')).pitch = FlxG.random.float(0.8, 1.2);
+					FlxG.sound.play(Paths.sound('ui/cancel')).pitch = FlxG.random.float(0.95, 1.05);
 					FlxTween.cancelTweensOf(previewNote);
 					FlxG.camera.shake(2 / FlxG.camera.width, 0.1);
 					FlxTween.shake(previewNote, 0.05, 0.25, FlxAxes.XY, {

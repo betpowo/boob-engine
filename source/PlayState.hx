@@ -33,7 +33,7 @@ class PlayState extends FlxState
 	function set_health(v:Float):Float
 	{
 		health = FlxMath.bound(v, 0, 1);
-		healthBar.value = health;
+		healthBar.percent = health;
 		return health;
 	}
 
@@ -137,6 +137,7 @@ class PlayState extends FlxState
 		healthBar.x = 50;
 		healthBar.y = FlxG.height - healthBar.height - 50;
 		healthBar.rightToLeft = true;
+		healthBar.percent = health;
 
 		add(scoreNum);
 		scoreNum.scale.set(0.5, 0.5);
