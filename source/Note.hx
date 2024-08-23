@@ -1,3 +1,4 @@
+import Chart.ChartNote;
 import flixel.VaryingSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -161,6 +162,16 @@ class Note extends VaryingSprite
 
 		if (copyProps.alpha)
 			alpha = strum.alpha;
+	}
+
+	public static function fromChartNote(not:ChartNote):Note
+	{
+		var note = new Note(not.index);
+		note.strumTime = not.time;
+		note.strumIndex = not.index;
+		note.sustain.length = not.length;
+
+		return note;
 	}
 }
 

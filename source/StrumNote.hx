@@ -156,7 +156,7 @@ class StrumNote extends Note
 		{
 			for (note in notes)
 			{
-				// sustain notes
+				// misses
 				if (Conductor.time >= note.strumTime + 300)
 				{
 					noteMiss.dispatch(note);
@@ -257,11 +257,13 @@ class StrumNote extends Note
 							{
 								noteHeld.dispatch(note);
 								enableStepConfirm = true;
+								confirmTime = Conductor.stepCrochet;
 							}
 							else if (note.hit == HIT)
 							{
 								holdSpr.visible = false;
 								enableStepConfirm = false;
+								confirmTime = 0.13;
 							}
 						}
 					}
@@ -284,7 +286,7 @@ class StrumNote extends Note
 		if (enableStepConfirm)
 		{
 			animation.play('confirm', true);
-			confirmTime = 0.13;
+			confirmTime = Conductor.stepCrochet;
 		}
 	}
 }

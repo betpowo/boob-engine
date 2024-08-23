@@ -13,7 +13,7 @@ class ChartingState extends FlxState
 	var maxLayers:Int = 2;
 	var layer(default, set):Int = -1;
 	var inst:FlxSound;
-	var grid:FlxBackdrop;
+	var grid:ChartingGrid;
 	var gridShader:RGBPalette;
 	var previewNote:Note = new Note(2);
 
@@ -49,22 +49,24 @@ class ChartingState extends FlxState
 		});
 		strumLine.y = 50;
 
-		grid = new FlxBackdrop(FlxGridOverlay.createGrid(1, 1, 4, 2, true, 0x665d005d, 0x660000bb), Y);
+		grid = new ChartingGrid(FlxGridOverlay.createGrid(1, 1, 1, 2, true, 0x665d005d, 0x660000bb), Y);
 		grid.scale.set(GRID_SIZE, GRID_SIZE);
 		grid.updateHitbox();
-		grid.screenCenter(X);
-		grid.y = strumLine.y;
+		grid.columns = 4;
 		add(grid);
 
 		gridShader = new RGBPalette();
 		grid.shader = gridShader.shader;
 
 		strumLine.screenCenter(X);
+		grid.x = strumLine.x;
+		grid.y = strumLine.y;
 
 		add(strumLine);
 
 		add(note = new ChartingNoteGroup(chart, strumLine, [{base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}]));
 		note.gridSize = GRID_SIZE;
+		note.x = strumLine.x;
 
 		timeNum = new Counter();
 		timeNum.x = timeNum.y = 50;
@@ -101,6 +103,7 @@ class ChartingState extends FlxState
 		previewNote.setGraphicSize(GRID_SIZE);
 		previewNote.updateHitbox();
 		previewNote.editor = note.editor = true;
+		previewNote.speed = note.speed = 2;
 
 		changeLayer(0);
 	}
@@ -130,6 +133,8 @@ class ChartingState extends FlxState
 			changeLayer(1);
 
 		grid.y = strumLine.y + stepFromMS(Conductor.time) * GRID_SIZE * -1;
+		note.y = grid.y;
+
 		timeNum.number = FlxMath.roundDecimal(Conductor.time * 0.001, 2);
 
 		var intendedText = 'Beat: ${Conductor.beat}\nStep: ${Conductor.step}\nLayer:\n';
@@ -176,10 +181,15 @@ class ChartingState extends FlxState
 
 	var shittyLength:Float = 0;
 	var holdingTime:Float = 0;
+
+	public static var releaseTime:Float = 0;
+
 	var ogColors = [];
 
 	function updatePreviewNote(elapsed:Float)
 	{
+		releaseTime += elapsed;
+
 		if (ogColors.length < 1 && previewNote != null)
 			ogColors = [previewNote.rgb.r, previewNote.rgb.g, previewNote.rgb.b];
 
@@ -190,13 +200,13 @@ class ChartingState extends FlxState
 
 		shittyLength = Math.max(0, shittyLength);
 
-		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + grid.width))
+		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + (GRID_SIZE * grid.columns)))
 		{
 			var valueX = Math.floor((FlxG.mouse.x - grid.x) / GRID_SIZE);
 			var valueY = Math.floor((FlxG.mouse.y - grid.y) / GRID_SIZE);
 			var unsnapped = false;
 
-			previewNote.visible = true;
+			previewNote.visible = !note.selecting;
 			previewNote.x = valueX * GRID_SIZE;
 			previewNote.x += grid.x;
 			previewNote.strumIndex = valueX;
@@ -210,7 +220,7 @@ class ChartingState extends FlxState
 				previewNote.y = valueY * GRID_SIZE;
 				previewNote.y += grid.y;
 			}
-			previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength * 2) * GRID_SIZE);
+			previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
 			previewNote.sustain.blend = previewNote.blend;
 
 			if (FlxG.mouse.justPressed)
@@ -235,15 +245,33 @@ class ChartingState extends FlxState
 				// trace('place note');
 				if (layer != -1)
 				{
-					FlxG.sound.play(Paths.sound('charter/noteLay'));
-					var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - GRID_SIZE * 0.5) / GRID_SIZE : valueY) * Conductor.stepCrochet;
-					// trace('note is at $daTime');
-					chart.notes.push({
-						time: daTime,
-						index: valueX,
-						length: shittyLength,
-						lane: layer
-					});
+					if (!note.selecting)
+					{
+						FlxG.sound.play(Paths.sound('charter/noteLay'));
+						var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - GRID_SIZE * 0.5) / GRID_SIZE : valueY) * Conductor.stepCrochet;
+						// trace('note is at $daTime');
+						chart.notes.push({
+							time: daTime,
+							index: valueX,
+							length: shittyLength,
+							lane: layer
+						});
+						note.chart = chart; // lame
+						releaseTime = 0;
+					}
+					else
+					{
+						FlxG.sound.play(Paths.sound('charter/noteErase'));
+						chart.notes.sort((a, b) ->
+						{
+							if (a.time < b.time)
+								return -1;
+							if (a.time > b.time)
+								return 1;
+							return 0;
+						});
+						chart = note.chart; // lame
+					}
 					chart.notes.sort((a, b) ->
 					{
 						if (a.time < b.time)
@@ -252,7 +280,6 @@ class ChartingState extends FlxState
 							return 1;
 						return 0;
 					});
-					note.chart = chart; // lame
 				}
 				else
 				{
@@ -327,6 +354,10 @@ class ChartingNoteGroup extends Note
 	public var layer:Int = -1;
 	public var gridSize(default, set):Float = 110;
 
+	public var selecting:Bool = false;
+
+	// public var selected:Array<Int> = [];
+
 	public function set_gridSize(v:Float):Float
 	{
 		setGraphicSize(v);
@@ -351,31 +382,99 @@ class ChartingNoteGroup extends Note
 		}
 	}
 
+	var ogx:Float = 0;
+	var ogy:Float = 0;
+
 	override public function draw()
 	{
+		ogx = x;
+		ogy = y;
+		selecting = false;
 		if (strumLine != null && chart != null)
 		{
-			for (bruh in chart.notes)
+			for (idx => bruh in chart.notes)
 			{
 				var shouldDraw = (bruh.time + bruh.length) >= (Conductor.time - Conductor.crochet * 2)
 					&& bruh.time <= (Conductor.time + (Conductor.crochet * 3));
 				var gwa = rgbs[bruh.lane] ?? rgbs[0];
 				shader = gwa.shader;
 				alpha = 1;
-				y = ChartingState.stepFromMS(bruh.time - Conductor.time) * gridSize;
+				y += ChartingState.stepFromMS(bruh.time) * gridSize;
 				if (!Conductor.paused && ((Conductor.time >= bruh.time)) || (layer != -1 && bruh.lane != layer))
 				{
 					alpha = 0.3;
 				}
-
-				y += strumLine.y;
-				x = strumLine.x + (bruh.index * gridSize);
+				x += (bruh.index * gridSize);
 				strumIndex = bruh.index;
-				// i have to *2 it because it would be short
-				sustain.length = ChartingState.stepFromMS(bruh.length * 2) * gridSize;
+				sustain.length = ChartingState.stepFromMS(bruh.length) * gridSize;
+
+				colorTransform.greenOffset = 0;
+
+				if (FlxG.mouse.overlaps(this) && (bruh.lane == layer || layer == -1))
+				{
+					colorTransform.greenOffset = 128;
+					selecting = true;
+					handleSelection(idx);
+				}
+
 				if (shouldDraw)
 					super.draw();
+
+				x = ogx;
+				y = ogy;
 			}
 		}
+	}
+
+	function handleSelection(idx:Int = 0)
+	{
+		/*
+			// ill figure out moving notes later
+			if (FlxG.mouse.pressed)
+			{
+				var valueX:Float = Math.floor((FlxG.mouse.x - ogx) / gridSize);
+				var valueY:Float = Math.floor((FlxG.mouse.y - ogy) / gridSize);
+				var unsnapped = FlxG.keys.pressed.SHIFT;
+
+				if (unsnapped)
+					valueY = (FlxG.mouse.y - ogy - (gridSize * 0.5)) / gridSize;
+
+				var daTime = valueY * Conductor.stepCrochet;
+				trace('hi $daTime');
+
+				chart.notes[idx].time = daTime;
+		}*/
+
+		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart.notes[idx].lane)
+		{
+			chart.notes.splice(idx, 1);
+		}
+	}
+}
+
+// useless, but just to make multikey grid easier
+
+class ChartingGrid extends FlxBackdrop
+{
+	public var columns:Int = 4;
+
+	public function new(image, repeat)
+	{
+		super(image, repeat, 0, 0);
+	}
+
+	override public function draw()
+	{
+		var ogx = x;
+		var ogfy = flipY;
+
+		for (idx in 0...columns)
+		{
+			x = ogx + (scale.x * idx);
+			flipY = idx % 2 == 1;
+			super.draw();
+		}
+		x = ogx;
+		flipY = ogfy;
 	}
 }
