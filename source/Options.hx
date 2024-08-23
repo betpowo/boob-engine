@@ -1,7 +1,8 @@
 import flixel.FlxBasic;
 import flixel.input.keyboard.FlxKey;
 
-class DefaultOptions extends FlxBasic
+@:structInit
+class DefaultOptions
 {
 	public var keys = [[LEFT, A], [DOWN, S], [UP, W], [RIGHT, D]];
 	public var noteColors = [
@@ -14,22 +15,19 @@ class DefaultOptions extends FlxBasic
 
 class Options extends DefaultOptions
 {
-	public static var instance:Options;
+	public static final _default:DefaultOptions = {};
+	public static var data:DefaultOptions = _default;
 
-	public function new()
-	{
-		super();
-		if (instance == null)
-			instance = this;
-	}
-
-	public function _load():Bool
+	public static function load():Bool
 	{
 		// will be made later
-		if (true)
-		{
-			return true;
-		}
-		return false;
+		data.noteColors = [
+			{base: 0xffF9393F, outline: 0xff651038},
+			{base: 0xff12FA05, outline: 0xff0A4447},
+			{base: 0xff00FFFF, outline: 0xff1542B7},
+			{base: 0xffC24B99, outline: 0xff3C1F56}
+		];
+
+		return true;
 	}
 }

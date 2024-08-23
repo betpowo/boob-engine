@@ -63,9 +63,9 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
-		options = Options.instance;
-
 		super.create();
+
+		var options = Options.data;
 
 		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.4);
 
@@ -83,12 +83,10 @@ class PlayState extends FlxState
 		add(strumGroup);
 		add(noteGroup);
 
-		var index = 0;
-		for (keys in options.keys)
+		for (index => keys in options.keys)
 		{
 			var strum = playerStrums.members[index];
 			strum.inputs = keys;
-			index += 1;
 		}
 
 		for (str in [opponentStrums, playerStrums])
@@ -96,7 +94,7 @@ class PlayState extends FlxState
 			for (strum in str.members)
 			{
 				var rgbs = options.noteColors;
-				var que = rgbs[strum.ID] ?? {base: 0x87a3ad, outline: 0x000000};
+				var que = rgbs[strum.ID] ?? {base: 0x717171, outline: 0x333333};
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
@@ -231,6 +229,9 @@ class PlayState extends FlxState
 		noteGroup.add(note);
 		note.y -= 2000;
 		note.sustain.x -= 2000;
+
+		if (i.lane == 0)
+			note.scrollAngle = FlxG.random.float(-90, 90);
 
 		return note;
 	}

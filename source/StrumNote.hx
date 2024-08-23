@@ -176,10 +176,14 @@ class StrumNote extends Note
 						noteHeld.dispatch(note);
 
 						if (note.hit != HIT)
+						{
 							pressingNote = note;
+							holdSpr.angle = note.totalAngle;
+						}
 						else
 						{
 							holdSpr.visible = false;
+							holdSpr.angle = 0;
 							enableStepConfirm = false;
 						}
 					}
@@ -199,6 +203,7 @@ class StrumNote extends Note
 							holdSpr.visible = true;
 							holdSpr.animation.play('start', true);
 							enableStepConfirm = true;
+							holdSpr.angle = note.totalAngle;
 						}
 						note.doHit();
 						pressingNote = note;
@@ -241,6 +246,7 @@ class StrumNote extends Note
 								{
 									holdSpr.visible = true;
 									holdSpr.animation.play('start', true);
+									holdSpr.angle = note.totalAngle;
 								}
 								else
 								{
@@ -264,6 +270,7 @@ class StrumNote extends Note
 								holdSpr.visible = false;
 								enableStepConfirm = false;
 								confirmTime = 0.13;
+								holdSpr.angle = 0;
 							}
 						}
 					}
