@@ -8,26 +8,17 @@ class TitleState extends FlxState
 	{
 		super.create();
 
-		var presses:Int = 0;
-		var butt:FlxUIButton;
-		butt = new FlxUIButton(0, 0, 'test sound', function()
+		var butt:FlxUIButton = new FlxUIButton(0, 0, '>w<', function()
 		{
-			presses += 1;
-			switch (presses)
-			{
-				case 1:
-					butt.label.text = 'test note obj';
-					FlxG.sound.play(Paths.sound('charter/noteLay'));
-				case 2:
-					butt.label.text = 'start :3';
-					add(new Note(2));
-				default:
-					butt.label.text = '>w<';
-					FlxG.switchState(new PlayState());
-					PlayState.chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/darnell/charts/chart.json'));
-			}
+			PlayState.chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/darnell/charts/chart.json'));
+			FlxG.switchState(new PlayState());
 		});
 		butt.screenCenter();
 		add(butt);
+
+		add(new FlxUIButton(butt.x, butt.y + 40, 'option', function()
+		{
+			FlxG.switchState(new OptionsState());
+		}));
 	}
 }

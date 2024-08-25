@@ -274,6 +274,11 @@ class PlayState extends FlxState
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
+
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.switchState(new TitleState());
+		}
 	}
 
 	function spawnNote(i:ChartNote):Note
@@ -290,8 +295,8 @@ class PlayState extends FlxState
 		strum.notes.push(note);
 		note.rgb.copy(strum.rgb);
 
-		// var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.4, 1), FlxG.random.float(0.3, 1));
-		// note.rgb.set(clor, -1, clor.getDarkened(0.66));
+		var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.2, 1), FlxG.random.float(0.6, 1));
+		note.rgb.set(clor, -1, clor.getDarkened(0.5));
 
 		noteGroup.add(note);
 		note.y -= 2000;
