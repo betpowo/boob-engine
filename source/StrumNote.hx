@@ -6,6 +6,8 @@ import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
+typedef StrumNoteSignal = FlxTypedSignal<Note->Void>;
+
 class StrumNote extends Note
 {
 	public var strumRGB:RGBPalette = new RGBPalette();
@@ -14,6 +16,7 @@ class StrumNote extends Note
 	var blurSpr:VaryingSprite;
 	var holdSpr:FlxSprite;
 
+	public var parentLane:StrumLine = null;
 	public var inputs:Array<FlxKey> = null;
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
@@ -134,9 +137,10 @@ class StrumNote extends Note
 	var pressingNote:Note = null;
 	var enableStepConfirm:Bool = false;
 
-	public var noteHit:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
-	public var noteHeld:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
-	public var noteMiss:FlxTypedSignal<Note->Void> = new FlxTypedSignal<Note->Void>();
+	public var noteHit:StrumNoteSignal = new StrumNoteSignal();
+	public var noteHeld:StrumNoteSignal = new StrumNoteSignal();
+	public var noteHeldStep:StrumNoteSignal = new StrumNoteSignal();
+	public var noteMiss:StrumNoteSignal = new StrumNoteSignal();
 
 	override function update(elapsed:Float)
 	{
@@ -248,10 +252,7 @@ class StrumNote extends Note
 									holdSpr.animation.play('start', true);
 									holdSpr.angle = note.totalAngle;
 								}
-								else
-								{
-									noteHit.dispatch(note);
-								}
+								noteHit.dispatch(note);
 							}
 
 							confirmTime = 0.13;
@@ -261,9 +262,9 @@ class StrumNote extends Note
 
 							if (note.hit == HELD)
 							{
-								noteHeld.dispatch(note);
 								enableStepConfirm = true;
 								confirmTime = Conductor.stepCrochet;
+								noteHeld.dispatch(note);
 							}
 							else if (note.hit == HIT)
 							{
@@ -277,10 +278,10 @@ class StrumNote extends Note
 				}
 				if (confirmTime > 0)
 					confirmTime -= elapsed;
-				else
+				else if (confirmTime != -1)
 				{
 					animation.play('idle', true);
-					confirmTime = 0;
+					confirmTime = -1;
 					holdSpr.visible = false;
 					enableStepConfirm = false;
 				}
@@ -294,6 +295,8 @@ class StrumNote extends Note
 		{
 			animation.play('confirm', true);
 			confirmTime = Conductor.stepCrochet;
+			noteHeldStep.dispatch(pressingNote);
+			// Log.print('yo', 0x00ffff);
 		}
 	}
 }

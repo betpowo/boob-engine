@@ -23,7 +23,7 @@ class Main extends Sprite
 		Options.load();
 		// trace(Reflect.fields(opts));
 
-		addChild(new FlxGame(0, 0, TitleState, 175, 175));
+		addChild(new FlxGame(0, 0, TitleState, 240, 240));
 		addChild(new openfl.display.FPS(5, 5, -1));
 
 		FlxG.plugins.addPlugin(new Conductor());
@@ -120,8 +120,8 @@ class Log
 
 	public static function print(message:Dynamic, ?color:FlxColor = 0xd2d2d2, ?pos:PosInfos)
 	{
-		Sys.println('\033[38;2;${color.red};${color.green};${color.blue}m'
-			+ '\033[7m ${pos.className}:${pos.lineNumber} \033[27m '
+		Sys.println('\033[38;2;${color.red};${color.green};${color.blue};1m'
+			+ '\033[7m ${pos.className}:${pos.lineNumber} \033[27;21m '
 			+ message
 			+ '\033[0m');
 	}

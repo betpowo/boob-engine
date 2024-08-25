@@ -14,7 +14,8 @@ using StringTools;
 typedef Mod =
 {
 	name:String,
-	enabled:Bool
+	enabled:Bool,
+	global:Bool
 }
 
 class Paths
@@ -30,8 +31,8 @@ class Paths
 		{
 			for (m in dirList)
 			{
-				if (FileSystem.isDirectory('mods/$m') || m.endsWith('.bbm'))
-					modList.push({name: m.toLowerCase(), enabled: true});
+				if (FileSystem.isDirectory('mods/$m'))
+					modList.push({name: m.toLowerCase(), enabled: true, global: false});
 			}
 		}
 	}
@@ -80,8 +81,8 @@ class Paths
 	{
 		var key:String = file('$root/$f.png');
 		var mapKey:String = key;
-		if (useGPU)
-			mapKey += ':gpu';
+		/*if (useGPU)
+			mapKey += ':gpu'; */
 
 		var g:FlxGraphic;
 		if (FileSystem.exists(key) && !shitLoaded.exists(mapKey))

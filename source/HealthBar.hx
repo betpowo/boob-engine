@@ -52,6 +52,7 @@ class HealthBar extends FlxSprite
 		//   .....  .. ....::-=+*###########**+=-::........
 		// ........ .   .....::-=++**#####**++=-:::........
 
+		emptySprite.camera = camera;
 		emptySprite.setPosition(x, y);
 		emptySprite.scale.copyFrom(scale);
 		emptySprite.angle = angle;

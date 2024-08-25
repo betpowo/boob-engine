@@ -9,7 +9,7 @@ class Note extends VaryingSprite
 
 	public var rgb:RGBPalette = new RGBPalette();
 	public var strumTime:Float = 0;
-	public var strumTracker:StrumNote;
+	public var strum:StrumNote;
 	public var speed:Float = 1.0;
 	public var speedMult:Float = 1.0;
 	public var strumIndex(default, set):Int = 2;
@@ -17,7 +17,7 @@ class Note extends VaryingSprite
 	public var hit(default, set):NoteHitState = NONE;
 	public var scrollAngle:Float = 0;
 	public var sustain:Sustain;
-
+	public var anim:String = null;
 	public var editor:Bool = false;
 
 	var parentGroup:FlxTypedGroup<Note>;
@@ -62,9 +62,9 @@ class Note extends VaryingSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (strumTracker != null)
+		if (strum != null)
 		{
-			followStrum(strumTracker);
+			followStrum(strum);
 		}
 		if (sustain != null)
 			sustain.update(elapsed);
@@ -83,8 +83,8 @@ class Note extends VaryingSprite
 			parentGroup.remove(this);
 		if (sustain != null)
 			sustain.kill();
-		if (strumTracker != null)
-			strumTracker.notes.remove(this);
+		if (strum != null)
+			strum.notes.remove(this);
 
 		super.kill();
 	}
@@ -138,8 +138,8 @@ class Note extends VaryingSprite
 
 	public function get_totalAngle():Float
 	{
-		if (strumTracker != null && strumTracker is Note)
-			return scrollAngle + strumTracker.scrollAngle;
+		if (strum != null && strum is Note)
+			return scrollAngle + strum.scrollAngle;
 		return scrollAngle;
 	}
 

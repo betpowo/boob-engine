@@ -20,15 +20,9 @@ class PlayState extends FlxState
 	var noteGroup:NoteGroup = new NoteGroup();
 	var vocals:FlxSound;
 
-	var noteQueue:Array<Note> = [];
-
 	var options:Options;
 
 	var health(default, set):Float = 0.5;
-	var score(default, set):Int = 0;
-	var healthBar:HealthBar = new HealthBar();
-	var scoreNum:Counter = new Counter();
-	var timeNum:Counter = new Counter();
 
 	function set_health(v:Float):Float
 	{
@@ -36,6 +30,8 @@ class PlayState extends FlxState
 		healthBar.percent = health;
 		return health;
 	}
+
+	var score(default, set):Int = 0;
 
 	function set_score(v:Int):Int
 	{
@@ -61,13 +57,27 @@ class PlayState extends FlxState
 		return score = v;
 	}
 
+	var healthBar:HealthBar = new HealthBar();
+	var scoreNum:Counter = new Counter();
+	var timeNum:Counter = new Counter();
+
+	var player:Character;
+	var opponent:Character;
+
+	var camGame:FlxCamera;
+	var camHUD:FlxCamera;
+
 	override public function create()
 	{
 		super.create();
 
-		var options = Options.data;
+		camGame = FlxG.camera;
+		camGame.bgColor = FlxColor.fromHSB(0, 0, 0.4);
+		camHUD = new FlxCamera();
+		camHUD.bgColor = 0x00000000;
+		FlxG.cameras.add(camHUD, false);
 
-		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.4);
+		var options = Options.data;
 
 		var opponentStrums = new StrumLine(4);
 		var playerStrums = new StrumLine(4);
@@ -75,9 +85,11 @@ class PlayState extends FlxState
 		opponentStrums.setPosition(50, 50);
 		strumGroup.add(opponentStrums);
 		opponentStrums.autoHit = true;
+		opponentStrums.ID = 0;
 
 		playerStrums.setPosition(FlxG.width - playerStrums.width - 100, 50);
 		strumGroup.add(playerStrums);
+		playerStrums.ID = 1;
 		// playerStrums.autoHit = true;
 
 		add(strumGroup);
@@ -125,10 +137,15 @@ class PlayState extends FlxState
 		Conductor.tracker = FlxG.sound.music;
 		Conductor.beatHit.add(beatHit);
 
-		for (i in playerStrums.members)
+		for (str in strumGroup.members)
 		{
-			i.noteHit.add(noteHit);
-			i.noteMiss.add(noteMiss);
+			str.forEach((i) ->
+			{
+				i.noteHit.add(noteHit);
+				i.noteHeldStep.add(noteHeldStep);
+				// i.noteHeld.add(noteHeld);
+				i.noteMiss.add(noteMiss);
+			});
 		}
 
 		add(healthBar);
@@ -150,6 +167,15 @@ class PlayState extends FlxState
 		timeNum.y = scoreNum.y - timeNum.height - 15;
 		timeNum.display = TIME;
 		timeNum.setColorTransform(-1, -1, -1, 1, 255, 255, 255);
+
+		opponentStrums.camera = playerStrums.camera = healthBar.camera = scoreNum.camera = timeNum.camera = camHUD;
+
+		add(opponent = new Character('bf'));
+		opponent.setPosition(200, 200);
+
+		add(player = new Character('bf'));
+		player.setPosition(700, 200);
+		player.scale.x *= -1;
 	}
 
 	function beatHit()
@@ -160,14 +186,53 @@ class PlayState extends FlxState
 		});*/
 
 		if (Conductor.beat % 4 == 0)
-			FlxG.camera.zoom += 0.03;
+		{
+			camGame.zoom += 0.015;
+			camHUD.zoom += 0.03;
+		}
 	}
 
 	function noteHit(note:Note)
 	{
-		var gwa = 0.01;
-		score += 100;
-		health += gwa;
+		var laneID = note.strum.parentLane.ID;
+
+		if (laneID == 1)
+		{
+			var gwa = 0.01;
+			score += 100;
+			health += gwa;
+			if (note.anim != null)
+			{
+				player.holdTime = Conductor.crochetSec * 2;
+				player.playAnim(note.anim, true);
+			}
+		}
+		else
+		{
+			opponent.holdTime = Conductor.crochetSec * 2;
+			opponent.playAnim(note.anim, true);
+		}
+	}
+
+	function noteHeldStep(note:Note)
+	{
+		var laneID = note.strum.parentLane.ID;
+
+		if (laneID == 1)
+		{
+			health += 0.7 / 100;
+
+			if (note.anim != null)
+			{
+				player.holdTime = Conductor.crochetSec * 2;
+				player.playAnim(note.anim, true);
+			}
+		}
+		else
+		{
+			opponent.holdTime = Conductor.crochetSec * 2;
+			opponent.playAnim(note.anim, true);
+		}
 	}
 
 	function noteMiss(note:Note)
@@ -188,7 +253,9 @@ class PlayState extends FlxState
 				spawnNote(note);
 			}
 		}
-		FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, 1, elapsed * 2.5);
+		camGame.zoom = FlxMath.lerp(camGame.zoom, 1, elapsed * 2.5);
+		camHUD.zoom = FlxMath.lerp(camHUD.zoom, 1, elapsed * 2.5);
+
 		timeNum.number = Math.floor(Conductor.time * 0.001);
 
 		if (FlxG.keys.justPressed.SEVEN)
@@ -217,7 +284,7 @@ class PlayState extends FlxState
 		var note = noteGroup.recycle(Note);
 		note.strumIndex = i.index;
 		note.strumTime = i.time;
-		note.strumTracker = strum;
+		note.strum = strum;
 		note.sustain.length = i.length;
 		note.speed = chart.speed;
 		strum.notes.push(note);
@@ -232,6 +299,17 @@ class PlayState extends FlxState
 
 		if (i.lane == 0)
 			note.scrollAngle = FlxG.random.float(-90, 90);
+
+		note.camera = note.sustain.camera = camHUD;
+
+		note.anim = switch (note.strumIndex)
+		{
+			case 0: 'singLEFT';
+			case 1: 'singDOWN';
+			case 2: 'singUP';
+			case 3: 'singRIGHT';
+			case _: null;
+		}
 
 		return note;
 	}

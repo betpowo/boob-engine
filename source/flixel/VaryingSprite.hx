@@ -17,6 +17,7 @@ class VaryingSprite extends FlxSprite
 	public var angleOffset:Float = 0.0;
 	public var scaleMult:FlxPoint = new FlxPoint(1, 1);
 	public var alphaMult:Float = 1.0;
+	public var scaleOffset:Bool = false;
 
 	override function drawComplex(camera:FlxCamera):Void
 	{
@@ -34,10 +35,21 @@ class VaryingSprite extends FlxSprite
 				_matrix.rotateWithTrig(_cosAngleCustom, _sinAngleCustom);
 		}
 
+		var ogoffx = offset.x;
+		var ogoffy = offset.y;
+		if (scaleOffset)
+		{
+			offset.x = ogoffx * scale.x * scaleMult.x;
+			offset.y = ogoffy * scale.y * scaleMult.y;
+		}
+
 		getScreenPosition(_point, camera).subtractPoint(offset);
 		_point.addPoint(origin);
 		if (isPixelPerfectRender(camera))
 			_point.floor();
+
+		offset.x = ogoffx;
+		offset.y = ogoffy;
 
 		inline _matrix.translate(_point.x, _point.y);
 

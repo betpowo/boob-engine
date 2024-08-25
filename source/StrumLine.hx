@@ -30,6 +30,7 @@ class StrumLine extends FlxTypedSpriteGroup<StrumNote>
 		{
 			var strum = new StrumNote(i);
 			strum.setPosition(spacing * i);
+			strum.parentLane = this;
 			strum.ID = i;
 			add(strum);
 		}
