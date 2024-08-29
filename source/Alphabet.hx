@@ -59,6 +59,12 @@ class Alphabet extends FlxSprite
 
 	var rows:Int = 0;
 	var lineHeight:Float = 75;
+	var _defaultDrawData:AlphabetDrawData = {
+		x: 0.0,
+		y: 0.0,
+		angle: 0.0,
+		flip: 'none'
+	};
 
 	override public function draw()
 	{
@@ -77,7 +83,7 @@ class Alphabet extends FlxSprite
 			x -= ((width + separator) * scale.x * spli.length) * 0.5;
 			x += separator * 2;
 		}
-		script.callThingy('drawOnce', []);
+		// script.callThingy('drawOnce', []);
 		for (waaa in spli)
 		{
 			switch (waaa)
@@ -90,12 +96,7 @@ class Alphabet extends FlxSprite
 					x = ogx;
 					rows += 1;
 				default:
-					var _drawData:AlphabetDrawData = script.callThingy('onDraw', [waaa]) ?? {
-						x: 0.0,
-						y: 0.0,
-						angle: 0.0,
-						flip: 'none'
-					};
+					var _drawData:AlphabetDrawData = script.callThingy('onDraw', [waaa]) ?? _defaultDrawData;
 
 					var anim = _drawData.char ?? waaa;
 
@@ -174,13 +175,8 @@ class Alphabet extends FlxSprite
 	}
 }
 
-typedef AlphabetDrawData =
+typedef AlphabetDrawData = AlphabetExtraDrawData &
 {
-	?char:String,
-	x:Float,
-	y:Float,
-	angle:Float,
-	flip:String,
 	?extra:AlphabetExtraDrawData
 }
 
@@ -191,5 +187,5 @@ typedef AlphabetExtraDrawData =
 	y:Float,
 	angle:Float,
 	flip:String,
-	char:String
+	?char:String
 }

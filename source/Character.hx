@@ -1,8 +1,8 @@
-import flixel.VaryingSprite;
+import flixel.FlxSpriteExt;
 
-class Character extends VaryingSprite
+class Character extends FlxSpriteExt
 {
-	var ini:SSIni = new SSIni();
+	var ini:SSIni;
 	var animOffsets:Map<String, Array<Float>> = [];
 
 	public function new(char:String = 'bf')
@@ -14,16 +14,25 @@ class Character extends VaryingSprite
 		Conductor.beatHit.add(beatHit);
 	}
 
+	public static function getIni(char:String = 'bf'):SSIni
+	{
+		var path = 'data/characters/' + char;
+		if (!Paths.exists(path + '.ini'))
+			path = 'data/characters/bf';
+
+		path = Paths.file(path + '.ini');
+		return new SSIni(path);
+	}
+
+	var dancer:Bool = false; // uses danceLeft/Right instead of idle
+	private var _danced:Bool = false;
+
 	public function build(char:String = 'bf'):Bool
 	{
 		try
 		{
-			var path = 'data/characters/' + char + '.ini';
-			if (!Paths.exists(path))
-				path = 'data/characters/bf.ini';
-
-			path = Paths.file(path);
-			var guhTime = ini.doString(path);
+			dancer = false;
+			ini = getIni(char);
 			// Log.print('the time : $guhTime', 0xffcc66);
 
 			var sheets = ini.getSection().sheets.split(',');
@@ -41,14 +50,47 @@ class Character extends VaryingSprite
 				final animLoop:Bool = split[2] == 'true';
 				final offsets = [Std.parseFloat(split[3]), Std.parseFloat(split[4])];
 				// later
-				// final indices:Array<Int> = null;
+				var indices:Array<Int> = null;
 
-				animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
+				if (split[5] != null)
+				{
+					if (~/[0-9]+-[0-9]+/g.match(split[5]))
+					{
+						var result:Array<Int> = [];
+						var fuck = split[5].split('-');
+						var start:Int = Std.parseInt(fuck[0]);
+						var end:Int = Std.parseInt(fuck[1]);
+						var ind:Int = start;
+						while (ind <= end)
+						{
+							result.push(ind++);
+						}
+						indices = result;
+					}
+					else
+					{
+						var fuck:Array<Int> = [];
+						for (i in split[5].split('/'))
+							fuck.push(Std.parseInt(i));
+						indices = fuck;
+					}
+				}
+
+				if (indices != null)
+					animation.addByIndices(hxAnim, animName, indices, '', animFPS, animLoop);
+				else
+					animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
 				animOffsets.set(hxAnim, offsets);
+
+				if (hxAnim == 'danceLeft' || hxAnim == 'danceRight')
+					dancer = true;
 			}
 			antialiasing = (ini.getSection()?.aa ?? 'true') == 'true';
 			if ((ini.getSection()?.flip ?? 'false') == 'true')
-				scale.x *= -1;
+			{
+				// scale.x *= -1;
+				flipX = !flipX;
+			}
 
 			if (ini.getSection().scale != null)
 			{
@@ -69,7 +111,13 @@ class Character extends VaryingSprite
 
 	public function dance()
 	{
-		playAnim('idle', false);
+		if (dancer)
+		{
+			playAnim('dance' + (_danced ? 'Right' : 'Left'), false);
+			_danced = !_danced;
+		}
+		else
+			playAnim('idle', false);
 	}
 
 	public var holdTime:Float = 0;
@@ -98,7 +146,7 @@ class Character extends VaryingSprite
 
 	public function playAnim(anim:String, ?force:Bool = true, ?reverse:Bool = false, ?start:Int = 0)
 	{
-		if (scale.x < 0) // flipped
+		if (scale.x < 0 || flipX) // flipped
 		{
 			if (anim.contains('LEFT'))
 				anim = anim.replace('LEFT', 'RIGHT');
