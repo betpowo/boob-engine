@@ -1,8 +1,8 @@
+import tools.Ini;
 import flixel.VaryingSprite;
 
 class Character extends VaryingSprite
 {
-	var ini:SSIni = new SSIni();
 	var animOffsets:Map<String, Array<Float>> = [];
 
 	public function new(char:String = 'bf')
@@ -22,38 +22,33 @@ class Character extends VaryingSprite
 			if (!Paths.exists(path))
 				path = 'data/characters/bf.ini';
 
-			path = Paths.file(path);
-			var guhTime = ini.doString(path);
-			// Log.print('the time : $guhTime', 0xffcc66);
+			var data:IniData = Ini.parseFile(Paths.file(path));
 
-			var sheets = ini.getSection().sheets.split(',');
-
+			var sheets:Array<String> = (data.global.sheets:String).split(",");
 			frames = Paths.sparrow(sheets[0]);
 
 			// idk why i named it obj
-			var obj = ini.getSection('animations');
-			for (field in Reflect.fields(obj))
-			{
-				var split = Reflect.getProperty(obj, field).split(',');
-				final hxAnim:String = field;
-				final animName:String = split[0];
-				final animFPS:Float = Std.parseFloat(split[1]);
-				final animLoop:Bool = split[2] == 'true';
-				final offsets = [Std.parseFloat(split[3]), Std.parseFloat(split[4])];
+			var obj = data.animations;
+			for (animation in obj.keys()) {
+				var split:Array<String> = (obj.get(animation):String).split(",");
+				var hxAnim:String = animation;
+				var animName:String = split[0];
+				var animFPS:Float = Std.parseFloat(split[1]);
+				var animLoop:Bool = (split[2] == "true");
+				var offsets:Array<Float> = [Std.parseFloat(split[3]), Std.parseFloat(split[4])];
 				// later
 				// final indices:Array<Int> = null;
 
-				animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
+				this.animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
 				animOffsets.set(hxAnim, offsets);
 			}
-			antialiasing = (ini.getSection()?.aa ?? 'true') == 'true';
-			if ((ini.getSection()?.flip ?? 'false') == 'true')
+
+			antialiasing = (data.global.exists("aa") ? (data.global.aa:Bool) : true);
+			if (data.global.exists("flip") && (data.global.flip:Bool))
 				scale.x *= -1;
 
-			if (ini.getSection().scale != null)
-			{
-				var fuck = Std.parseFloat(ini.getSection()?.scale ?? '1');
-				scaleMult.set(fuck, fuck);
+			if (data.global.scale != null) {
+				scaleMult.set(data.global.scale, data.global.scale);
 			}
 
 			updateHitbox();
