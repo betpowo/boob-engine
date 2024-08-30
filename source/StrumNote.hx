@@ -1,7 +1,7 @@
 import Note.NoteHitState;
 import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
-import flixel.VaryingSprite;
+import flixel.FlxSpriteExt;
 import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -13,7 +13,7 @@ class StrumNote extends Note
 	public var strumRGB:RGBPalette = new RGBPalette();
 
 	private var dumpRGB:RGBPalette = new RGBPalette();
-	var blurSpr:VaryingSprite;
+	var blurSpr:FlxSpriteExt;
 	var holdSpr:FlxSprite;
 
 	public var parentLane:StrumLine = null;
@@ -36,7 +36,7 @@ class StrumNote extends Note
 		strumRGB.set(0x87a3ad, -1, 0);
 		dumpRGB.set(FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15), -1, 0x201e31);
 
-		blurSpr = new VaryingSprite();
+		blurSpr = new FlxSpriteExt();
 		blurSpr.frames = Paths.sparrow('ui/note');
 		blurSpr.animation.addByPrefix('idle', 'blur', 24, true);
 		blurSpr.animation.play('idle', true);
@@ -264,6 +264,8 @@ class StrumNote extends Note
 							{
 								enableStepConfirm = true;
 								confirmTime = Conductor.stepCrochet;
+								holdSpr.visible = true;
+								holdSpr.angle = note.totalAngle;
 								noteHeld.dispatch(note);
 							}
 							else if (note.hit == HIT)

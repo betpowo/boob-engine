@@ -63,6 +63,7 @@ class PlayState extends FlxState
 
 	var player:Character;
 	var opponent:Character;
+	var spectator:Character;
 
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
@@ -170,12 +171,17 @@ class PlayState extends FlxState
 
 		opponentStrums.camera = playerStrums.camera = healthBar.camera = scoreNum.camera = timeNum.camera = camHUD;
 
+		add(spectator = new Character('gf'));
+		spectator.screenCenter();
+
 		add(opponent = new Character('bf'));
 		opponent.setPosition(200, 200);
+		opponent.setColorTransform(-1, 0, 0, 1, 255);
 
 		add(player = new Character('bf'));
 		player.setPosition(700, 200);
-		player.scale.x *= -1;
+		player.flipX = !player.flipX;
+		// player.scale.x *= -1;
 	}
 
 	function beatHit()
@@ -295,8 +301,8 @@ class PlayState extends FlxState
 		strum.notes.push(note);
 		note.rgb.copy(strum.rgb);
 
-		var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.2, 1), FlxG.random.float(0.6, 1));
-		note.rgb.set(clor, -1, clor.getDarkened(0.5));
+		/*var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.2, 1), FlxG.random.float(0.6, 1));
+			note.rgb.set(clor, -1, clor.getDarkened(0.5)); */
 
 		noteGroup.add(note);
 		note.y -= 2000;

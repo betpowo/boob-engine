@@ -1,9 +1,9 @@
 import Chart.ChartNote;
-import flixel.VaryingSprite;
+import flixel.FlxSpriteExt;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 
-class Note extends VaryingSprite
+class Note extends FlxSpriteExt
 {
 	public static var angles:Array<Float> = [270, 180, 0, 90];
 
@@ -175,7 +175,7 @@ class Note extends VaryingSprite
 	}
 }
 
-class Sustain extends VaryingSprite
+class Sustain extends FlxSpriteExt
 {
 	public var length:Float = 0;
 	public var parent:Note = null;
