@@ -1,8 +1,10 @@
+import tools.Ini;
+import tools.Ini.IniData;
 import flixel.FlxSpriteExt;
 
 class Character extends FlxSpriteExt
 {
-	var ini:SSIni;
+  var ini:IniData;
 	var animOffsets:Map<String, Array<Float>> = [];
 
 	public function new(char:String = 'bf')
@@ -21,7 +23,7 @@ class Character extends FlxSpriteExt
 			path = 'data/characters/bf';
 
 		path = Paths.file(path + '.ini');
-		return new SSIni(path);
+		return Ini.parseFile(Paths.file(path));
 	}
 
 	var dancer:Bool = false; // uses danceLeft/Right instead of idle
@@ -35,22 +37,20 @@ class Character extends FlxSpriteExt
 			ini = getIni(char);
 			// Log.print('the time : $guhTime', 0xffcc66);
 
-			var sheets = ini.getSection().sheets.split(',');
-
+			var sheets:Array<String> = (ini.global.sheets:String).split(",");
 			frames = Paths.sparrow(sheets[0]);
 
 			// idk why i named it obj
-			var obj = ini.getSection('animations');
-			for (field in Reflect.fields(obj))
-			{
-				var split = Reflect.getProperty(obj, field).split(',');
-				final hxAnim:String = field;
-				final animName:String = split[0];
-				final animFPS:Float = Std.parseFloat(split[1]);
-				final animLoop:Bool = split[2] == 'true';
-				final offsets = [Std.parseFloat(split[3]), Std.parseFloat(split[4])];
+			var obj = ini.animations;
+			for (animation in obj.keys()) {
+				var split:Array<String> = (obj.get(animation):String).split(",");
+				var hxAnim:String = animation;
+				var animName:String = split[0];
+				var animFPS:Float = Std.parseFloat(split[1]);
+				var animLoop:Bool = (split[2] == "true");
+				var offsets:Array<Float> = [Std.parseFloat(split[3]), Std.parseFloat(split[4])];
 				// later
-				var indices:Array<Int> = null;
+  			var indices:Array<Int> = null;
 
 				if (split[5] != null)
 				{
@@ -77,25 +77,21 @@ class Character extends FlxSpriteExt
 				}
 
 				if (indices != null)
-					animation.addByIndices(hxAnim, animName, indices, '', animFPS, animLoop);
-				else
-					animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
+					this.animation.addByIndices(hxAnim, animName, indices, '', animFPS, animLoop);
+        else
+          this.animation.addByPrefix(hxAnim, animName, animFPS, animLoop);
 				animOffsets.set(hxAnim, offsets);
 
 				if (hxAnim == 'danceLeft' || hxAnim == 'danceRight')
 					dancer = true;
 			}
-			antialiasing = (ini.getSection()?.aa ?? 'true') == 'true';
-			if ((ini.getSection()?.flip ?? 'false') == 'true')
-			{
-				// scale.x *= -1;
-				flipX = !flipX;
-			}
 
-			if (ini.getSection().scale != null)
-			{
-				var fuck = Std.parseFloat(ini.getSection()?.scale ?? '1');
-				scaleMult.set(fuck, fuck);
+			antialiasing = (ini.global.exists("aa") ? (ini.global.aa:Bool) : true);
+			if (ini.global.exists("flip") && (ini.global.flip:Bool))
+				flipX = !flipX;
+
+			if (ini.global.scale != null) {
+				scaleMult.set(ini.global.scale, ini.global.scale);
 			}
 
 			updateHitbox();

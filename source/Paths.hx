@@ -88,6 +88,7 @@ class Paths
 		if (FileSystem.exists(key) && !shitLoaded.exists(mapKey))
 		{
 			var b:BitmapData = BitmapData.fromFile(key);
+			#if !hl
 			if (useGPU)
 			{
 				// from da psych engine cus im lazy
@@ -98,6 +99,7 @@ class Paths
 				b.disposeImage();
 				b = BitmapData.fromTexture(texture);
 			}
+			#end
 			g = FlxGraphic.fromBitmapData(b, false, key);
 			g.persist = true;
 			g.destroyOnNoUse = false;
