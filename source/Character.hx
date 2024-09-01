@@ -4,7 +4,9 @@ import tools.Ini;
 
 class Character extends FlxSpriteExt
 {
-	var ini:IniData;
+	public var ini:IniData;
+	public var holdDur:Float = 4;
+
 	var animOffsets:Map<String, Array<Float>> = [];
 
 	public function new(char:String = 'bf')
@@ -38,7 +40,12 @@ class Character extends FlxSpriteExt
 			// Log.print('the time : $guhTime', 0xffcc66);
 
 			var sheets:Array<String> = (ini.global.sheets : String).split(",");
-			frames = Paths.sparrow(sheets[0]);
+			var atlas = Paths.sparrow(sheets[0]);
+
+			for (i in 1...sheets.length)
+				atlas.addAtlas(Paths.sparrow(sheets[i]));
+
+			frames = atlas;
 
 			// idk why i named it obj
 			var obj = ini.animations;
@@ -55,26 +62,25 @@ class Character extends FlxSpriteExt
 
 				if (split[5] != null)
 				{
-					if (~/[0-9]+-[0-9]+/g.match(split[5]))
+					var result:Array<Int> = [];
+					for (i in split[5].split('/'))
 					{
-						var result:Array<Int> = [];
-						var fuck = split[5].split('-');
-						var start:Int = Std.parseInt(fuck[0]);
-						var end:Int = Std.parseInt(fuck[1]);
-						var ind:Int = start;
-						while (ind <= end)
+						if (~/[0-9]+-[0-9]+/g.match(i))
 						{
-							result.push(ind++);
+							var subindices = i.split('-');
+							var start:Int = Std.parseInt(subindices[0]);
+							var end:Int = Std.parseInt(subindices[1]);
+							var ind:Int = start;
+							while (ind <= end)
+							{
+								result.push(ind++);
+							}
 						}
-						indices = result;
+						else
+							result.push(Std.parseInt(i));
 					}
-					else
-					{
-						var fuck:Array<Int> = [];
-						for (i in split[5].split('/'))
-							fuck.push(Std.parseInt(i));
-						indices = fuck;
-					}
+					indices = result;
+					// trace(result);
 				}
 
 				if (indices != null)
@@ -92,13 +98,19 @@ class Character extends FlxSpriteExt
 			if (ini.global.exists("flip") && (ini.global.flip : Bool))
 				flipX = !flipX;
 
+			if (ini.global.exists("hold"))
+			{
+				holdDur = (ini.global.hold : Float);
+			}
+
 			if (ini.global.scale != null)
 			{
 				scaleMult.set(ini.global.scale, ini.global.scale);
 			}
 
-			updateHitbox();
 			dance();
+			updateHitbox();
+
 			return true;
 		}
 		catch (e)
@@ -131,7 +143,15 @@ class Character extends FlxSpriteExt
 		else if (holdTime != -1)
 		{
 			holdTime = -1;
-			dance();
+			if (!dancer) // prevent weird quick bop after hold time is over (it throws me off)
+				dance();
+		}
+		if (animation != null)
+		{
+			if (animation.exists(animation.name + '-hold') && animation.finished)
+			{
+				playAnim(animation.name + '-hold', true);
+			}
 		}
 	}
 

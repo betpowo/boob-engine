@@ -11,6 +11,8 @@ class Conductor extends FlxBasic
 
 	// for muscle memory purposes - i didnt wanna actually add stepCrochet lol
 	public static var stepCrochet(get, never):Float;
+	public static var stepCrochetSec(get, never):Float;
+
 	public static var crochet(get, never):Float;
 	public static var crochetSec(get, never):Float;
 
@@ -38,6 +40,11 @@ class Conductor extends FlxBasic
 	public static function get_stepCrochet():Float
 	{
 		return crochet / 4;
+	}
+
+	public static function get_stepCrochetSec():Float
+	{
+		return stepCrochet * 0.001;
 	}
 
 	public static function get_crochet():Float

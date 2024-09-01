@@ -7,9 +7,9 @@ using StringTools;
 
 class HscriptHandler
 {
-	var interpreter:Interp = new Interp();
-	var parser:Parser = new Parser();
-	var file:String = '';
+	public var interpreter:Interp = new Interp();
+	public var parser:Parser = new Parser();
+	public var file:String = '';
 
 	public static var _STOP:Int = 0;
 	public static var _CONTINUE:Int = 1;

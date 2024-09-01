@@ -6,7 +6,7 @@ using StringTools;
 
 class Alphabet extends FlxSprite
 {
-	public var text(default, set):String = 'AlphabetÐ';
+	public var text(default, set):String = 'Alphabet';
 
 	public function set_text(v:String):String
 	{
@@ -24,7 +24,6 @@ class Alphabet extends FlxSprite
 	}
 
 	public var separator:Float = 4;
-	public var alignment:FlxTextAlign = LEFT;
 	public var rgb = new RGBPalette();
 
 	var displit:Array<String> = [];
@@ -73,16 +72,6 @@ class Alphabet extends FlxSprite
 		var ogy = y;
 		var ogh = height;
 		var spli = displit;
-		if (alignment == RIGHT)
-		{
-			x -= (width + separator) * scale.x * spli.length;
-			x += separator;
-		}
-		else if (alignment == CENTER)
-		{
-			x -= ((width + separator) * scale.x * spli.length) * 0.5;
-			x += separator * 2;
-		}
 		// script.callThingy('drawOnce', []);
 		for (waaa in spli)
 		{
@@ -96,7 +85,7 @@ class Alphabet extends FlxSprite
 					x = ogx;
 					rows += 1;
 				default:
-					var _drawData:AlphabetDrawData = script.callThingy('onDraw', [waaa]) ?? _defaultDrawData;
+					var _drawData:AlphabetDrawData = getDrawData(waaa);
 
 					var anim = _drawData.char ?? waaa;
 
@@ -172,6 +161,16 @@ class Alphabet extends FlxSprite
 		x = ogx;
 		y = ogy;
 		height = ogh;
+	}
+
+	private var _drawfunc:String->AlphabetDrawData = null;
+
+	inline function getDrawData(input:String)
+	{
+		if (_drawfunc == null && script.interpreter.variables.exists('onDraw'))
+			_drawfunc = script.interpreter.variables.get('onDraw');
+
+		return _drawfunc(input) ?? _defaultDrawData;
 	}
 }
 

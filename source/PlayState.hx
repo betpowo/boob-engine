@@ -174,9 +174,9 @@ class PlayState extends FlxState
 		add(spectator = new Character('gf'));
 		spectator.screenCenter();
 
-		add(opponent = new Character('bf'));
-		opponent.setPosition(200, 200);
-		opponent.setColorTransform(-1, 0, 0, 1, 255);
+		add(opponent = new Character('dad'));
+		opponent.setPosition(50, 100);
+		// opponent.setColorTransform(-1, 0, 0, 1, 255);
 
 		add(player = new Character('bf'));
 		player.setPosition(700, 200);
@@ -209,13 +209,13 @@ class PlayState extends FlxState
 			health += gwa;
 			if (note.anim != null)
 			{
-				player.holdTime = Conductor.crochetSec * 2;
-				player.playAnim(note.anim, true);
+				spectator.holdTime = Conductor.stepCrochetSec * spectator.holdDur;
+				spectator.playAnim(note.anim, true);
 			}
 		}
 		else
 		{
-			opponent.holdTime = Conductor.crochetSec * 2;
+			opponent.holdTime = Conductor.stepCrochetSec * opponent.holdDur;
 			opponent.playAnim(note.anim, true);
 		}
 	}
