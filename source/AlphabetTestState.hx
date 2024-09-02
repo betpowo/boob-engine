@@ -1,5 +1,6 @@
 package;
 
+import Alphabet.AlphaCharacter;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIButton;
 import flixel.system.FlxAssets;
@@ -21,7 +22,7 @@ class AlphabetTestState extends FlxState
 		test.x = test.y = 50;
 		add(test);
 
-		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 500, prevtext, 16);
+		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 512, prevtext, 16);
 		add(input);
 
 		add(new FlxUIButton(input.x + input.width + 5, input.y, '-X', function()
@@ -44,9 +45,31 @@ class AlphabetTestState extends FlxState
 			test.scaleY += 0.1;
 		}));
 
+		add(new FlxUIButton(input.x + input.width + 5 + 280, input.y, '-angle', function()
+		{
+			test.angle -= 15;
+		}));
+
+		add(new FlxUIButton(input.x + input.width + 5 + 350, input.y, '+angle', function()
+		{
+			test.angle += 15;
+		}));
+
 		add(new FlxUIButton(input.x, input.y - 30, '\\n', function()
 		{
 			input.text += '\n';
+		}));
+		add(new FlxUIButton(input.x + 70, input.y - 30, 'left', function()
+		{
+			test.alignment = LEFT;
+		}));
+		add(new FlxUIButton(input.x + 140, input.y - 30, 'center', function()
+		{
+			test.alignment = CENTER;
+		}));
+		add(new FlxUIButton(input.x + 210, input.y - 30, 'right', function()
+		{
+			test.alignment = RIGHT;
 		}));
 
 		if (!FlxG.sound.music.playing)
@@ -61,6 +84,7 @@ class AlphabetTestState extends FlxState
 
 		if (FlxG.keys.justPressed.F5)
 		{
+			AlphaCharacter.ini = null;
 			prevtext = input.text;
 			FlxG.resetState();
 			FlxG.sound.play(FlxAssets.getSound('flixel/sounds/flixel')).persist = true;

@@ -3,9 +3,12 @@ package;
 
 import flash.media.Sound;
 import flixel.graphics.FlxGraphic;
+import flixel.util.typeLimit.OneOfTwo;
 import haxe.PosInfos;
+import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.RectangleTexture;
+import openfl.system.System;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -18,9 +21,13 @@ typedef Mod =
 	global:Bool
 }
 
+typedef FunkinAsset = OneOfTwo<FlxGraphic, Sound>;
+
 class Paths
 {
-	private static var shitLoaded:Map<String, Any> = [];
+	private static var assetsLoaded:Map<String, FunkinAsset> = [];
+	private static var skipExclude:Array<String> = [];
+
 	public static var modList:Array<Mod> = [];
 	public static var mod:String;
 
@@ -85,7 +92,7 @@ class Paths
 			mapKey += ':gpu'; */
 
 		var g:FlxGraphic;
-		if (FileSystem.exists(key) && !shitLoaded.exists(mapKey))
+		if (FileSystem.exists(key) && !assetsLoaded.exists(mapKey))
 		{
 			var b:BitmapData = BitmapData.fromFile(key);
 			#if !hl
@@ -100,13 +107,14 @@ class Paths
 				b = BitmapData.fromTexture(texture);
 			}
 			#end
+
 			g = FlxGraphic.fromBitmapData(b, false, key);
 			g.persist = true;
 			g.destroyOnNoUse = false;
-			shitLoaded.set(mapKey, g);
+			assetsLoaded.set(mapKey, g);
 		}
-		if (shitLoaded.get(mapKey) != null)
-			return shitLoaded.get(mapKey);
+		if (assetsLoaded.get(mapKey) != null)
+			return assetsLoaded.get(mapKey);
 		trace('$key not found im gonna fucking kill mysel');
 		return null;
 	}
@@ -121,14 +129,6 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(image(f, root), daXML);
 	}
 
-	public static function sound(f:String, ?root:String = 'sounds'):Sound
-	{
-		var br:String = file('$root/$f.ogg');
-		if (!shitLoaded.exists(br))
-			shitLoaded.set(br, Sound.fromFile(br));
-		return shitLoaded.get(br);
-	}
-
 	public static function ini(f:String, ?root:String = ''):String
 		return file('$root/$f.ini');
 
@@ -138,6 +138,14 @@ class Paths
 	public static function xml(f:String, ?root:String = 'images'):String
 		return file('$root/$f.xml');
 
+	public static function sound(f:String, ?root:String = 'sounds'):Sound
+	{
+		var br:String = file('$root/$f.ogg');
+		if (!assetsLoaded.exists(br))
+			assetsLoaded.set(br, Sound.fromFile(br));
+		return assetsLoaded.get(br);
+	}
+
 	public static function song(sg:String, f:String = 'Inst', ?sub:String = ''):Sound
 	{
 		if (!sub.endsWith('/'))
@@ -145,5 +153,40 @@ class Paths
 		if (exists(file('songs/$sg/$sub/$f.ogg')))
 			return sound(f, 'songs/$sg/$sub');
 		return sound(f, 'songs/$sg');
+	}
+
+	public static function exclude(s:String)
+	{
+		var fil = Paths.file(s);
+		if (skipExclude.indexOf(fil) == -1)
+			skipExclude.push(fil);
+	}
+
+	@:privateAccess
+	public static function clear():Bool
+	{
+		for (key => val in assetsLoaded)
+		{
+			if (val != null && skipExclude.indexOf(key) != -1)
+			{
+				if (val is FlxGraphic)
+				{
+					@:privateAccess FlxG.bitmap._cache.remove(key);
+					openfl.Assets.cache.removeBitmapData(key);
+
+					var grah:FlxGraphic = val; // why
+					grah.persist = false;
+					grah.destroyOnNoUse = true;
+					grah.destroy();
+				}
+				else if (val is Sound)
+				{
+					Assets.cache.clear(key);
+				}
+				assetsLoaded.remove(key);
+			}
+		}
+		System.gc();
+		return true;
 	}
 }

@@ -324,4 +324,12 @@ class PlayState extends FlxState
 
 		return note;
 	}
+
+	override function destroy()
+	{
+		strumGroup.destroy();
+		noteGroup.destroy();
+		super.destroy();
+		Paths.clear();
+	}
 }

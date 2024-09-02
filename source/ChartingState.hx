@@ -15,7 +15,7 @@ class ChartingState extends FlxState
 	var inst:FlxSound;
 	var grid:ChartingGrid;
 	var gridShader:RGBPalette;
-	var previewNote:Note = new Note(2);
+	var previewNote:Note;
 
 	function set_layer(v:Int):Int
 	{
@@ -96,7 +96,7 @@ class ChartingState extends FlxState
 
 		FlxG.sound.playMusic(Paths.sound('chartEditorLoop', 'music'), 0);
 
-		add(previewNote);
+		add(previewNote = new Note(2));
 		previewNote.rgb.set(0x333333, -1, 0x111111);
 		previewNote.alpha = 0.75;
 		previewNote.blend = ADD;
