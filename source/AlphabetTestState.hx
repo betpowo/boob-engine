@@ -16,19 +16,38 @@ class AlphabetTestState extends FlxState
 	{
 		super.create();
 
-		test = new Alphabet();
+		test = new Alphabet('');
 		test.text = prevtext;
 		test.x = test.y = 50;
 		add(test);
 
-		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 200, prevtext, 16);
+		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 500, prevtext, 16);
 		add(input);
 
-		var butt = new FlxUIButton(input.x + input.width + 5, input.y, 'Paste', function()
+		add(new FlxUIButton(input.x + input.width + 5, input.y, '-X', function()
 		{
-			@:privateAccess input.insertSubstring(input.text, Clipboard.text, input.caretIndex);
-		});
-		add(butt);
+			test.scaleX -= 0.1;
+		}));
+
+		add(new FlxUIButton(input.x + input.width + 5 + 70, input.y, '+X', function()
+		{
+			test.scaleX += 0.1;
+		}));
+
+		add(new FlxUIButton(input.x + input.width + 5 + 140, input.y, '-Y', function()
+		{
+			test.scaleY -= 0.1;
+		}));
+
+		add(new FlxUIButton(input.x + input.width + 5 + 210, input.y, '+Y', function()
+		{
+			test.scaleY += 0.1;
+		}));
+
+		add(new FlxUIButton(input.x, input.y - 30, '\\n', function()
+		{
+			input.text += '\n';
+		}));
 
 		if (!FlxG.sound.music.playing)
 			FlxG.sound.playMusic('assets/songs/bopeebo/Inst.ogg', 0.6);

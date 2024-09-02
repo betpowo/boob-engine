@@ -78,8 +78,8 @@ class ChartingState extends FlxState
 
 		infoText = new Alphabet();
 		infoText.x = infoText.y = 50;
-		infoText.y += 20;
-		infoText.scale.set(0.4, 0.4);
+		infoText.y += (timeNum.frameHeight * timeNum.scale.y) + 8;
+		infoText.setScale(0.7, 0.7);
 		add(infoText);
 
 		timeNum.camera = infoText.camera = camHUD;
@@ -220,8 +220,12 @@ class ChartingState extends FlxState
 				previewNote.y = valueY * GRID_SIZE;
 				previewNote.y += grid.y;
 			}
-			previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
 			previewNote.sustain.blend = previewNote.blend;
+
+			if (!note.selecting)
+			{
+				previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
+			}
 
 			if (FlxG.mouse.justPressed)
 			{
@@ -295,18 +299,18 @@ class ChartingState extends FlxState
 							var tick:Int = Math.floor(shakeTime / 0.05);
 							if (tick % 2 == 0)
 							{
-								infoText.rgb.g = 0xff0000;
+								infoText.color = 0xff0000;
 								previewNote.rgb.set(0xff0000, 0, 0x800000);
 							}
 							else
 							{
-								infoText.rgb.g = -1;
+								infoText.color = -1;
 								previewNote.rgb.set(ogColors[0], ogColors[1], ogColors[2]);
 							}
 						},
 						onComplete: (_) ->
 						{
-							infoText.rgb.g = -1;
+							infoText.color = -1;
 							previewNote.rgb.set(ogColors[0], ogColors[1], ogColors[2]);
 						}
 					});
@@ -448,6 +452,12 @@ class ChartingNoteGroup extends Note
 		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart.notes[idx].lane)
 		{
 			chart.notes.splice(idx, 1);
+		}
+
+		if (FlxG.keys.anyJustPressed([Q, E]))
+		{
+			FlxG.sound.play(Paths.sound('charter/stretch${FlxG.random.int(1, 2)}_UI'));
+			chart.notes[idx].length += Conductor.stepCrochet * (FlxG.keys.justPressed.Q ? -1 : 1);
 		}
 	}
 }

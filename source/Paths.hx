@@ -129,17 +129,18 @@ class Paths
 		return shitLoaded.get(br);
 	}
 
+	public static function ini(f:String, ?root:String = ''):String
+		return file('$root/$f.ini');
+
 	public static function script(f:String, ?root:String = 'data/scripts'):String
 		return file('$root/$f.hx');
 
 	public static function xml(f:String, ?root:String = 'images'):String
 		return file('$root/$f.xml');
 
-	public static function song(sg:String, f:String = 'Inst', ?sub:String):Sound
+	public static function song(sg:String, f:String = 'Inst', ?sub:String = ''):Sound
 	{
-		if (sub == null)
-			sub = '';
-		else if (!sub.endsWith('/'))
+		if (!sub.endsWith('/'))
 			sub += '/';
 		if (exists(file('songs/$sg/$sub/$f.ogg')))
 			return sound(f, 'songs/$sg/$sub');

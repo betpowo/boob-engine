@@ -1,190 +1,182 @@
-import flixel.FlxCamera;
-import flixel.util.FlxAxes;
-import flixel.util.FlxStringUtil;
+import flixel.FlxSpriteExt;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
+import tools.Ini.IniData;
+import tools.Ini;
 
 using StringTools;
 
-class Alphabet extends FlxSprite
+class Alphabet extends FlxTypedSpriteGroup<AlphabetChar>
 {
-	public var text(default, set):String = 'Alphabet';
+	public var text(default, set):String = '';
 
-	public function set_text(v:String):String
+	private var _lastLength:Int = 0;
+
+	public function set_text(t:String)
 	{
-		if (text != v)
+		if (text != t)
 		{
-			text = v;
-			schedule();
+			text = t;
+
+			var xPos:Float = 0;
+			var yPos:Float = 66;
+			var rows:Int = 0;
+
+			forEach((letter) ->
+			{
+				var i:Int = members.length;
+				while (i > 0)
+				{
+					--i;
+					var letter:AlphabetChar = members[i];
+					if (letter != null)
+					{
+						letter.kill();
+						members.remove(letter);
+						remove(letter);
+					}
+				}
+			});
+
+			for (char in text.split(''))
+			{
+				switch (char)
+				{
+					case ' ':
+						xPos += 30;
+					case '\t':
+						xPos += 120;
+					case '\n':
+						xPos = 0;
+						rows += 1;
+					default:
+						var a:AlphabetChar = recycle(AlphabetChar);
+						a.setPosition(xPos, yPos * rows);
+						a.change(char);
+						a.spawn.set(a.x, a.y);
+						add(a);
+						xPos += a.frameWidth + 1; // tiny padding
+				}
+			}
+			setScale(scaleX, scaleY);
 		}
-		return v;
+		return text;
 	}
 
-	function schedule()
+	public function new(text:String = 'Alphabet')
 	{
-		displit = text.split('');
+		super();
+		this.text = text;
 	}
 
-	public var separator:Float = 4;
-	public var rgb = new RGBPalette();
-
-	var displit:Array<String> = [];
-	var script:HscriptHandler;
-
-	public function new(?x:Float = 0, ?y:Float = 0)
+	public function setScale(_x:Float = 1, ?_y:Float = 1)
 	{
-		super(x, y);
-		if (script == null)
-			script = new HscriptHandler('alphabet', 'images/ui');
+		scaleX = _x;
+		scaleY = _y ?? _x;
+	}
 
-		frames = Paths.sparrow('ui/alphabet');
-		animation.addByPrefix('idle', ':FALLBACK', 0, true);
-		animation.play('idle', true);
+	public var scaleX(default, set):Float = 1;
+	public var scaleY(default, set):Float = 1;
+
+	function set_scaleX(value:Float):Float
+	{
+		scale.x = value;
 		updateHitbox();
-
-		for (fr in frames.frames)
+		for (letter in members)
 		{
-			var frameName = fr.name.replace('0000', '');
-			var the = script.callThingy('doFilter', [frameName]); // why is it an array ?????
-			animation.addByPrefix(the, frameName, 0, true);
+			letter.x = x + (letter.spawn.x * value);
+			letter.scale.x = value;
+			letter.updateHitbox();
 		}
+		scaleX = value;
+		return value;
+	}
 
+	function set_scaleY(value:Float):Float
+	{
+		scale.y = value;
+		updateHitbox();
+		for (letter in members)
+		{
+			letter.y = y + (letter.spawn.y * value);
+			letter.scale.y = value;
+			letter.updateHitbox();
+		}
+		scaleY = value;
+		return value;
+	}
+
+	// cobalt bar wrote this
+	public override function setColorTransform(redMultiplier:Float = 1.0, greenMultiplier:Float = 1.0, blueMultiplier:Float = 1.0,
+			alphaMultiplier:Float = 1.0, redOffset:Float = 0.0, greenOffset:Float = 0.0, blueOffset:Float = 0.0, alphaOffset:Float = 0.0):Void
+	{
+		forEachAlive((a) ->
+		{
+			a.setColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+		});
+	}
+}
+
+/**
+ * a single `Alphabet` character
+ */
+class AlphabetChar extends FlxSpriteExt
+{
+	public var ini:IniData;
+	public var spawn:FlxPoint = new FlxPoint(0, 0);
+
+	public function new(char:String = '?')
+	{
+		super();
+		var image = 'ui/fonts/bold';
+		frames = Paths.sparrow(image);
+		ini = Ini.parseFile(Paths.ini('images/$image'));
 		antialiasing = true;
 		moves = false;
-
-		shader = rgb.shader;
-		rgb.set(0xff0000, -1, 0);
-
-		schedule();
+		scaleOffset = true;
+		change(char);
 	}
 
-	var rows:Int = 0;
-	var lineHeight:Float = 75;
-	var _defaultDrawData:AlphabetDrawData = {
-		x: 0.0,
-		y: 0.0,
-		angle: 0.0,
-		flip: 'none'
-	};
-
-	override public function draw()
+	public function change(char:String = '?')
 	{
-		rows = 0;
-		var ogx = x;
-		var ogy = y;
-		var ogh = height;
-		var spli = displit;
-		// script.callThingy('drawOnce', []);
-		for (waaa in spli)
+		try
 		{
-			switch (waaa)
+			var ogchar:String = char;
+
+			if (~/[a-z]/.match(char))
+				char = char.toUpperCase();
+			else if (~/[0-9]/.match(char))
+				char += '_';
+
+			if (ini?.replacements?.exists(char))
+				char = '-${ini.replacements[char]}-';
+
+			animation.addByPrefix('idle', char, 24, true);
+			animation.play('idle', true);
+			updateHitbox();
+
+			if (ini.exists('offsets'))
 			{
-				case ' ':
-					x += (30 + separator) * scale.x;
-					y = ogy;
-					y += lineHeight * rows * scale.y;
-				case '\n':
-					x = ogx;
-					rows += 1;
-				default:
-					var _drawData:AlphabetDrawData = getDrawData(waaa);
-
-					var anim = _drawData.char ?? waaa;
-
-					animation.play(anim, true);
-					if (!animation.exists(anim))
-						animation.play('idle', true); // fallback char
-
-					updateHitbox();
-					y = ogy + ogh - height;
-					y += lineHeight * rows * scale.y;
-
-					if (_drawData != null)
+				for (k => v in ini.offsets)
+				{
+					if (k.contains(ogchar))
 					{
-						var ogfx = flipX;
-						var ogfy = flipY;
-
-						x += _drawData.x * scale.x;
-						y += _drawData.y * scale.y;
-						angle += _drawData.angle;
-
-						if (_drawData.flip != null)
-						{
-							var axes = FlxAxes.fromString(_drawData.flip);
-							if (axes.x)
-								flipX = !flipX;
-							if (axes.y)
-								flipY = !flipY;
-						}
-
-						super.draw();
-						if (_drawData.extra != null)
-						{
-							animation.play(_drawData.extra.char, true);
-
-							x += _drawData.extra.x * scale.x;
-							y += _drawData.extra.y * scale.y;
-							angle += _drawData.extra.angle;
-							if (_drawData.extra.flip != null)
-							{
-								var axes = FlxAxes.fromString(_drawData.extra.flip);
-								if (axes.x)
-									flipX = !flipX;
-								if (axes.y)
-									flipY = !flipY;
-							}
-							super.draw();
-							x -= _drawData.extra.x * scale.x;
-							y -= _drawData.extra.y * scale.y;
-							angle -= _drawData.extra.angle;
-
-							animation.play(anim, true);
-							if (!animation.exists(anim))
-								animation.play('idle', true); // fallback char
-
-							updateHitbox();
-						}
-
-						x -= _drawData.x;
-						y -= _drawData.y;
-						angle -= _drawData.angle;
-
-						flipX = ogfx;
-						flipY = ogfy;
+						// Log.print('hihiihiihih ' + ogchar, 0x6600ff);
+						final spli:Array<String> = (v : String).split(',');
+						x += Std.parseFloat(spli[0]);
+						y += Std.parseFloat(spli[1]);
+						// Log.print(spli.toString(), 0x66ff33);
 					}
-					else
-					{
-						super.draw();
-					}
-					x += (frameWidth + separator) * scale.x;
-					y = ogy;
+				}
 			}
 		}
-		x = ogx;
-		y = ogy;
-		height = ogh;
+		catch (e)
+		{
+			Log.print('alpabet fail : $e', 0xff3366);
+
+			animation.addByPrefix('idle', '-question mark-', 24, true);
+			animation.play('idle', true);
+			updateHitbox();
+		}
 	}
-
-	private var _drawfunc:String->AlphabetDrawData = null;
-
-	inline function getDrawData(input:String)
-	{
-		if (_drawfunc == null && script.interpreter.variables.exists('onDraw'))
-			_drawfunc = script.interpreter.variables.get('onDraw');
-
-		return _drawfunc(input) ?? _defaultDrawData;
-	}
-}
-
-typedef AlphabetDrawData = AlphabetExtraDrawData &
-{
-	?extra:AlphabetExtraDrawData
-}
-
-// WHY
-typedef AlphabetExtraDrawData =
-{
-	x:Float,
-	y:Float,
-	angle:Float,
-	flip:String,
-	?char:String
 }
