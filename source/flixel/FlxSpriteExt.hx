@@ -18,6 +18,7 @@ class FlxSpriteExt extends FlxSprite
 	public var scaleMult:FlxPoint = new FlxPoint(1, 1);
 	public var alphaMult:Float = 1.0;
 	public var scaleOffset:Bool = false;
+	public var rotateOffset:Bool = false;
 
 	override function drawComplex(camera:FlxCamera):Void
 	{
@@ -60,6 +61,8 @@ class FlxSpriteExt extends FlxSprite
 			offset.x = ogoffx * scale.x * scaleMult.x;
 			offset.y = ogoffy * scale.y * scaleMult.y;
 		}
+		if (rotateOffset)
+			offset.degrees -= angle + angleOffset;
 
 		getScreenPosition(_point, camera).subtractPoint(offset);
 		_point.addPoint(origin);

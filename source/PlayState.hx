@@ -117,17 +117,6 @@ class PlayState extends FlxState
 				note.parentGroup = noteGroup;
 			}
 		});
-		FlxG.sound.playMusic(Paths.song('darnell'), 0);
-		vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Play'));
-		FlxG.sound.list.add(vocals);
-		vocals.play();
-
-		var _vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Opp'));
-		FlxG.sound.list.add(_vocals);
-		_vocals.play();
-
-		FlxG.sound.music.time = vocals.time = _vocals.time = 0;
-		FlxG.sound.music.volume = 1;
 
 		for (i in chart.notes)
 		{
@@ -182,6 +171,18 @@ class PlayState extends FlxState
 		player.setPosition(700, 200);
 		player.flipX = !player.flipX;
 		// player.scale.x *= -1;
+
+		FlxG.sound.playMusic(Paths.song('darnell'), 0);
+		vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Play'));
+		FlxG.sound.list.add(vocals);
+		vocals.play();
+
+		var _vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Opp'));
+		FlxG.sound.list.add(_vocals);
+		_vocals.play();
+
+		FlxG.sound.music.time = vocals.time = _vocals.time = 0;
+		FlxG.sound.music.volume = 1;
 	}
 
 	function beatHit()

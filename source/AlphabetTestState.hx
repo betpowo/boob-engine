@@ -71,6 +71,11 @@ class AlphabetTestState extends FlxState
 		{
 			test.alignment = RIGHT;
 		}));
+		add(new FlxUIButton(input.x + 280, input.y - 30, 'toggle offsetPos', function()
+		{
+			test.offsetPos = !test.offsetPos;
+			test.alignment = test.alignment;
+		}));
 
 		if (!FlxG.sound.music.playing)
 			FlxG.sound.playMusic('assets/songs/bopeebo/Inst.ogg', 0.6);
@@ -85,6 +90,7 @@ class AlphabetTestState extends FlxState
 		if (FlxG.keys.justPressed.F5)
 		{
 			AlphaCharacter.ini = null;
+			AlphaCharacter.sheets = null;
 			prevtext = input.text;
 			FlxG.resetState();
 			FlxG.sound.play(FlxAssets.getSound('flixel/sounds/flixel')).persist = true;

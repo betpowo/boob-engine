@@ -9,9 +9,10 @@ using StringTools;
 class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 {
 	public var text(default, set):String = '';
-	public var alignment:FlxTextAlign = LEFT;
+	public var alignment(default, set):FlxTextAlign = LEFT;
 
 	private var _lastLength:Int = 0;
+	private var maxWidth:Float = 0;
 
 	public function set_text(t:String)
 	{
@@ -22,6 +23,10 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			var xPos:Float = 0;
 			var yPos:Float = 66;
 			var rows:Int = 0;
+			var _mWidth:Float = 0;
+			var rowWidths:Array<Float> = [];
+
+			maxWidth = 0;
 
 			forEach((letter) ->
 			{
@@ -44,12 +49,16 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 				switch (char)
 				{
 					case ' ':
-						xPos += 30;
+						xPos += 26;
+						_mWidth += 26;
 					case '\t':
-						xPos += 120;
+						xPos += 26 * 4;
+						_mWidth += 26 * 4;
 					case '\n':
+						rowWidths[rows] = xPos;
 						xPos = 0;
 						rows += 1;
+						_mWidth = 0;
 					case '\r':
 						continue;
 					default:
@@ -60,6 +69,13 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 						add(a);
 						xPos += a.frameWidth + 1; // tiny padding
 						a.ID = idx;
+						a.row = rows;
+
+						_mWidth += a.frameWidth + 1;
+						if (maxWidth < _mWidth)
+						{
+							maxWidth = _mWidth;
+						}
 
 						if (a.extraData != null)
 						{
@@ -82,14 +98,32 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 							add(b);
 
 							b.ID = a.ID;
+							// b.rowWidth = _mWidth;
+							b.row = rows;
 						}
+
+						// a.rowWidth = _mWidth;
 				}
 			}
+			rowWidths.push(xPos);
+
+			forEachAlive((letter) ->
+			{
+				letter.rowWidth = rowWidths[letter.row];
+			});
+
 			setScale(scaleX, scaleY);
 			angle = angle;
+			alignment = alignment;
+			// trace(rowWidths);
 		}
 		return text;
 	}
+
+	/**
+	 * will offset the letters depending on alignment if enabled
+	 */
+	public var offsetPos:Bool = true;
 
 	public function new(text:String = 'Alphabet')
 	{
@@ -117,6 +151,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			letter.updateHitbox();
 		}
 		scaleX = value;
+		alignment = alignment;
 		return value;
 	}
 
@@ -131,7 +166,36 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			letter.updateHitbox();
 		}
 		scaleY = value;
+		alignment = alignment;
 		return value;
+	}
+
+	// static final stupid:Float = 2 / 5;
+
+	public function set_alignment(a:FlxTextAlign):FlxTextAlign
+	{
+		// dont feel like writing it all so i just copy pasted psych engine code cus im lazy (kill me
+		alignment = a;
+		forEachAlive((letter) ->
+		{
+			var newOffset:Float = 0;
+
+			switch (alignment)
+			{
+				case CENTER:
+					newOffset = letter.rowWidth / 2;
+					if (!offsetPos) newOffset -= maxWidth * .5;
+				case RIGHT:
+					newOffset = letter.rowWidth;
+					if (!offsetPos) newOffset -= maxWidth;
+				default:
+					newOffset = 0;
+			}
+
+			letter.updateHitbox();
+			letter.offset.x += newOffset * scaleX;
+		});
+		return alignment;
 	}
 
 	override function set_angle(a:Float):Float
@@ -144,7 +208,9 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			pot.pivotDegrees(FlxPoint.weak(x, y), a);
 			letter.setPosition(pot.x, pot.y);
 			pot.put();
+			letter.updateHitbox();
 		});
+		alignment = alignment;
 		return super.set_angle(a);
 	}
 
@@ -169,8 +235,10 @@ class AlphaCharacter extends FlxSpriteExt
 
 	public var spawn:FlxPoint = new FlxPoint(0, 0);
 	public var character:String = '?';
+	public var row:Int = 0;
+	public var rowWidth:Float = 0;
 
-	static var sheets:Array<String> = null;
+	public static var sheets:Array<String> = null;
 
 	public function new(char:String = '?')
 	{
@@ -194,7 +262,7 @@ class AlphaCharacter extends FlxSpriteExt
 
 		antialiasing = true;
 		moves = false;
-		// scaleOffset = true;
+		rotateOffset = true;
 		// change(char);
 	}
 
@@ -243,6 +311,12 @@ class AlphaCharacter extends FlxSpriteExt
 						// Log.print(spli.toString(), 0x66ff33);
 					}
 				}
+			}
+			if (ini.exists('equalsoffset') && character == '=')
+			{
+				final spli:Array<String> = (ini.equalsoffset : String).split(',');
+				x += Std.parseFloat(spli[0]);
+				y += Std.parseFloat(spli[1]);
 			}
 
 			extraData = null;
