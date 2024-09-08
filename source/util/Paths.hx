@@ -1,5 +1,5 @@
 // hi this is recycled from a game i was making with some friends i coded it almost from scratch
-package;
+package util;
 
 import flash.media.Sound;
 import flixel.graphics.FlxGraphic;

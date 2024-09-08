@@ -1,3 +1,5 @@
+package song;
+
 import flixel.math.FlxMath;
 
 typedef Chart =

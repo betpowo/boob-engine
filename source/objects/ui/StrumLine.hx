@@ -1,3 +1,5 @@
+package objects.ui;
+
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class StrumLine extends FlxTypedSpriteGroup<StrumNote>

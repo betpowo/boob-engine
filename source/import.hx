@@ -12,5 +12,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
+import song.*;
+import util.Paths;
 
 using StringTools;

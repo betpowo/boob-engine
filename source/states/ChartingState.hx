@@ -1,5 +1,10 @@
+package states;
+
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
+import objects.Note;
+import objects.ui.*;
+import util.*;
 
 class ChartingState extends FlxState
 {
@@ -8,7 +13,7 @@ class ChartingState extends FlxState
 	var chart = null;
 	var strumLine:StrumLine;
 	var note:ChartingNoteGroup;
-	var infoText:Alphabet;
+	var infoText:FlxText;
 	var timeNum:Counter;
 	var maxLayers:Int = 2;
 	var layer(default, set):Int = -1;
@@ -76,10 +81,15 @@ class ChartingState extends FlxState
 		timeNum.updateHitbox();
 		add(timeNum);
 
-		infoText = new Alphabet();
+		infoText = new FlxText();
 		infoText.x = infoText.y = 50;
 		infoText.y += (timeNum.frameHeight * timeNum.scale.y) + 8;
-		infoText.setScale(0.7, 0.7);
+		infoText.size = 20;
+		infoText.borderColor = FlxColor.BLACK;
+		infoText.borderSize = 4;
+		infoText.borderQuality = 2;
+		infoText.borderStyle = OUTLINE_FAST;
+		infoText.x -= 10;
 		add(infoText);
 
 		timeNum.camera = infoText.camera = camHUD;
@@ -137,7 +147,7 @@ class ChartingState extends FlxState
 
 		timeNum.number = FlxMath.roundDecimal(Conductor.time * 0.001, 2);
 
-		var intendedText = 'Beat: ${Conductor.beat}\nStep: ${Conductor.step}\nLayer:\n';
+		var intendedText = ' Beat: ${Conductor.beat}\n Step: ${Conductor.step}\n Layer:\n ';
 		intendedText += (layer == -1) ? '[ALL]' : 'Unnamed [' + Std.string(layer) + ']';
 		if (infoText.text != intendedText)
 			infoText.text = intendedText;
@@ -175,7 +185,7 @@ class ChartingState extends FlxState
 			PlayState.chart = chart;
 			inst.stop();
 			FlxG.sound.music.stop();
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new states.PlayState());
 		}
 	}
 
@@ -222,7 +232,7 @@ class ChartingState extends FlxState
 			}
 			previewNote.sustain.blend = previewNote.blend;
 
-			if (!note.selecting)
+			if (previewNote.visible)
 			{
 				previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
 			}

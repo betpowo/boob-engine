@@ -1,3 +1,5 @@
+package util;
+
 import flixel.system.FlxAssets.FlxShader;
 
 // im very sorry shadowmario but idk how to figure this out myself ;-;

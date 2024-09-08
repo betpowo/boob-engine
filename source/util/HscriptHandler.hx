@@ -1,4 +1,4 @@
-package;
+package util;
 
 import hscript.Interp;
 import hscript.Parser;

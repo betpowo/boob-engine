@@ -2,16 +2,19 @@ package;
 
 // adding psych crash handler stuff for a moment while i debug things
 import flixel.FlxGame;
-import haxe.CallStack;
-import haxe.PosInfos;
-import haxe.io.Path;
 import lime.app.Application;
 import openfl.Lib;
 import openfl.display.Sprite;
-import openfl.events.UncaughtErrorEvent;
 import openfl.utils.Function;
 
 using StringTools;
+
+#if CRASH_HANDLER
+import haxe.CallStack;
+import haxe.PosInfos;
+import haxe.io.Path;
+import openfl.events.UncaughtErrorEvent;
+#end
 
 class Main extends Sprite
 {
@@ -20,13 +23,13 @@ class Main extends Sprite
 		super();
 
 		Log.init();
-		Options.load();
+		util.Options.load();
 		// trace(Reflect.fields(opts));
 
-		addChild(new FlxGame(0, 0, TitleState, 240, 240));
+		addChild(new FlxGame(0, 0, states.TitleState, 240, 240));
 		addChild(new openfl.display.FPS(5, 5, -1));
 
-		FlxG.plugins.addPlugin(new Conductor());
+		FlxG.plugins.addPlugin(new song.Conductor());
 		FlxG.signals.preStateSwitch.add(() ->
 		{
 			Conductor.beatHit.removeAll();
@@ -35,7 +38,9 @@ class Main extends Sprite
 			Conductor.time = 0;
 		});
 
+		#if CRASH_HANDLER
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
 
 		/*
 			Log.anonprint('');
@@ -80,6 +85,7 @@ class Main extends Sprite
 		 */
 	}
 
+	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
 		var errMsg:String = "";
@@ -101,6 +107,7 @@ class Main extends Sprite
 		Application.current.window.alert(errMsg, "Error!");
 		Sys.exit(1);
 	}
+	#end
 }
 
 class Log

@@ -1,3 +1,5 @@
+package objects.ui;
+
 import flixel.util.FlxStringUtil;
 
 class Counter extends FlxSprite

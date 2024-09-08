@@ -1,7 +1,10 @@
-import Chart.ChartNote;
+package objects;
+
 import flixel.FlxSpriteExt;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import song.Chart.ChartNote;
+import util.RGBPalette;
 
 class Note extends FlxSpriteExt
 {

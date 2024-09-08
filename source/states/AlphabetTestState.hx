@@ -1,10 +1,10 @@
-package;
+package states;
 
-import Alphabet.AlphaCharacter;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIButton;
 import flixel.system.FlxAssets;
 import lime.system.Clipboard;
+import objects.Alphabet;
 
 class AlphabetTestState extends FlxState
 {
@@ -99,7 +99,7 @@ class AlphabetTestState extends FlxState
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
 			FlxG.sound.music.stop();
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new states.PlayState());
 		}
 	}
 }

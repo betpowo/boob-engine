@@ -1,10 +1,15 @@
-import Note.NoteHitState;
+package objects;
+
 import flash.filters.BitmapFilter;
 import flash.filters.BlurFilter;
 import flixel.FlxSpriteExt;
 import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import objects.Note.NoteHitState;
+import objects.Note;
+import objects.ui.StrumLine;
+import util.RGBPalette;
 
 typedef StrumNoteSignal = FlxTypedSignal<Note->Void>;
 

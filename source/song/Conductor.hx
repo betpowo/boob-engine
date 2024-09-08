@@ -1,3 +1,5 @@
+package song;
+
 import flixel.FlxBasic;
 import flixel.util.FlxSignal;
 

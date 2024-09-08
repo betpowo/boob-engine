@@ -1,3 +1,5 @@
+package objects;
+
 import flixel.FlxSpriteExt;
 import tools.Ini.IniData;
 import tools.Ini;

@@ -43,9 +43,11 @@ class FPS extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("_sans", 12, color);
-		text = "FPS: ";
-
+		defaultTextFormat = new TextFormat("_sans", 14, color);
+		defaultTextFormat.bold = true;
+		text = "--- FPS";
+		width = FlxG.width;
+		height = FlxG.height;
 		cacheCount = 0;
 		currentTime = 0;
 		times = [];
@@ -76,16 +78,16 @@ class FPS extends TextField
 
 		if (currentCount != cacheCount /*&& visible*/)
 		{
-			text = "FPS: " + currentFPS;
+			text = '$currentFPS FPS';
 
 			#if openfl
-			text += "\nMEM: " + FlxStringUtil.formatBytes(System.totalMemory);
+			text += " - " + FlxStringUtil.formatBytes(System.totalMemory);
 			#end
 
 			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
 			text += "\ntotalDC: " + Context3DStats.totalDrawCalls();
 			text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
-			text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
+			// text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
 			#end
 		}
 

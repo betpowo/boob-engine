@@ -1,10 +1,14 @@
-package;
+package states;
 
-import Chart.ChartNote;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import objects.*;
+import objects.ui.*;
+import song.*;
+import song.Chart.ChartNote;
+import util.Options;
 
 typedef NoteGroup = FlxTypedGroup<Note>;
 
@@ -202,22 +206,22 @@ class PlayState extends FlxState
 	function noteHit(note:Note)
 	{
 		var laneID = note.strum.parentLane.ID;
-
+		var char:Character = player;
 		if (laneID == 1)
 		{
 			var gwa = 0.01;
 			score += 100;
 			health += gwa;
-			if (note.anim != null)
-			{
-				spectator.holdTime = Conductor.stepCrochetSec * spectator.holdDur;
-				spectator.playAnim(note.anim, true);
-			}
 		}
 		else
 		{
-			opponent.holdTime = Conductor.stepCrochetSec * opponent.holdDur;
-			opponent.playAnim(note.anim, true);
+			char = opponent;
+		}
+
+		if (note.anim != null && char != null)
+		{
+			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
+			char.playAnim(note.anim, true);
 		}
 	}
 
@@ -269,14 +273,14 @@ class PlayState extends FlxState
 		{
 			FlxG.sound.music.stop();
 			vocals.stop();
-			FlxG.switchState(new ChartingState(chart));
+			FlxG.switchState(new states.ChartingState(chart));
 		}
 
 		if (FlxG.keys.justPressed.THREE)
 		{
 			FlxG.sound.music.stop();
 			vocals.stop();
-			FlxG.switchState(new AlphabetTestState());
+			FlxG.switchState(new states.AlphabetTestState());
 		}
 
 		if (FlxG.keys.justPressed.F5)
@@ -284,7 +288,7 @@ class PlayState extends FlxState
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new TitleState());
+			FlxG.switchState(new states.TitleState());
 		}
 	}
 

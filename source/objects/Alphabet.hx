@@ -1,3 +1,5 @@
+package objects;
+
 import flixel.FlxSpriteExt;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
@@ -314,7 +316,7 @@ class AlphaCharacter extends FlxSpriteExt
 			}
 			if (ini.exists('equalsoffset') && character == '=')
 			{
-				final spli:Array<String> = (ini.equalsoffset : String).split(',');
+				final spli:Array<String> = cast(ini.equalsoffset, String).split(',');
 				x += Std.parseFloat(spli[0]);
 				y += Std.parseFloat(spli[1]);
 			}

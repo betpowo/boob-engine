@@ -1,3 +1,5 @@
+package objects.ui;
+
 import flixel.math.FlxRect;
 
 // is this useful ????
