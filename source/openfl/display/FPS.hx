@@ -1,7 +1,7 @@
 package openfl.display;
 
-import flixel.util.FlxStringUtil;
 import haxe.Timer;
+import flixel.util.FlxStringUtil;
 import openfl.events.Event;
 import openfl.system.System;
 import openfl.text.TextField;
@@ -22,8 +22,7 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class FPS extends TextField
-{
+class FPS extends TextField {
 	/**
 		The current frame rate, expressed using frames-per-second
 	**/
@@ -33,8 +32,7 @@ class FPS extends TextField
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 
-	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
-	{
+	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000) {
 		super();
 
 		this.x = x;
@@ -53,8 +51,7 @@ class FPS extends TextField
 		times = [];
 
 		#if flash
-		addEventListener(Event.ENTER_FRAME, function(e)
-		{
+		addEventListener(Event.ENTER_FRAME, function(e) {
 			var time = Lib.getTimer();
 			__enterFrame(time - currentTime);
 		});
@@ -63,21 +60,18 @@ class FPS extends TextField
 
 	// Event Handlers
 	@:noCompletion
-	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
-	{
+	private #if !flash override #end function __enterFrame(deltaTime:Float):Void {
 		currentTime += deltaTime;
 		times.push(currentTime);
 
-		while (times[0] < currentTime - 1000)
-		{
+		while (times[0] < currentTime - 1000) {
 			times.shift();
 		}
 
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (currentCount != cacheCount /*&& visible*/)
-		{
+		if (currentCount != cacheCount /*&& visible*/) {
 			text = '$currentFPS FPS';
 
 			#if openfl

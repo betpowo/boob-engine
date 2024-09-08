@@ -11,16 +11,14 @@ package tools;
 /**
  * Simple INI parsing implementation.
  */
-class Ini
-{
+class Ini {
 	/**
 	 * Parses INI content from a file and converts it into readable Haxe values.
 	 * @param path Path to the file.
 	 * @param allowArrays Whether to allow array parsing.
 	 * @return Parsed INI data.
 	 */
-	public static inline function parseFile(path:String, allowArrays:Bool = false):IniData
-	{
+	public static inline function parseFile(path:String, allowArrays:Bool = false):IniData {
 		return parse(sys.io.File.getContent(path), allowArrays);
 	}
 
@@ -30,8 +28,7 @@ class Ini
 	 * @param allowArrays Whether to allow array parsing.
 	 * @return Parsed INI data.
 	 */
-	public static function parse(content:String, allowArrays:Bool = false):IniData
-	{
+	public static function parse(content:String, allowArrays:Bool = false):IniData {
 		var parser:Ini = new Ini();
 		parser.allowArrays = allowArrays;
 
@@ -70,8 +67,7 @@ class Ini
 	 * @param content String to parse.
 	 * @return Parsed INI data.
 	 */
-	public function parseString(content:String):IniData
-	{
+	public function parseString(content:String):IniData {
 		_currentSection = "global";
 		_currentLine = 1;
 
@@ -87,8 +83,7 @@ class Ini
 	/**
 	 * Clean up memory allocated by this parser.
 	 */
-	public function clean():Void
-	{
+	public function clean():Void {
 		_currentSection = null;
 		output = null;
 	}
@@ -97,38 +92,32 @@ class Ini
 	 * Method which parses a line from an INI structure.
 	 * @param line Line to parse.
 	 */
-	function parseLine(line:String):Void
-	{
+	function parseLine(line:String):Void {
 		line = line.trim();
 
 		// skip empty lines
-		if (line.length == 0)
-		{
+		if (line.length == 0) {
 			_currentLine++;
 			return;
 		}
 
 		// skip comments
-		if (line.startsWith(";") || line.startsWith("#"))
-		{
+		if (line.startsWith(";") || line.startsWith("#")) {
 			_currentLine++;
 			return;
 		}
 
 		// handle sections
-		if (line.startsWith("["))
-		{
+		if (line.startsWith("[")) {
 			// could not close section, throw an error
-			if (!line.endsWith("]"))
-			{
+			if (!line.endsWith("]")) {
 				throw "Missing section end bracket at line " + Std.string(_currentLine);
 			}
 
 			var section:String = line.substring(1, line.length - 1);
 
 			// duplicate section, throw an error
-			if (output.exists(section))
-			{
+			if (output.exists(section)) {
 				throw 'Duplicate section "${section}" at line ' + Std.string(_currentLine);
 			}
 
@@ -138,16 +127,14 @@ class Ini
 		}
 
 		// handle key value pairs
-		if (!line.contains("="))
-		{
+		if (!line.contains("=")) {
 			// no key value pair found, throw an error
 			throw "Missing key value pair at line " + Std.string(_currentLine);
 		}
 
 		var keyValuePairs:Array<String> = line.split("=");
 
-		for (i in 0...Math.floor(keyValuePairs.length / 2))
-		{
+		for (i in 0...Math.floor(keyValuePairs.length / 2)) {
 			var key:String = keyValuePairs[i * 2].trim();
 			var value:String = keyValuePairs[i * 2 + 1].trim();
 
@@ -161,8 +148,7 @@ class Ini
 	 * Handles INI sections and subsections.
 	 * @param section Section to register.
 	 */
-	function registerSection(section:String):Void
-	{
+	function registerSection(section:String):Void {
 		// if (!section.contains(".")) {
 		_currentSection = section;
 		output.set(_currentSection, new StringMap<Any>());
@@ -183,8 +169,7 @@ class Ini
 	 * @param expr Expression to parse.
 	 * @return Parsed expression.
 	 */
-	function parseExpression(expr:String):Any
-	{
+	function parseExpression(expr:String):Any {
 		static final NUMBER_EXPR:EReg = ~/^[0-9.]*$/;
 
 		// null expression
@@ -200,8 +185,7 @@ class Ini
 			return Std.parseFloat(expr);
 
 		// array expression
-		if (allowArrays && expr.startsWith("[") && expr.endsWith("]"))
-		{
+		if (allowArrays && expr.startsWith("[") && expr.endsWith("]")) {
 			var array:Array<Any> = [];
 			for (value in expr.substring(1, expr.length - 1).split(","))
 				array.push(parseExpression(value.trim()));

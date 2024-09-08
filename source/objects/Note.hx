@@ -6,8 +6,7 @@ import flixel.math.FlxRect;
 import song.Chart.ChartNote;
 import util.RGBPalette;
 
-class Note extends FlxSpriteExt
-{
+class Note extends FlxSpriteExt {
 	public static var angles:Array<Float> = [270, 180, 0, 90];
 
 	public var rgb:RGBPalette = new RGBPalette();
@@ -25,16 +24,14 @@ class Note extends FlxSpriteExt
 
 	var parentGroup:FlxTypedGroup<Note>;
 
-	public function set_hit(v:NoteHitState):NoteHitState
-	{
+	public function set_hit(v:NoteHitState):NoteHitState {
 		hit = v;
 		if (hit == HIT)
 			kill();
 		return v;
 	}
 
-	public function set_strumIndex(v:Int):Int
-	{
+	public function set_strumIndex(v:Int):Int {
 		if (aocondc)
 			angleOffset = angles[FlxMath.wrap(v, 0, angles.length - 1)];
 		return strumIndex = v;
@@ -42,8 +39,7 @@ class Note extends FlxSpriteExt
 
 	var originalOffsets = [0.0, 0.0];
 
-	public function new(?strumIndex:Int = 2)
-	{
+	public function new(?strumIndex:Int = 2) {
 		super();
 		sustain = new Sustain(this);
 		this.strumIndex = strumIndex;
@@ -62,26 +58,22 @@ class Note extends FlxSpriteExt
 		originalOffsets = [offset.x, offset.y]; // for fun anim
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
-		if (strum != null)
-		{
+		if (strum != null) {
 			followStrum(strum);
 		}
 		if (sustain != null)
 			sustain.update(elapsed);
 	}
 
-	override function draw()
-	{
+	override function draw() {
 		if (sustain != null && sustain.length >= 10)
 			sustain.draw();
 		super.draw();
 	}
 
-	override function kill()
-	{
+	override function kill() {
 		if (parentGroup != null)
 			parentGroup.remove(this);
 		if (sustain != null)
@@ -96,18 +88,14 @@ class Note extends FlxSpriteExt
 
 	var _origLen:Float = -1;
 
-	function doHit()
-	{
-		if (sustain != null && sustain.length > 0)
-		{
-			if (_origLen == -1)
-			{
+	function doHit() {
+		if (sustain != null && sustain.length > 0) {
+			if (_origLen == -1) {
 				var diff = strumTime - Conductor.time;
 				sustain.length += diff;
 			}
 
-			if (_shouldDoHit)
-			{
+			if (_shouldDoHit) {
 				if (_origLen == -1)
 					_origLen = sustain.length;
 
@@ -121,9 +109,7 @@ class Note extends FlxSpriteExt
 				offset.y = originalOffsets[1] + FlxG.random.float(-1, 1) * 7;
 				color = 0x808080; // ???
 			}
-		}
-		else
-		{
+		} else {
 			hit = HIT;
 			kill();
 		}
@@ -139,15 +125,13 @@ class Note extends FlxSpriteExt
 
 	public var totalAngle(get, never):Float;
 
-	public function get_totalAngle():Float
-	{
+	public function get_totalAngle():Float {
 		if (strum != null && strum is Note)
 			return scrollAngle + strum.scrollAngle;
 		return scrollAngle;
 	}
 
-	function followStrum(strum:StrumNote)
-	{
+	function followStrum(strum:StrumNote) {
 		var grah = totalAngle * (Math.PI / -180);
 		var distance = (strumTime - Conductor.time) * 0.45 * speed;
 
@@ -167,8 +151,7 @@ class Note extends FlxSpriteExt
 			alpha = strum.alpha;
 	}
 
-	public static function fromChartNote(not:ChartNote):Note
-	{
+	public static function fromChartNote(not:ChartNote):Note {
 		var note = new Note(not.index);
 		note.strumTime = not.time;
 		note.strumIndex = not.index;
@@ -178,13 +161,11 @@ class Note extends FlxSpriteExt
 	}
 }
 
-class Sustain extends FlxSpriteExt
-{
+class Sustain extends FlxSpriteExt {
 	public var length:Float = 0;
 	public var parent:Note = null;
 
-	public function new(parent:Note)
-	{
+	public function new(parent:Note) {
 		super();
 		this.parent = parent;
 		frames = Paths.sparrow('ui/note');
@@ -198,8 +179,7 @@ class Sustain extends FlxSpriteExt
 		moves = false;
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 	}
 
@@ -210,8 +190,7 @@ class Sustain extends FlxSpriteExt
 		scrollAngle: true
 	};
 
-	function followNote(strum:Note, ?speed:Float = 1)
-	{
+	function followNote(strum:Note, ?speed:Float = 1) {
 		if (copyProps.x)
 			x = (strum.getMidpoint().x - width * 0.5);
 
@@ -231,18 +210,15 @@ class Sustain extends FlxSpriteExt
 		speedMult: 1
 	}
 
-	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1)
-	{
+	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1) {
 		animation.play('hold', true);
 		setGraphicSize(width, (l * 0.48 * s * m) + 2);
 		updateHitbox();
 		origin.y = 0;
 	}
 
-	override public function draw()
-	{
-		if (parent != null)
-		{
+	override public function draw() {
+		if (parent != null) {
 			followNote(parent);
 			shader = parent.shader;
 		}
@@ -263,10 +239,8 @@ class Sustain extends FlxSpriteExt
 		super.draw();
 	}
 
-	function doRotate()
-	{
-		if (parent != null)
-		{
+	function doRotate() {
+		if (parent != null) {
 			var gwa = FlxPoint.weak(x, y).pivotDegrees(FlxPoint.weak(parent.getMidpoint().x, parent.getMidpoint().y), parent.totalAngle);
 			setPosition(gwa.x, gwa.y);
 		}
@@ -274,8 +248,7 @@ class Sustain extends FlxSpriteExt
 }
 
 // floats aren't worth it
-enum NoteHitState
-{
+enum NoteHitState {
 	NONE;
 	HELD;
 	HIT;

@@ -8,18 +8,15 @@ import tools.Ini;
 
 using StringTools;
 
-class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
-{
+class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 	public var text(default, set):String = '';
 	public var alignment(default, set):FlxTextAlign = LEFT;
 
 	private var _lastLength:Int = 0;
 	private var maxWidth:Float = 0;
 
-	public function set_text(t:String)
-	{
-		if (text != t)
-		{
+	public function set_text(t:String) {
+		if (text != t) {
 			text = t;
 
 			var xPos:Float = 0;
@@ -30,15 +27,12 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 
 			maxWidth = 0;
 
-			forEach((letter) ->
-			{
+			forEach((letter) -> {
 				var i:Int = members.length;
-				while (i > 0)
-				{
+				while (i > 0) {
 					--i;
 					var letter:AlphaCharacter = members[i];
-					if (letter != null)
-					{
+					if (letter != null) {
 						letter.kill();
 						members.remove(letter);
 						remove(letter);
@@ -46,10 +40,8 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 				}
 			});
 
-			for (idx => char in text.split(''))
-			{
-				switch (char)
-				{
+			for (idx => char in text.split('')) {
+				switch (char) {
 					case ' ':
 						xPos += 26;
 						_mWidth += 26;
@@ -74,13 +66,11 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 						a.row = rows;
 
 						_mWidth += a.frameWidth + 1;
-						if (maxWidth < _mWidth)
-						{
+						if (maxWidth < _mWidth) {
 							maxWidth = _mWidth;
 						}
 
-						if (a.extraData != null)
-						{
+						if (a.extraData != null) {
 							var b:AlphaCharacter = recycle(AlphaCharacter);
 							b.animation.remove('idle');
 							b.animation.addByPrefix('idle', a.extraData.anim, 24, true);
@@ -109,8 +99,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 			}
 			rowWidths.push(xPos);
 
-			forEachAlive((letter) ->
-			{
+			forEachAlive((letter) -> {
 				letter.rowWidth = rowWidths[letter.row];
 			});
 
@@ -127,14 +116,12 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 	 */
 	public var offsetPos:Bool = true;
 
-	public function new(text:String = 'Alphabet')
-	{
+	public function new(text:String = 'Alphabet') {
 		super();
 		this.text = text;
 	}
 
-	public function setScale(_x:Float = 1, ?_y:Float = 1)
-	{
+	public function setScale(_x:Float = 1, ?_y:Float = 1) {
 		scaleX = _x;
 		scaleY = _y ?? _x;
 	}
@@ -142,12 +129,10 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 	public var scaleX(default, set):Float = 1;
 	public var scaleY(default, set):Float = 1;
 
-	function set_scaleX(value:Float):Float
-	{
+	function set_scaleX(value:Float):Float {
 		scale.x = value;
 		updateHitbox();
-		for (letter in members)
-		{
+		for (letter in members) {
 			letter.x = x + (letter.spawn.x * value);
 			letter.scale.x = value;
 			letter.updateHitbox();
@@ -157,12 +142,10 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 		return value;
 	}
 
-	function set_scaleY(value:Float):Float
-	{
+	function set_scaleY(value:Float):Float {
 		scale.y = value;
 		updateHitbox();
-		for (letter in members)
-		{
+		for (letter in members) {
 			letter.y = y + (letter.spawn.y * value);
 			letter.scale.y = value;
 			letter.updateHitbox();
@@ -174,16 +157,13 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 
 	// static final stupid:Float = 2 / 5;
 
-	public function set_alignment(a:FlxTextAlign):FlxTextAlign
-	{
+	public function set_alignment(a:FlxTextAlign):FlxTextAlign {
 		// dont feel like writing it all so i just copy pasted psych engine code cus im lazy (kill me
 		alignment = a;
-		forEachAlive((letter) ->
-		{
+		forEachAlive((letter) -> {
 			var newOffset:Float = 0;
 
-			switch (alignment)
-			{
+			switch (alignment) {
 				case CENTER:
 					newOffset = letter.rowWidth / 2;
 					if (!offsetPos) newOffset -= maxWidth * .5;
@@ -200,11 +180,9 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 		return alignment;
 	}
 
-	override function set_angle(a:Float):Float
-	{
+	override function set_angle(a:Float):Float {
 		angle = a;
-		forEachAlive((letter) ->
-		{
+		forEachAlive((letter) -> {
 			letter.angle = a;
 			var pot:FlxPoint = FlxPoint.get((letter.spawn.x * scaleX) + x, (letter.spawn.y * scaleY) + y);
 			pot.pivotDegrees(FlxPoint.weak(x, y), a);
@@ -218,10 +196,8 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
 
 	// cobalt bar wrote this
 	public override function setColorTransform(redMultiplier:Float = 1.0, greenMultiplier:Float = 1.0, blueMultiplier:Float = 1.0,
-			alphaMultiplier:Float = 1.0, redOffset:Float = 0.0, greenOffset:Float = 0.0, blueOffset:Float = 0.0, alphaOffset:Float = 0.0):Void
-	{
-		forEachAlive((a) ->
-		{
+			alphaMultiplier:Float = 1.0, redOffset:Float = 0.0, greenOffset:Float = 0.0, blueOffset:Float = 0.0, alphaOffset:Float = 0.0):Void {
+		forEachAlive((a) -> {
 			a.setColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
 		});
 	}
@@ -231,8 +207,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter>
  * a single `Alphabet` character
  * only extends `FlxSpriteExt` just so i can rotate the offset property
  */
-class AlphaCharacter extends FlxSpriteExt
-{
+class AlphaCharacter extends FlxSpriteExt {
 	public static var ini:IniData;
 
 	public var spawn:FlxPoint = new FlxPoint(0, 0);
@@ -242,8 +217,7 @@ class AlphaCharacter extends FlxSpriteExt
 
 	public static var sheets:Array<String> = null;
 
-	public function new(char:String = '?')
-	{
+	public function new(char:String = '?') {
 		super();
 		if (ini == null)
 			ini = Ini.parseFile(Paths.ini('images/ui/alphabet'));
@@ -254,8 +228,7 @@ class AlphaCharacter extends FlxSpriteExt
 		var atlas = Paths.sparrow('ui/alphabet/' + sheets[0]);
 		Paths.exclude('images/ui/alphabet/${sheets[0]}.png');
 
-		for (i in 1...sheets.length)
-		{
+		for (i in 1...sheets.length) {
 			atlas.addAtlas(Paths.sparrow('ui/alphabet/' + sheets[i]));
 			Paths.exclude('images/ui/alphabet/${sheets[i]}.png');
 		}
@@ -270,18 +243,13 @@ class AlphaCharacter extends FlxSpriteExt
 
 	public var extraData:Dynamic = null;
 
-	public function change(char:String = '?')
-	{
-		try
-		{
+	public function change(char:String = '?') {
+		try {
 			character = char;
 
-			if (ini.exists('replacements'))
-			{
-				for (k => v in ini.replacements)
-				{
-					if (k.contains(char))
-					{
+			if (ini.exists('replacements')) {
+				for (k => v in ini.replacements) {
+					if (k.contains(char)) {
 						char = ini.replacements[k];
 						// Log.print(ini.replacements[k], 0xccff00);
 						// Log.print(k, 0x00cccc);
@@ -295,12 +263,9 @@ class AlphaCharacter extends FlxSpriteExt
 			animation.play('idle', true);
 			updateHitbox();
 
-			if (ini.exists('transform'))
-			{
-				for (k => v in ini.transform)
-				{
-					if (k.contains(character))
-					{
+			if (ini.exists('transform')) {
+				for (k => v in ini.transform) {
+					if (k.contains(character)) {
 						// Log.print('hihiihiihih ' + character, 0x6600ff);
 						final spli:Array<String> = (v : String).split(',');
 						x += Std.parseFloat(spli[0]);
@@ -314,8 +279,7 @@ class AlphaCharacter extends FlxSpriteExt
 					}
 				}
 			}
-			if (ini.exists('equalsoffset') && character == '=')
-			{
+			if (ini.exists('equalsoffset') && character == '=') {
 				final spli:Array<String> = cast(ini.equalsoffset, String).split(',');
 				x += Std.parseFloat(spli[0]);
 				y += Std.parseFloat(spli[1]);
@@ -323,12 +287,9 @@ class AlphaCharacter extends FlxSpriteExt
 
 			extraData = null;
 
-			if (ini.exists('extra'))
-			{
-				for (k => v in ini.extra)
-				{
-					if (k.contains(character))
-					{
+			if (ini.exists('extra')) {
+				for (k => v in ini.extra) {
+					if (k.contains(character)) {
 						final spli:Array<String> = (v : String).split(',');
 						extraData = {
 							anim: spli[0],
@@ -339,9 +300,7 @@ class AlphaCharacter extends FlxSpriteExt
 					}
 				}
 			}
-		}
-		catch (e)
-		{
+		} catch (e) {
 			Log.print('alpabet fail : $e', 0xff3366);
 
 			animation.addByPrefix('idle', '-question mark-', 24, true);

@@ -6,15 +6,14 @@ import flixel.FlxSpriteExt;
 import flixel.graphics.frames.FlxFilterFrames;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import util.RGBPalette;
 import objects.Note.NoteHitState;
 import objects.Note;
 import objects.ui.StrumLine;
-import util.RGBPalette;
 
 typedef StrumNoteSignal = FlxTypedSignal<Note->Void>;
 
-class StrumNote extends Note
-{
+class StrumNote extends Note {
 	public var strumRGB:RGBPalette = new RGBPalette();
 
 	private var dumpRGB:RGBPalette = new RGBPalette();
@@ -28,13 +27,11 @@ class StrumNote extends Note
 	public var blocked:Bool = false;
 	public var hitWindow:Float = 123.0;
 
-	public override function set_hit(v:NoteHitState):NoteHitState
-	{
+	public override function set_hit(v:NoteHitState):NoteHitState {
 		return hit = NONE;
 	}
 
-	public function new(?strumIndex:Int = 2)
-	{
+	public function new(?strumIndex:Int = 2) {
 		super(strumIndex);
 		sustain = null;
 		shader = strumRGB.shader;
@@ -56,8 +53,7 @@ class StrumNote extends Note
 		holdSpr.animation.addByPrefix('hold', 'hold', 24, true);
 		holdSpr.animation.play('hold', true);
 		holdSpr.updateHitbox();
-		holdSpr.animation.finishCallback = function(a)
-		{
+		holdSpr.animation.finishCallback = function(a) {
 			if (a == 'start')
 				holdSpr.animation.play('hold', true);
 		}
@@ -66,13 +62,10 @@ class StrumNote extends Note
 
 		animation.addByIndices('confirm', 'idle', [0, 0, 0], '', 24, false);
 		animation.addByIndices('press', 'idle', [0, 0, 0], '', 24, false);
-		animation.callback = function(a, b, c)
-		{
-			if (a == 'confirm')
-			{
+		animation.callback = function(a, b, c) {
+			if (a == 'confirm') {
 				shader = strumRGB.shader;
-				switch (b)
-				{
+				switch (b) {
 					case 0:
 						var mult = 1.15;
 						scaleMult.set(mult, mult);
@@ -87,13 +80,10 @@ class StrumNote extends Note
 						blurSpr.alphaMult = 0.75;
 						scaleMult.set(mult, mult);
 				}
-			}
-			else if (a == 'press')
-			{
+			} else if (a == 'press') {
 				shader = dumpRGB.shader;
 				blurSpr.visible = false;
-				switch (b)
-				{
+				switch (b) {
 					case 0:
 						var mult = 0.9;
 						scaleMult.set(mult, mult);
@@ -102,9 +92,7 @@ class StrumNote extends Note
 						scaleMult.set(mult, mult);
 						blurSpr.alpha = 0.75;
 				}
-			}
-			else
-			{
+			} else {
 				scaleMult.set(1, 1);
 				blurSpr.visible = false;
 				shader = strumRGB.shader;
@@ -113,23 +101,19 @@ class StrumNote extends Note
 		Conductor.stepHit.add(stepHit);
 	}
 
-	override function draw()
-	{
+	override function draw() {
 		blurSpr.camera = holdSpr.camera = camera;
 		blurSpr.shader = holdSpr.shader = (pressingNote ?? this).rgb.shader;
-		if (visible && alpha > 0)
-		{
+		if (visible && alpha > 0) {
 			super.draw();
-			if (blurSpr.visible && blurSpr.alpha >= 0)
-			{
+			if (blurSpr.visible && blurSpr.alpha >= 0) {
 				blurSpr.x = getMidpoint().x - blurSpr.width * 0.5;
 				blurSpr.y = getMidpoint().y - blurSpr.height * 0.5;
 				blurSpr.centerOffsets();
 				blurSpr.draw();
 			}
 
-			if (holdSpr.visible && holdSpr.alpha >= 0)
-			{
+			if (holdSpr.visible && holdSpr.alpha >= 0) {
 				holdSpr.x = getMidpoint().x - holdSpr.width * 0.5;
 				holdSpr.y = getMidpoint().y - holdSpr.height * 0.5;
 				holdSpr.centerOffsets();
@@ -147,8 +131,7 @@ class StrumNote extends Note
 	public var noteHeldStep:StrumNoteSignal = new StrumNoteSignal();
 	public var noteMiss:StrumNoteSignal = new StrumNoteSignal();
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 		blurSpr.setPosition(x, y);
 		blurSpr.angle = angle;
@@ -161,36 +144,27 @@ class StrumNote extends Note
 		holdSpr.update(elapsed);
 		dumpRGB.r = FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15);
 
-		if (inputs is Array && inputs != null)
-		{
-			for (note in notes)
-			{
+		if (inputs is Array && inputs != null) {
+			for (note in notes) {
 				// misses
-				if (Conductor.time >= note.strumTime + 300)
-				{
+				if (Conductor.time >= note.strumTime + 300) {
 					noteMiss.dispatch(note);
 					note.kill();
 				}
 			}
 
-			if (FlxG.keys.anyPressed(inputs) && !blocked)
-			{
-				for (note in notes)
-				{
+			if (FlxG.keys.anyPressed(inputs) && !blocked) {
+				for (note in notes) {
 					// sustain notes
-					if ((note.hit == HELD && note._shouldDoHit))
-					{
+					if ((note.hit == HELD && note._shouldDoHit)) {
 						note._shouldDoHit = true;
 						note.doHit();
 						noteHeld.dispatch(note);
 
-						if (note.hit != HIT)
-						{
+						if (note.hit != HIT) {
 							pressingNote = note;
 							holdSpr.angle = note.totalAngle;
-						}
-						else
-						{
+						} else {
 							holdSpr.visible = false;
 							holdSpr.angle = 0;
 							enableStepConfirm = false;
@@ -199,15 +173,11 @@ class StrumNote extends Note
 				}
 			}
 
-			if (FlxG.keys.anyJustPressed(inputs) && !blocked)
-			{
-				for (note in notes)
-				{
+			if (FlxG.keys.anyJustPressed(inputs) && !blocked) {
+				for (note in notes) {
 					// normal notes
-					if (Math.abs(note.strumTime - Conductor.time) <= hitWindow && note.hit == NONE)
-					{
-						if (note.sustain.length > 60)
-						{
+					if (Math.abs(note.strumTime - Conductor.time) <= hitWindow && note.hit == NONE) {
+						if (note.sustain.length > 60) {
 							note._shouldDoHit = true;
 							holdSpr.visible = true;
 							holdSpr.animation.play('start', true);
@@ -223,10 +193,8 @@ class StrumNote extends Note
 				animation.play((pressingNote != null) ? 'confirm' : 'press', true);
 			}
 
-			if (FlxG.keys.anyJustReleased(inputs))
-			{
-				for (note in notes)
-				{
+			if (FlxG.keys.anyJustReleased(inputs)) {
+				for (note in notes) {
 					// sustain notes
 					note._shouldDoHit = false;
 				}
@@ -237,22 +205,14 @@ class StrumNote extends Note
 				pressingNote = null;
 				animation.play('idle', true);
 			}
-		}
-		else
-		{
-			if (autoHit)
-			{
-				for (note in notes)
-				{
-					if (note.strumTime <= Conductor.time)
-					{
-						if (note.hit != HIT)
-						{
-							if (note.hit == NONE)
-							{
+		} else {
+			if (autoHit) {
+				for (note in notes) {
+					if (note.strumTime <= Conductor.time) {
+						if (note.hit != HIT) {
+							if (note.hit == NONE) {
 								animation.play('confirm', true);
-								if (note.sustain.length > 60)
-								{
+								if (note.sustain.length > 60) {
 									holdSpr.visible = true;
 									holdSpr.animation.play('start', true);
 									holdSpr.angle = note.totalAngle;
@@ -265,16 +225,13 @@ class StrumNote extends Note
 							pressingNote = note;
 							note.doHit();
 
-							if (note.hit == HELD)
-							{
+							if (note.hit == HELD) {
 								enableStepConfirm = true;
 								confirmTime = Conductor.stepCrochet;
 								holdSpr.visible = true;
 								holdSpr.angle = note.totalAngle;
 								noteHeld.dispatch(note);
-							}
-							else if (note.hit == HIT)
-							{
+							} else if (note.hit == HIT) {
 								holdSpr.visible = false;
 								enableStepConfirm = false;
 								confirmTime = 0.13;
@@ -285,8 +242,7 @@ class StrumNote extends Note
 				}
 				if (confirmTime > 0)
 					confirmTime -= elapsed;
-				else if (confirmTime != -1)
-				{
+				else if (confirmTime != -1) {
 					animation.play('idle', true);
 					confirmTime = -1;
 					holdSpr.visible = false;
@@ -296,10 +252,8 @@ class StrumNote extends Note
 		}
 	}
 
-	function stepHit()
-	{
-		if (enableStepConfirm)
-		{
+	function stepHit() {
+		if (enableStepConfirm) {
 			animation.play('confirm', true);
 			confirmTime = Conductor.stepCrochet;
 			noteHeldStep.dispatch(pressingNote);

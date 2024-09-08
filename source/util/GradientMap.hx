@@ -2,26 +2,22 @@ package util;
 
 import flixel.system.FlxAssets.FlxShader;
 
-class GradientMap
-{
+class GradientMap {
 	public var shader(default, null):GradientMapShader = new GradientMapShader();
 	public var black(default, set):FlxColor;
 	public var white(default, set):FlxColor;
 	public var mult(default, set):Float;
 
-	public function set(?_w:FlxColor = 0xffffffff, ?_b:FlxColor = 0xff000000)
-	{
+	public function set(?_w:FlxColor = 0xffffffff, ?_b:FlxColor = 0xff000000) {
 		white = _w;
 		black = _b;
 	};
 
-	public function copy(target:GradientMap)
-	{
+	public function copy(target:GradientMap) {
 		set(target.white, target.black);
 	}
 
-	private function set_white(color:FlxColor)
-	{
+	private function set_white(color:FlxColor) {
 		if (color == color.to24Bit() && color != FlxColor.TRANSPARENT)
 			color.alphaFloat = 1;
 
@@ -30,8 +26,7 @@ class GradientMap
 		return color;
 	}
 
-	private function set_black(color:FlxColor)
-	{
+	private function set_black(color:FlxColor) {
 		if (color == color.to24Bit() && color != FlxColor.TRANSPARENT)
 			color.alphaFloat = 1;
 
@@ -40,22 +35,19 @@ class GradientMap
 		return color;
 	}
 
-	private function set_mult(value:Float)
-	{
+	private function set_mult(value:Float) {
 		mult = FlxMath.bound(value, 0, 1);
 		shader.mult.value = [mult];
 		return mult;
 	}
 
-	public function new()
-	{
+	public function new() {
 		set(-1, 0);
 		mult = 1.0;
 	}
 }
 
-class GradientMapShader extends FlxShader
-{
+class GradientMapShader extends FlxShader {
 	@:glFragmentHeader('
 		#pragma header
 		
@@ -87,8 +79,7 @@ class GradientMapShader extends FlxShader
 		void main() {
 			gl_FragColor = flixel_texture2DCustom(bitmap, openfl_TextureCoordv);
 		}')
-	public function new()
-	{
+	public function new() {
 		super();
 	}
 }

@@ -12,16 +12,14 @@ import flixel.util.FlxDestroyUtil;
 /**
  * god bless flxskewedsprite for existing otherwise this would be impossible for me to figure out
  */
-class FlxSpriteExt extends FlxSprite
-{
+class FlxSpriteExt extends FlxSprite {
 	public var angleOffset:Float = 0.0;
 	public var scaleMult:FlxPoint = new FlxPoint(1, 1);
 	public var alphaMult:Float = 1.0;
 	public var scaleOffset:Bool = false;
 	public var rotateOffset:Bool = false;
 
-	override function drawComplex(camera:FlxCamera):Void
-	{
+	override function drawComplex(camera:FlxCamera):Void {
 		/*
 			_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
 			inline _matrix.translate(-origin.x, -origin.y);
@@ -31,21 +29,18 @@ class FlxSpriteExt extends FlxSprite
 		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0);
 		inline _matrix.translate(-origin.x, -origin.y);
 		_matrix.scale(scale.x * scaleMult.x, scale.y * scaleMult.y);
-		if (checkFlipX())
-		{
+		if (checkFlipX()) {
 			_matrix.a *= -1;
 			_matrix.c *= -1;
 			_matrix.tx *= -1;
 		}
-		if (checkFlipY())
-		{
+		if (checkFlipY()) {
 			_matrix.b *= -1;
 			_matrix.d *= -1;
 			_matrix.ty *= -1;
 		}
 
-		if (bakedRotationAngle <= 0)
-		{
+		if (bakedRotationAngle <= 0) {
 			var radians:Float = (angle + angleOffset) * FlxAngle.TO_RAD;
 			var _sinAngleCustom = Math.sin(radians);
 			var _cosAngleCustom = Math.cos(radians);
@@ -56,8 +51,7 @@ class FlxSpriteExt extends FlxSprite
 
 		var ogoffx = offset.x;
 		var ogoffy = offset.y;
-		if (scaleOffset)
-		{
+		if (scaleOffset) {
 			offset.x = ogoffx * scale.x * scaleMult.x;
 			offset.y = ogoffy * scale.y * scaleMult.y;
 		}

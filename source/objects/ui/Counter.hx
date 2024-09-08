@@ -2,33 +2,27 @@ package objects.ui;
 
 import flixel.util.FlxStringUtil;
 
-class Counter extends FlxSprite
-{
+class Counter extends FlxSprite {
 	public var number(default, set):Float = 0;
 	public var display(default, set):CounterDisplay = INT;
 
-	public function set_number(v:Float):Float
-	{
-		if (number != v)
-		{
+	public function set_number(v:Float):Float {
+		if (number != v) {
 			number = v;
 			schedule();
 		}
 		return v;
 	}
 
-	public function set_display(v:CounterDisplay):CounterDisplay
-	{
-		if (display != v)
-		{
+	public function set_display(v:CounterDisplay):CounterDisplay {
+		if (display != v) {
 			display = v;
 			schedule();
 		}
 		return v;
 	}
 
-	function schedule()
-	{
+	function schedule() {
 		displit = getDisplay(number).split('');
 	}
 
@@ -37,8 +31,7 @@ class Counter extends FlxSprite
 
 	var displit:Array<String> = [];
 
-	public function new(?x:Float = 0, ?y:Float = 0)
-	{
+	public function new(?x:Float = 0, ?y:Float = 0) {
 		super(x, y);
 		loadGraphic(Paths.image('ui/num'));
 		loadGraphic(Paths.image('ui/num'), true, Std.int(width / 7), Std.int(height / 2));
@@ -52,25 +45,19 @@ class Counter extends FlxSprite
 		schedule();
 	}
 
-	override public function draw()
-	{
+	override public function draw() {
 		var ogx = x;
 		var spli = displit;
-		if (alignment == RIGHT)
-		{
+		if (alignment == RIGHT) {
 			x -= (frameWidth + separator) * scale.x * spli.length;
 			x += separator;
-		}
-		else if (alignment == CENTER)
-		{
+		} else if (alignment == CENTER) {
 			x -= ((frameWidth + separator) * scale.x * spli.length) * 0.5;
 			x += separator * 2;
 		}
-		for (waaa in spli)
-		{
+		for (waaa in spli) {
 			var num = 0;
-			switch (waaa)
-			{
+			switch (waaa) {
 				case '-':
 					num = 10;
 				case '.':
@@ -89,10 +76,8 @@ class Counter extends FlxSprite
 		x = ogx;
 	}
 
-	function getDisplay(num:Float):String
-	{
-		return switch (display)
-		{
+	function getDisplay(num:Float):String {
+		return switch (display) {
 			case QUESTION:
 				[for (i in 0...Std.int(Math.max(num, 1))) '?'].join('');
 			case TIME | TIME_MS:
@@ -105,8 +90,7 @@ class Counter extends FlxSprite
 	}
 }
 
-enum CounterDisplay
-{
+enum CounterDisplay {
 	INT;
 	FLOAT;
 	TIME;

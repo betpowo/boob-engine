@@ -3,16 +3,14 @@ package objects.ui;
 import flixel.math.FlxRect;
 
 // is this useful ????
-class HealthBar extends FlxSprite
-{
+class HealthBar extends FlxSprite {
 	public var emptySprite:FlxSprite;
 	public var empty:FlxColor;
 	public var fill:FlxColor;
 	public var percent(default, set):Float;
 	public var rightToLeft:Bool;
 
-	public function new(?x:Float = 0, ?y:Float = 0)
-	{
+	public function new(?x:Float = 0, ?y:Float = 0) {
 		super(x, y);
 		loadGraphic(Paths.image('ui/bar'));
 		updateHitbox();
@@ -27,8 +25,7 @@ class HealthBar extends FlxSprite
 		setColors(0xff0000, 0x66ff33);
 	}
 
-	override public function draw()
-	{
+	override public function draw() {
 		//             ...                      ..        .
 		//
 		//
@@ -72,16 +69,14 @@ class HealthBar extends FlxSprite
 		super.draw();
 	}
 
-	private function set_percent(f:Float):Float
-	{
+	private function set_percent(f:Float):Float {
 		f = FlxMath.bound(f, 0, 1);
 		percent = f;
 		return f;
 	}
 
 	// useless
-	public function setColors(?_empty:FlxColor = 0xff0000, ?_fill:FlxColor = 0x66ff33)
-	{
+	public function setColors(?_empty:FlxColor = 0xff0000, ?_fill:FlxColor = 0x66ff33) {
 		empty = _empty;
 		fill = _fill;
 	}

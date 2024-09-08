@@ -6,8 +6,7 @@ import objects.Note;
 import objects.ui.*;
 import util.*;
 
-class ChartingState extends FlxState
-{
+class ChartingState extends FlxState {
 	var GRID_SIZE:Float = 100;
 
 	var chart = null;
@@ -22,24 +21,21 @@ class ChartingState extends FlxState
 	var gridShader:RGBPalette;
 	var previewNote:Note;
 
-	function set_layer(v:Int):Int
-	{
+	function set_layer(v:Int):Int {
 		layer = v;
 		if (note != null)
 			note.layer = layer;
 		return layer;
 	}
 
-	public function new(chart:Chart)
-	{
+	public function new(chart:Chart) {
 		super();
 		this.chart = chart;
 	}
 
 	var camHUD:FlxCamera;
 
-	override public function create()
-	{
+	override public function create() {
 		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.3);
 		camHUD = new FlxCamera();
 		camHUD.bgColor = 0x00000000;
@@ -47,8 +43,7 @@ class ChartingState extends FlxState
 
 		strumLine = new StrumLine(4);
 		strumLine.spacing = GRID_SIZE;
-		strumLine.forEach((n) ->
-		{
+		strumLine.forEach((n) -> {
 			n.setGraphicSize(GRID_SIZE);
 			n.updateHitbox();
 		});
@@ -118,8 +113,7 @@ class ChartingState extends FlxState
 		changeLayer(0);
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 
 		if (Conductor.paused)
@@ -152,36 +146,28 @@ class ChartingState extends FlxState
 		if (infoText.text != intendedText)
 			infoText.text = intendedText;
 
-		if (FlxG.mouse.justPressed)
-		{
+		if (FlxG.mouse.justPressed) {
 			FlxG.sound.play(Paths.sound('charter/ClickDown'));
-		}
-		else if (FlxG.mouse.justReleased)
-		{
+		} else if (FlxG.mouse.justReleased) {
 			FlxG.sound.play(Paths.sound('charter/ClickUp'));
 		}
 
 		updatePreviewNote(elapsed);
 
-		if (FlxG.keys.justPressed.SPACE)
-		{
+		if (FlxG.keys.justPressed.SPACE) {
 			Conductor.paused = !Conductor.paused;
 			inst.time = Conductor.time;
-			if (Conductor.paused)
-			{
+			if (Conductor.paused) {
 				inst.pause();
 				FlxG.sound.music.play();
-			}
-			else
-			{
+			} else {
 				inst.play(false, Conductor.time);
 				FlxG.sound.music.pause();
 				FlxG.sound.music.volume = -1;
 			}
 		}
 
-		if (FlxG.keys.justPressed.ENTER)
-		{
+		if (FlxG.keys.justPressed.ENTER) {
 			PlayState.chart = chart;
 			inst.stop();
 			FlxG.sound.music.stop();
@@ -196,8 +182,7 @@ class ChartingState extends FlxState
 
 	var ogColors = [];
 
-	function updatePreviewNote(elapsed:Float)
-	{
+	function updatePreviewNote(elapsed:Float) {
 		releaseTime += elapsed;
 
 		if (ogColors.length < 1 && previewNote != null)
@@ -210,8 +195,7 @@ class ChartingState extends FlxState
 
 		shittyLength = Math.max(0, shittyLength);
 
-		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + (GRID_SIZE * grid.columns)))
-		{
+		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + (GRID_SIZE * grid.columns))) {
 			var valueX = Math.floor((FlxG.mouse.x - grid.x) / GRID_SIZE);
 			var valueY = Math.floor((FlxG.mouse.y - grid.y) / GRID_SIZE);
 			var unsnapped = false;
@@ -220,30 +204,24 @@ class ChartingState extends FlxState
 			previewNote.x = valueX * GRID_SIZE;
 			previewNote.x += grid.x;
 			previewNote.strumIndex = valueX;
-			if (FlxG.keys.pressed.SHIFT)
-			{
+			if (FlxG.keys.pressed.SHIFT) {
 				previewNote.y = FlxG.mouse.y - GRID_SIZE * 0.5;
 				unsnapped = true;
-			}
-			else
-			{
+			} else {
 				previewNote.y = valueY * GRID_SIZE;
 				previewNote.y += grid.y;
 			}
 			previewNote.sustain.blend = previewNote.blend;
 
-			if (previewNote.visible)
-			{
+			if (previewNote.visible) {
 				previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
 			}
 
-			if (FlxG.mouse.justPressed)
-			{
+			if (FlxG.mouse.justPressed) {
 				holdingTime = 0;
 			}
 
-			if (FlxG.mouse.pressed)
-			{
+			if (FlxG.mouse.pressed) {
 				holdingTime += elapsed;
 				previewNote.shader = gridShader.shader;
 				var tick:Int = Math.floor(holdingTime / 0.1);
@@ -251,16 +229,13 @@ class ChartingState extends FlxState
 				previewNote.angle = FlxMath.fastSin(holdingTime * 15) * 5;
 			}
 
-			if (FlxG.mouse.justReleased)
-			{
+			if (FlxG.mouse.justReleased) {
 				previewNote.color = previewNote.sustain.color = -1;
 				previewNote.shader = previewNote.rgb.shader;
 				previewNote.angle = 0;
 				// trace('place note');
-				if (layer != -1)
-				{
-					if (!note.selecting)
-					{
+				if (layer != -1) {
+					if (!note.selecting) {
 						FlxG.sound.play(Paths.sound('charter/noteLay'));
 						var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - GRID_SIZE * 0.5) / GRID_SIZE : valueY) * Conductor.stepCrochet;
 						// trace('note is at $daTime');
@@ -272,12 +247,9 @@ class ChartingState extends FlxState
 						});
 						note.chart = chart; // lame
 						releaseTime = 0;
-					}
-					else
-					{
+					} else {
 						FlxG.sound.play(Paths.sound('charter/noteErase'));
-						chart.notes.sort((a, b) ->
-						{
+						chart.notes.sort((a, b) -> {
 							if (a.time < b.time)
 								return -1;
 							if (a.time > b.time)
@@ -286,49 +258,39 @@ class ChartingState extends FlxState
 						});
 						chart = note.chart; // lame
 					}
-					chart.notes.sort((a, b) ->
-					{
+					chart.notes.sort((a, b) -> {
 						if (a.time < b.time)
 							return -1;
 						if (a.time > b.time)
 							return 1;
 						return 0;
 					});
-				}
-				else
-				{
+				} else {
 					var shakeTime = 0.0;
 					FlxG.sound.play(Paths.sound('ui/cancel')).pitch = FlxG.random.float(0.95, 1.05);
 					FlxTween.cancelTweensOf(previewNote);
 					FlxG.camera.shake(2 / FlxG.camera.width, 0.1);
 					FlxTween.shake(previewNote, 0.05, 0.25, FlxAxes.XY, {
 						ease: FlxEase.expoOut,
-						onUpdate: (_) ->
-						{
+						onUpdate: (_) -> {
 							shakeTime += FlxG.elapsed;
 							var tick:Int = Math.floor(shakeTime / 0.05);
-							if (tick % 2 == 0)
-							{
+							if (tick % 2 == 0) {
 								infoText.color = 0xff0000;
 								previewNote.rgb.set(0xff0000, 0, 0x800000);
-							}
-							else
-							{
+							} else {
 								infoText.color = -1;
 								previewNote.rgb.set(ogColors[0], ogColors[1], ogColors[2]);
 							}
 						},
-						onComplete: (_) ->
-						{
+						onComplete: (_) -> {
 							infoText.color = -1;
 							previewNote.rgb.set(ogColors[0], ogColors[1], ogColors[2]);
 						}
 					});
 				}
 			}
-		}
-		else
-		{
+		} else {
 			previewNote.visible = false;
 			previewNote.color = previewNote.sustain.color = -1;
 			previewNote.shader = previewNote.rgb.shader;
@@ -336,33 +298,26 @@ class ChartingState extends FlxState
 		}
 	}
 
-	function changeLayer(ch:Int = 0)
-	{
-		if (ch != 0)
-		{
+	function changeLayer(ch:Int = 0) {
+		if (ch != 0) {
 			layer += ch;
 			layer = FlxMath.wrap(layer, -1, maxLayers - 1);
 			FlxG.sound.play(Paths.sound('ui/scroll'));
 		}
-		if (layer != -1)
-		{
+		if (layer != -1) {
 			var target:RGBPalette = note.rgbs[layer];
 			gridShader.copy(target);
-		}
-		else
-		{
+		} else {
 			gridShader.set(0xeeeeff, -1, 0x808099);
 		}
 	}
 
-	public static function stepFromMS(ms:Float):Float
-	{
+	public static function stepFromMS(ms:Float):Float {
 		return ms / Conductor.stepCrochet;
 	}
 }
 
-class ChartingNoteGroup extends Note
-{
+class ChartingNoteGroup extends Note {
 	public var strumLine:StrumLine;
 	public var chart:Chart;
 	public var layer:Int = -1;
@@ -372,8 +327,7 @@ class ChartingNoteGroup extends Note
 
 	// public var selected:Array<Int> = [];
 
-	public function set_gridSize(v:Float):Float
-	{
+	public function set_gridSize(v:Float):Float {
 		setGraphicSize(v);
 		updateHitbox();
 		sustain.scale.x = (v / sustain.frameWidth) * sustain.scale.x;
@@ -383,13 +337,11 @@ class ChartingNoteGroup extends Note
 
 	public var rgbs = [];
 
-	public function new(chart, strumLine, laneColors:Array<{base:Int, outline:Int}>)
-	{
+	public function new(chart, strumLine, laneColors:Array<{base:Int, outline:Int}>) {
 		super();
 		this.chart = chart;
 		this.strumLine = strumLine;
-		for (idx => i in laneColors)
-		{
+		for (idx => i in laneColors) {
 			var colr = new RGBPalette();
 			colr.set(i.base, -1, i.outline);
 			rgbs[idx] = colr;
@@ -399,23 +351,19 @@ class ChartingNoteGroup extends Note
 	var ogx:Float = 0;
 	var ogy:Float = 0;
 
-	override public function draw()
-	{
+	override public function draw() {
 		ogx = x;
 		ogy = y;
 		selecting = false;
-		if (strumLine != null && chart != null)
-		{
-			for (idx => bruh in chart.notes)
-			{
+		if (strumLine != null && chart != null) {
+			for (idx => bruh in chart.notes) {
 				var shouldDraw = (bruh.time + bruh.length) >= (Conductor.time - Conductor.crochet * 2)
 					&& bruh.time <= (Conductor.time + (Conductor.crochet * 3));
 				var gwa = rgbs[bruh.lane] ?? rgbs[0];
 				shader = gwa.shader;
 				alpha = 1;
 				y += ChartingState.stepFromMS(bruh.time) * gridSize;
-				if (!Conductor.paused && ((Conductor.time >= bruh.time)) || (layer != -1 && bruh.lane != layer))
-				{
+				if (!Conductor.paused && ((Conductor.time >= bruh.time)) || (layer != -1 && bruh.lane != layer)) {
 					alpha = 0.3;
 				}
 				x += (bruh.index * gridSize);
@@ -424,8 +372,7 @@ class ChartingNoteGroup extends Note
 
 				colorTransform.greenOffset = 0;
 
-				if (FlxG.mouse.overlaps(this) && (bruh.lane == layer || layer == -1))
-				{
+				if (FlxG.mouse.overlaps(this) && (bruh.lane == layer || layer == -1)) {
 					colorTransform.greenOffset = 128;
 					selecting = true;
 					handleSelection(idx);
@@ -440,8 +387,7 @@ class ChartingNoteGroup extends Note
 		}
 	}
 
-	function handleSelection(idx:Int = 0)
-	{
+	function handleSelection(idx:Int = 0) {
 		/*
 			// ill figure out moving notes later
 			if (FlxG.mouse.pressed)
@@ -459,13 +405,11 @@ class ChartingNoteGroup extends Note
 				chart.notes[idx].time = daTime;
 		}*/
 
-		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart.notes[idx].lane)
-		{
+		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart.notes[idx].lane) {
 			chart.notes.splice(idx, 1);
 		}
 
-		if (FlxG.keys.anyJustPressed([Q, E]))
-		{
+		if (FlxG.keys.anyJustPressed([Q, E])) {
 			FlxG.sound.play(Paths.sound('charter/stretch${FlxG.random.int(1, 2)}_UI'));
 			chart.notes[idx].length += Conductor.stepCrochet * (FlxG.keys.justPressed.Q ? -1 : 1);
 		}
@@ -474,22 +418,18 @@ class ChartingNoteGroup extends Note
 
 // useless, but just to make multikey grid easier
 
-class ChartingGrid extends FlxBackdrop
-{
+class ChartingGrid extends FlxBackdrop {
 	public var columns:Int = 4;
 
-	public function new(image, repeat)
-	{
+	public function new(image, repeat) {
 		super(image, repeat, 0, 0);
 	}
 
-	override public function draw()
-	{
+	override public function draw() {
 		var ogx = x;
 		var ogfy = flipY;
 
-		for (idx in 0...columns)
-		{
+		for (idx in 0...columns) {
 			x = ogx + (scale.x * idx);
 			flipY = idx % 2 == 1;
 			super.draw();

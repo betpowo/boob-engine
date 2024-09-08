@@ -2,20 +2,19 @@
 package util;
 
 import flash.media.Sound;
+import haxe.PosInfos;
+import sys.FileSystem;
+import sys.io.File;
 import flixel.graphics.FlxGraphic;
 import flixel.util.typeLimit.OneOfTwo;
-import haxe.PosInfos;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.system.System;
-import sys.FileSystem;
-import sys.io.File;
 
 using StringTools;
 
-typedef Mod =
-{
+typedef Mod = {
 	name:String,
 	enabled:Bool,
 	global:Bool
@@ -23,34 +22,27 @@ typedef Mod =
 
 typedef FunkinAsset = OneOfTwo<FlxGraphic, Sound>;
 
-class Paths
-{
+class Paths {
 	private static var assetsLoaded:Map<String, FunkinAsset> = [];
 	private static var skipExclude:Array<String> = [];
 
 	public static var modList:Array<Mod> = [];
 	public static var mod:String;
 
-	public static inline function initMods()
-	{
+	public static inline function initMods() {
 		var dirList:Array<String> = FileSystem.readDirectory('mods/');
-		if (dirList != null)
-		{
-			for (m in dirList)
-			{
+		if (dirList != null) {
+			for (m in dirList) {
 				if (FileSystem.isDirectory('mods/$m'))
 					modList.push({name: m.toLowerCase(), enabled: true, global: false});
 			}
 		}
 	}
 
-	public static inline function getFirstMod():String
-	{
+	public static inline function getFirstMod():String {
 		var m:String = '';
-		for (i in modList)
-		{
-			if (i.enabled)
-			{
+		for (i in modList) {
+			if (i.enabled) {
 				m = i.name;
 				break;
 			}
@@ -58,8 +50,7 @@ class Paths
 		return m;
 	}
 
-	public static function file(f:String, ?pos:PosInfos):String
-	{
+	public static function file(f:String, ?pos:PosInfos):String {
 		if (f.startsWith('/')) // blank root
 			f = f.substring(1);
 
@@ -77,27 +68,23 @@ class Paths
 		return result;
 	}
 
-	public static function exists(f:String):Bool
-	{
+	public static function exists(f:String):Bool {
 		return FileSystem.exists(file(f));
 	}
 
 	public static var useGPU:Bool = true;
 
-	public static function image(f:String, ?root:String = 'images'):FlxGraphic
-	{
+	public static function image(f:String, ?root:String = 'images'):FlxGraphic {
 		var key:String = file('$root/$f.png');
 		var mapKey:String = key;
 		/*if (useGPU)
 			mapKey += ':gpu'; */
 
 		var g:FlxGraphic;
-		if (FileSystem.exists(key) && !assetsLoaded.exists(mapKey))
-		{
+		if (FileSystem.exists(key) && !assetsLoaded.exists(mapKey)) {
 			var b:BitmapData = BitmapData.fromFile(key);
 			#if !hl
-			if (useGPU)
-			{
+			if (useGPU) {
 				// from da psych engine cus im lazy
 				var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(b.width, b.height, BGRA, true);
 				texture.uploadFromBitmapData(b);
@@ -119,8 +106,7 @@ class Paths
 		return null;
 	}
 
-	public static function sparrow(f:String, ?root:String = 'images'):FlxAtlasFrames
-	{
+	public static function sparrow(f:String, ?root:String = 'images'):FlxAtlasFrames {
 		var daXML = xml(f, root);
 
 		if (exists(daXML))
@@ -138,16 +124,14 @@ class Paths
 	public static function xml(f:String, ?root:String = 'images'):String
 		return file('$root/$f.xml');
 
-	public static function sound(f:String, ?root:String = 'sounds'):Sound
-	{
+	public static function sound(f:String, ?root:String = 'sounds'):Sound {
 		var br:String = file('$root/$f.ogg');
 		if (!assetsLoaded.exists(br))
 			assetsLoaded.set(br, Sound.fromFile(br));
 		return assetsLoaded.get(br);
 	}
 
-	public static function song(sg:String, f:String = 'Inst', ?sub:String = ''):Sound
-	{
+	public static function song(sg:String, f:String = 'Inst', ?sub:String = ''):Sound {
 		if (!sub.endsWith('/'))
 			sub += '/';
 		if (exists(file('songs/$sg/$sub/$f.ogg')))
@@ -155,22 +139,17 @@ class Paths
 		return sound(f, 'songs/$sg');
 	}
 
-	public static function exclude(s:String)
-	{
+	public static function exclude(s:String) {
 		var fil = Paths.file(s);
 		if (skipExclude.indexOf(fil) == -1)
 			skipExclude.push(fil);
 	}
 
 	@:privateAccess
-	public static function clear():Bool
-	{
-		for (key => val in assetsLoaded)
-		{
-			if (val != null && skipExclude.indexOf(key) != -1)
-			{
-				if (val is FlxGraphic)
-				{
+	public static function clear():Bool {
+		for (key => val in assetsLoaded) {
+			if (val != null && skipExclude.indexOf(key) != -1) {
+				if (val is FlxGraphic) {
 					@:privateAccess FlxG.bitmap._cache.remove(key);
 					openfl.Assets.cache.removeBitmapData(key);
 
@@ -178,9 +157,7 @@ class Paths
 					grah.persist = false;
 					grah.destroyOnNoUse = true;
 					grah.destroy();
-				}
-				else if (val is Sound)
-				{
+				} else if (val is Sound) {
 					Assets.cache.clear(key);
 				}
 				assetsLoaded.remove(key);

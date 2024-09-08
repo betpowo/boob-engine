@@ -12,8 +12,7 @@ import util.Options;
 
 typedef NoteGroup = FlxTypedGroup<Note>;
 
-class PlayState extends FlxState
-{
+class PlayState extends FlxState {
 	public static var chart:Chart = {
 		speed: 1,
 		notes: [{time: 0, index: 0}],
@@ -28,8 +27,7 @@ class PlayState extends FlxState
 
 	var health(default, set):Float = 0.5;
 
-	function set_health(v:Float):Float
-	{
+	function set_health(v:Float):Float {
 		health = FlxMath.bound(v, 0, 1);
 		healthBar.percent = health;
 		return health;
@@ -37,8 +35,7 @@ class PlayState extends FlxState
 
 	var score(default, set):Int = 0;
 
-	function set_score(v:Int):Int
-	{
+	function set_score(v:Int):Int {
 		var oldScore = score;
 		var diff = v - oldScore;
 
@@ -72,8 +69,7 @@ class PlayState extends FlxState
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
 
-	override public function create()
-	{
+	override public function create() {
 		super.create();
 
 		camGame = FlxG.camera;
@@ -100,30 +96,25 @@ class PlayState extends FlxState
 		add(strumGroup);
 		add(noteGroup);
 
-		for (index => keys in options.keys)
-		{
+		for (index => keys in options.keys) {
 			var strum = playerStrums.members[index];
 			strum.inputs = keys;
 		}
 
-		for (str in [opponentStrums, playerStrums])
-		{
-			for (strum in str.members)
-			{
+		for (str in [opponentStrums, playerStrums]) {
+			for (strum in str.members) {
 				var rgbs = options.noteColors;
 				var que = rgbs[strum.ID] ?? {base: 0x717171, outline: 0x333333};
 				strum.rgb.set(que.base, -1, que.outline);
 			}
 		}
-		noteGroup.memberAdded.add(function(note)
-		{
+		noteGroup.memberAdded.add(function(note) {
 			@:privateAccess {
 				note.parentGroup = noteGroup;
 			}
 		});
 
-		for (i in chart.notes)
-		{
+		for (i in chart.notes) {
 			i.spawned = false;
 		}
 		Conductor.bpm = chart.bpm;
@@ -131,10 +122,8 @@ class PlayState extends FlxState
 		Conductor.tracker = FlxG.sound.music;
 		Conductor.beatHit.add(beatHit);
 
-		for (str in strumGroup.members)
-		{
-			str.forEach((i) ->
-			{
+		for (str in strumGroup.members) {
+			str.forEach((i) -> {
 				i.noteHit.add(noteHit);
 				i.noteHeldStep.add(noteHeldStep);
 				// i.noteHeld.add(noteHeld);
@@ -189,77 +178,61 @@ class PlayState extends FlxState
 		FlxG.sound.music.volume = 1;
 	}
 
-	function beatHit()
-	{
+	function beatHit() {
 		/*strumGroup.members[0].forEach((n) ->
 			{
 				n.scrollAngle = Conductor.beat % 2 == 0 ? -15 : 15;
 		});*/
 
-		if (Conductor.beat % 4 == 0)
-		{
+		if (Conductor.beat % 4 == 0) {
 			camGame.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
 	}
 
-	function noteHit(note:Note)
-	{
+	function noteHit(note:Note) {
 		var laneID = note.strum.parentLane.ID;
 		var char:Character = player;
-		if (laneID == 1)
-		{
+		if (laneID == 1) {
 			var gwa = 0.01;
 			score += 100;
 			health += gwa;
-		}
-		else
-		{
+		} else {
 			char = opponent;
 		}
 
-		if (note.anim != null && char != null)
-		{
+		if (note.anim != null && char != null) {
 			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
 			char.playAnim(note.anim, true);
 		}
 	}
 
-	function noteHeldStep(note:Note)
-	{
+	function noteHeldStep(note:Note) {
 		var laneID = note.strum.parentLane.ID;
 
-		if (laneID == 1)
-		{
+		if (laneID == 1) {
 			health += 0.7 / 100;
 
-			if (note.anim != null)
-			{
+			if (note.anim != null) {
 				player.holdTime = Conductor.crochetSec * 2;
 				player.playAnim(note.anim, true);
 			}
-		}
-		else
-		{
+		} else {
 			opponent.holdTime = Conductor.crochetSec * 2;
 			opponent.playAnim(note.anim, true);
 		}
 	}
 
-	function noteMiss(note:Note)
-	{
+	function noteMiss(note:Note) {
 		var gwa = 0.02;
 		score -= 10;
 		health -= gwa;
 	}
 
-	override public function update(elapsed:Float)
-	{
+	override public function update(elapsed:Float) {
 		super.update(elapsed);
-		for (idx => note in chart.notes)
-		{
-			if (Conductor.time >= note.time - (3000 / chart.speed) && !note.spawned)
-			{
+		for (idx => note in chart.notes) {
+			if (Conductor.time >= note.time - (3000 / chart.speed) && !note.spawned) {
 				note.spawned = true;
 				spawnNote(note);
 			}
@@ -269,15 +242,13 @@ class PlayState extends FlxState
 
 		timeNum.number = Math.floor(Conductor.time * 0.001);
 
-		if (FlxG.keys.justPressed.SEVEN)
-		{
+		if (FlxG.keys.justPressed.SEVEN) {
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new states.ChartingState(chart));
 		}
 
-		if (FlxG.keys.justPressed.THREE)
-		{
+		if (FlxG.keys.justPressed.THREE) {
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new states.AlphabetTestState());
@@ -286,14 +257,12 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
 
-		if (FlxG.keys.justPressed.ESCAPE)
-		{
+		if (FlxG.keys.justPressed.ESCAPE) {
 			FlxG.switchState(new states.TitleState());
 		}
 	}
 
-	function spawnNote(i:ChartNote):Note
-	{
+	function spawnNote(i:ChartNote):Note {
 		var group = strumGroup.members[i.lane] ?? strumGroup.members[0];
 		var strum = group.members[i.index % group.members.length];
 
@@ -318,8 +287,7 @@ class PlayState extends FlxState
 
 		note.camera = note.sustain.camera = camHUD;
 
-		note.anim = switch (note.strumIndex)
-		{
+		note.anim = switch (note.strumIndex) {
 			case 0: 'singLEFT';
 			case 1: 'singDOWN';
 			case 2: 'singUP';
@@ -330,8 +298,7 @@ class PlayState extends FlxState
 		return note;
 	}
 
-	override function destroy()
-	{
+	override function destroy() {
 		strumGroup.destroy();
 		noteGroup.destroy();
 		super.destroy();

@@ -6,15 +6,13 @@ import flixel.system.FlxAssets;
 import lime.system.Clipboard;
 import objects.Alphabet;
 
-class AlphabetTestState extends FlxState
-{
+class AlphabetTestState extends FlxState {
 	var test:Alphabet;
 	var input:FlxInputText;
 
 	static var prevtext:String = 'Alphabet';
 
-	override public function create()
-	{
+	override public function create() {
 		super.create();
 
 		test = new Alphabet('');
@@ -25,54 +23,43 @@ class AlphabetTestState extends FlxState
 		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 512, prevtext, 16);
 		add(input);
 
-		add(new FlxUIButton(input.x + input.width + 5, input.y, '-X', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5, input.y, '-X', function() {
 			test.scaleX -= 0.1;
 		}));
 
-		add(new FlxUIButton(input.x + input.width + 5 + 70, input.y, '+X', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5 + 70, input.y, '+X', function() {
 			test.scaleX += 0.1;
 		}));
 
-		add(new FlxUIButton(input.x + input.width + 5 + 140, input.y, '-Y', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5 + 140, input.y, '-Y', function() {
 			test.scaleY -= 0.1;
 		}));
 
-		add(new FlxUIButton(input.x + input.width + 5 + 210, input.y, '+Y', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5 + 210, input.y, '+Y', function() {
 			test.scaleY += 0.1;
 		}));
 
-		add(new FlxUIButton(input.x + input.width + 5 + 280, input.y, '-angle', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5 + 280, input.y, '-angle', function() {
 			test.angle -= 15;
 		}));
 
-		add(new FlxUIButton(input.x + input.width + 5 + 350, input.y, '+angle', function()
-		{
+		add(new FlxUIButton(input.x + input.width + 5 + 350, input.y, '+angle', function() {
 			test.angle += 15;
 		}));
 
-		add(new FlxUIButton(input.x, input.y - 30, '\\n', function()
-		{
+		add(new FlxUIButton(input.x, input.y - 30, '\\n', function() {
 			input.text += '\n';
 		}));
-		add(new FlxUIButton(input.x + 70, input.y - 30, 'left', function()
-		{
+		add(new FlxUIButton(input.x + 70, input.y - 30, 'left', function() {
 			test.alignment = LEFT;
 		}));
-		add(new FlxUIButton(input.x + 140, input.y - 30, 'center', function()
-		{
+		add(new FlxUIButton(input.x + 140, input.y - 30, 'center', function() {
 			test.alignment = CENTER;
 		}));
-		add(new FlxUIButton(input.x + 210, input.y - 30, 'right', function()
-		{
+		add(new FlxUIButton(input.x + 210, input.y - 30, 'right', function() {
 			test.alignment = RIGHT;
 		}));
-		add(new FlxUIButton(input.x + 280, input.y - 30, 'toggle offsetPos', function()
-		{
+		add(new FlxUIButton(input.x + 280, input.y - 30, 'toggle offsetPos', function() {
 			test.offsetPos = !test.offsetPos;
 			test.alignment = test.alignment;
 		}));
@@ -81,14 +68,12 @@ class AlphabetTestState extends FlxState
 			FlxG.sound.playMusic('assets/songs/bopeebo/Inst.ogg', 0.6);
 	}
 
-	override public function update(elapsed:Float)
-	{
+	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
 		test.text = input.text;
 
-		if (FlxG.keys.justPressed.F5)
-		{
+		if (FlxG.keys.justPressed.F5) {
 			AlphaCharacter.ini = null;
 			AlphaCharacter.sheets = null;
 			prevtext = input.text;
@@ -96,8 +81,7 @@ class AlphabetTestState extends FlxState
 			FlxG.sound.play(FlxAssets.getSound('flixel/sounds/flixel')).persist = true;
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE)
-		{
+		if (FlxG.keys.justPressed.ESCAPE) {
 			FlxG.sound.music.stop();
 			FlxG.switchState(new states.PlayState());
 		}
