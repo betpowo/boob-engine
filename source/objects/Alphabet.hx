@@ -300,12 +300,18 @@ class AlphaCharacter extends FlxSpriteExt {
 					}
 				}
 			}
+			updateHitbox();
 		} catch (e) {
 			Log.print('alpabet fail : $e', 0xff3366);
 
-			animation.addByPrefix('idle', '-question mark-', 24, true);
+			animation.addByPrefix('idle', '?', 24, true);
 			animation.play('idle', true);
 			updateHitbox();
 		}
+	}
+
+	override public function updateHitbox() {
+		super.updateHitbox();
+		origin.set(offset.x * scale.x * -1, offset.y * scale.y * -1);
 	}
 }

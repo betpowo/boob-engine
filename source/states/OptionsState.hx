@@ -30,6 +30,11 @@ class OptionsState extends FlxState {
 			if (menu.followFunction != null)
 				menu.followFunction(alp, 0.1);
 		});
+		menu.press = function(a) {
+			menu.members[a].angle = 0;
+			FlxTween.cancelTweensOf(menu.members[a]);
+			FlxTween.tween(menu.members[a], {angle: 360}, 1);
+		}
 
 		var button:ImageButton = new ImageButton(Paths.image('ui/editor/plus'));
 		add(button);

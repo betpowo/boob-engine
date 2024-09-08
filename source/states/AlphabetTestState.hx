@@ -2,13 +2,14 @@ package states;
 
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIButton;
+import flixel.addons.ui.FlxUIInputText;
 import flixel.system.FlxAssets;
 import lime.system.Clipboard;
 import objects.Alphabet;
 
 class AlphabetTestState extends FlxState {
 	var test:Alphabet;
-	var input:FlxInputText;
+	var input:FlxUIInputText;
 
 	static var prevtext:String = 'Alphabet';
 
@@ -20,7 +21,7 @@ class AlphabetTestState extends FlxState {
 		test.x = test.y = 50;
 		add(test);
 
-		input = new FlxInputText(50, FlxG.height - 16 - 50, FlxG.width - 512, prevtext, 16);
+		input = new FlxUIInputText(50, FlxG.height - 16 - 50, FlxG.width - 512, prevtext, 16);
 		add(input);
 
 		add(new FlxUIButton(input.x + input.width + 5, input.y, '-X', function() {

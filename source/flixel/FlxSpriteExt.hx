@@ -17,6 +17,7 @@ class FlxSpriteExt extends FlxSprite {
 	public var scaleMult:FlxPoint = new FlxPoint(1, 1);
 	public var alphaMult:Float = 1.0;
 	public var scaleOffset:Bool = false;
+	public var scaleOffsetDivide:Bool = false;
 	public var rotateOffset:Bool = false;
 
 	override function drawComplex(camera:FlxCamera):Void {
@@ -52,8 +53,13 @@ class FlxSpriteExt extends FlxSprite {
 		var ogoffx = offset.x;
 		var ogoffy = offset.y;
 		if (scaleOffset) {
-			offset.x = ogoffx * scale.x * scaleMult.x;
-			offset.y = ogoffy * scale.y * scaleMult.y;
+			if (scaleOffsetDivide) {
+				offset.x = ogoffx / scale.x / scaleMult.x;
+				offset.y = ogoffy / scale.y / scaleMult.y;
+			} else {
+				offset.x = ogoffx * scale.x * scaleMult.x;
+				offset.y = ogoffy * scale.y * scaleMult.y;
+			}
 		}
 		if (rotateOffset)
 			offset.degrees -= angle + angleOffset;
