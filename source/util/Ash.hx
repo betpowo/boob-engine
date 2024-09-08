@@ -8,7 +8,7 @@ import flixel.FlxBasic;
  * Attached Sprite Handler
  */
 class Ash extends FlxBasic {
-	var trackers:Array<AshTracker> = [];
+	public static var trackers:Array<AshTracker> = [];
 
 	public static function attach(parent:FlxSprite, child:FlxSprite, ?offX:Float = 0, ?offY:Float = 0) {
 		trackers.push({
