@@ -12,8 +12,10 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 	public var text(default, set):String = '';
 	public var alignment(default, set):FlxTextAlign = LEFT;
 
+	// do Not change this
+	public var maxWidth:Float = 0;
+
 	private var _lastLength:Int = 0;
-	private var maxWidth:Float = 0;
 
 	public function set_text(t:String) {
 		if (text != t) {
@@ -85,8 +87,8 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 							if (flip.y)
 								b.flipY = true;
 
-							b.spawn.set(b.x, b.y);
 							b.updateHitbox();
+							b.spawn.set(b.x, b.y);
 							add(b);
 
 							b.ID = a.ID;
@@ -146,7 +148,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 		scale.y = value;
 		updateHitbox();
 		for (letter in members) {
-			letter.y = y + ((letter.letterOffset[1] + letter.spawn.y) * value);
+			letter.y = y + (letter.spawn.y * value);
 			letter.scale.y = value;
 			letter.updateHitbox();
 		}
@@ -239,6 +241,7 @@ class AlphaCharacter extends FlxSpriteExt {
 		moves = false;
 		additiveOffset = true;
 		rotateOffset = true;
+		scaleOffsetY = true;
 		// change(char);
 	}
 
@@ -313,6 +316,8 @@ class AlphaCharacter extends FlxSpriteExt {
 
 	override public function updateHitbox() {
 		super.updateHitbox();
+		// offset.y doesnt work properly ???
+		// y += letterOffset[1];
 		offset.set(letterOffset[0], letterOffset[1]);
 		origin.set(0, 0);
 	}

@@ -13,6 +13,8 @@ import util.Options;
 typedef NoteGroup = FlxTypedGroup<Note>;
 
 class PlayState extends FlxState {
+	public static var instance:PlayState;
+
 	public static var chart:Chart = {
 		speed: 1,
 		notes: [{time: 0, index: 0}],
@@ -21,7 +23,7 @@ class PlayState extends FlxState {
 
 	var strumGroup = new FlxTypedGroup<StrumLine>();
 	var noteGroup:NoteGroup = new NoteGroup();
-	var vocals:FlxSound;
+	var vocals:Array<FlxSound> = [];
 
 	var options:Options;
 
@@ -68,15 +70,26 @@ class PlayState extends FlxState {
 
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
+	var camOverlay:FlxCamera;
+
+	public function new() {
+		super();
+		instance = this;
+	}
 
 	override public function create() {
 		super.create();
 
 		camGame = FlxG.camera;
 		camGame.bgColor = FlxColor.fromHSB(0, 0, 0.4);
+
 		camHUD = new FlxCamera();
 		camHUD.bgColor = 0x00000000;
 		FlxG.cameras.add(camHUD, false);
+
+		camOverlay = new FlxCamera();
+		camOverlay.bgColor = 0x00000000;
+		FlxG.cameras.add(camOverlay, false);
 
 		var options = Options.data;
 
@@ -166,16 +179,28 @@ class PlayState extends FlxState {
 		// player.scale.x *= -1;
 
 		FlxG.sound.playMusic(Paths.song('darnell'), 0);
-		vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Play'));
-		FlxG.sound.list.add(vocals);
-		vocals.play();
+
+		var _vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Play'));
+		FlxG.sound.list.add(_vocals);
+		_vocals.play();
+		vocals.push(_vocals);
 
 		var _vocals = new FlxSound().loadEmbedded(Paths.song('darnell', 'Voices-Opp'));
 		FlxG.sound.list.add(_vocals);
 		_vocals.play();
+		vocals.push(_vocals);
 
-		FlxG.sound.music.time = vocals.time = _vocals.time = 0;
+		FlxG.sound.music.time = Conductor.time = 0;
+		resyncVox();
 		FlxG.sound.music.volume = 1;
+	}
+
+	static function resyncVox() {
+		for (v in instance.vocals) {
+			if (v != null) {
+				v.time = Conductor.time;
+			}
+		}
 	}
 
 	function beatHit() {
@@ -244,21 +269,19 @@ class PlayState extends FlxState {
 
 		if (FlxG.keys.justPressed.SEVEN) {
 			FlxG.sound.music.stop();
-			vocals.stop();
 			FlxG.switchState(new states.ChartingState(chart));
 		}
 
 		if (FlxG.keys.justPressed.THREE) {
 			FlxG.sound.music.stop();
-			vocals.stop();
 			FlxG.switchState(new states.AlphabetTestState());
 		}
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
 
-		if (FlxG.keys.justPressed.ESCAPE) {
-			FlxG.switchState(new states.TitleState());
+		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER) {
+			openSubState(new substates.PauseSubstate());
 		}
 	}
 
@@ -296,6 +319,31 @@ class PlayState extends FlxState {
 		}
 
 		return note;
+	}
+
+	public static function pause(p:Bool = true):Bool {
+		Conductor.paused = p;
+		FlxG.sound.list.forEach(snd -> {
+			if (!p)
+				snd.resume();
+			else
+				snd.pause();
+		});
+
+		if (!p)
+			FlxG.sound.music.resume();
+		else
+			FlxG.sound.music.pause();
+
+		FlxG.sound.music.time = Conductor.time;
+		resyncVox();
+
+		return Conductor.paused;
+	}
+
+	override public function openSubState(SubState:FlxSubState) {
+		SubState.camera = camOverlay;
+		super.openSubState(SubState);
 	}
 
 	override function destroy() {

@@ -12,7 +12,7 @@ class Character extends FlxSpriteExt {
 
 	public function new(char:String = 'bf') {
 		super();
-		scaleOffset = true;
+		scaleOffsetX = scaleOffsetY = true;
 		build(char);
 
 		Conductor.beatHit.add(beatHit);

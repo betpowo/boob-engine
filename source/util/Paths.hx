@@ -98,6 +98,7 @@ class Paths {
 			g = FlxGraphic.fromBitmapData(b, false, key);
 			g.persist = true;
 			g.destroyOnNoUse = false;
+			Assets.cache.setBitmapData(mapKey, b);
 			assetsLoaded.set(mapKey, g);
 		}
 		if (assetsLoaded.get(mapKey) != null)
@@ -126,8 +127,11 @@ class Paths {
 
 	public static function sound(f:String, ?root:String = 'sounds'):Sound {
 		var br:String = file('$root/$f.ogg');
-		if (!assetsLoaded.exists(br))
-			assetsLoaded.set(br, Sound.fromFile(br));
+		if (!assetsLoaded.exists(br)) {
+			var snd:Sound = Sound.fromFile(br);
+			assetsLoaded.set(br, snd);
+			Assets.cache.setSound(br, snd);
+		}
 		return assetsLoaded.get(br);
 	}
 
@@ -157,9 +161,8 @@ class Paths {
 					grah.persist = false;
 					grah.destroyOnNoUse = true;
 					grah.destroy();
-				} else if (val is Sound) {
-					Assets.cache.clear(key);
 				}
+				Assets.cache.clear(key);
 				assetsLoaded.remove(key);
 			}
 		}

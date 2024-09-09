@@ -17,8 +17,11 @@ class FlxSpriteExt extends FlxSprite {
 	public var angleOffset:Float = 0.0;
 	public var scaleMult:FlxPoint = new FlxPoint(1, 1);
 	public var alphaMult:Float = 1.0;
-	public var scaleOffset:Bool = false;
-	public var scaleOffsetDivide:Bool = false;
+
+	// i cant use flxaxes???
+	public var scaleOffsetX:Bool = false;
+	public var scaleOffsetY:Bool = false;
+
 	public var rotateOffset:Bool = false;
 
 	/**
@@ -58,15 +61,10 @@ class FlxSpriteExt extends FlxSprite {
 
 		var ogoffx = offset.x;
 		var ogoffy = offset.y;
-		if (scaleOffset) {
-			if (scaleOffsetDivide) {
-				offset.x = ogoffx / scale.x / scaleMult.x;
-				offset.y = ogoffy / scale.y / scaleMult.y;
-			} else {
-				offset.x = ogoffx * scale.x * scaleMult.x;
-				offset.y = ogoffy * scale.y * scaleMult.y;
-			}
-		}
+		if (scaleOffsetX)
+			offset.x = ogoffx * scale.x * scaleMult.x;
+		if (scaleOffsetY)
+			offset.y = ogoffy * scale.y * scaleMult.y;
 		if (rotateOffset)
 			offset.degrees += angle + angleOffset;
 
