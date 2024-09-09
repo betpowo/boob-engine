@@ -36,6 +36,36 @@ class TitleState extends FlxState {
 		add(new FlxUIButton(butt.x, butt.y + 40, 'option', function() {
 			FlxG.switchState(new OptionsState());
 		}));
+
+		var test = new FlxSprite().makeGraphic(50, 50, -1);
+		test.angularVelocity = 10;
+		test.screenCenter();
+		add(test);
+
+		var test = new FlxSprite().makeGraphic(50, 50, -1);
+		test.color = 0xff0000;
+		test.updateHitbox();
+		test.offset.x += 30;
+		test.angularVelocity = 10;
+		test.screenCenter();
+		add(test);
+
+		var test = new FlxSprite().makeGraphic(50, 50, -1);
+		test.color = 0xff00ff;
+		test.updateHitbox();
+		test.origin.x = 0;
+		test.angularVelocity = 10;
+		test.screenCenter();
+		add(test);
+
+		var test = new FlxSprite().makeGraphic(50, 50, -1);
+		test.color = 0x0000ff;
+		test.updateHitbox();
+		test.origin.x = 0;
+		test.offset.x += 30;
+		test.angularVelocity = 10;
+		test.screenCenter();
+		add(test);
 	}
 
 	function fuck(_y:Float = 50, text:String = 'boob engine!', col:FlxColor = -1, outli:FlxColor = 0) {

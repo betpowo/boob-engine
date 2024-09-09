@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.util.FlxDestroyUtil;
 
 /**
@@ -19,6 +20,11 @@ class FlxSpriteExt extends FlxSprite {
 	public var scaleOffset:Bool = false;
 	public var scaleOffsetDivide:Bool = false;
 	public var rotateOffset:Bool = false;
+
+	/**
+		WHY IS IT NOT ADDITIVE IN THE FIRST PLACE
+	**/
+	public var additiveOffset:Bool = false;
 
 	override function drawComplex(camera:FlxCamera):Void {
 		/*
@@ -62,9 +68,12 @@ class FlxSpriteExt extends FlxSprite {
 			}
 		}
 		if (rotateOffset)
-			offset.degrees -= angle + angleOffset;
+			offset.degrees += angle + angleOffset;
 
-		getScreenPosition(_point, camera).subtractPoint(offset);
+		if (additiveOffset)
+			getScreenPosition(_point, camera).addPoint(offset);
+		else
+			getScreenPosition(_point, camera).subtractPoint(offset);
 		_point.addPoint(origin);
 		if (isPixelPerfectRender(camera))
 			_point.floor();
@@ -78,5 +87,40 @@ class FlxSpriteExt extends FlxSprite {
 		colorTransform.alphaMultiplier = ogAlpha * alphaMult;
 		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
 		colorTransform.alphaMultiplier = ogAlpha;
+	}
+
+	override function isOnScreen(?camera:FlxCamera):Bool {
+		return super.isOnScreen(camera);
+	}
+
+	/**
+	 * Calculates the smallest globally aligned bounding box that encompasses this sprite's graphic as it
+	 * would be displayed. Honors scrollFactor, rotation, scale, offset and origin.
+	 * @param newRect Optional output `FlxRect`, if `null`, a new one is created.
+	 * @param camera  Optional camera used for scrollFactor, if null `FlxG.camera` is used.
+	 * @return A globally aligned `FlxRect` that fully contains the input sprite.
+	 * @since 4.11.0
+	 */
+	override public function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect {
+		// lmfao
+		if (additiveOffset) {
+			if (newRect == null)
+				newRect = FlxRect.get();
+
+			if (camera == null)
+				camera = FlxG.camera;
+
+			newRect.setPosition(x, y);
+			if (pixelPerfectPosition)
+				newRect.floor();
+			_scaledOrigin.set(origin.x * scale.x, origin.y * scale.y);
+			newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) + offset.x + origin.x - _scaledOrigin.x;
+			newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) + offset.y + origin.y - _scaledOrigin.y;
+			if (isPixelPerfectRender(camera))
+				newRect.floor();
+			newRect.setSize(frameWidth * Math.abs(scale.x), frameHeight * Math.abs(scale.y));
+			return newRect.getRotatedBounds(angle, _scaledOrigin, newRect);
+		}
+		return super.getScreenBounds(newRect, camera);
 	}
 }

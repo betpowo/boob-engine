@@ -75,10 +75,9 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 							b.animation.remove('idle');
 							b.animation.addByPrefix('idle', a.extraData.anim, 24, true);
 							b.animation.play('idle', true);
-							b.updateHitbox();
-							b.setPosition(a.spawn.x + ((a.frameWidth - b.frameWidth) * 0.5), a.spawn.y);
-							b.x += a.extraData.x;
-							b.y += a.extraData.y;
+							b.setPosition((a.spawn.x + a.offset.x) + ((a.frameWidth - b.frameWidth) * 0.5), a.spawn.y + a.offset.y);
+							b.letterOffset[0] = a.extraData.x;
+							b.letterOffset[1] = a.extraData.y;
 
 							var flip:FlxAxes = a.extraData.flip;
 							if (flip.x)
@@ -87,6 +86,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 								b.flipY = true;
 
 							b.spawn.set(b.x, b.y);
+							b.updateHitbox();
 							add(b);
 
 							b.ID = a.ID;
@@ -146,7 +146,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 		scale.y = value;
 		updateHitbox();
 		for (letter in members) {
-			letter.y = y + (letter.spawn.y * value);
+			letter.y = y + ((letter.letterOffset[1] + letter.spawn.y) * value);
 			letter.scale.y = value;
 			letter.updateHitbox();
 		}
@@ -165,7 +165,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 
 			switch (alignment) {
 				case CENTER:
-					newOffset = letter.rowWidth / 2;
+					newOffset = letter.rowWidth * .5;
 					if (!offsetPos) newOffset -= maxWidth * .5;
 				case RIGHT:
 					newOffset = letter.rowWidth;
@@ -175,7 +175,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 			}
 
 			letter.updateHitbox();
-			letter.offset.x += newOffset * scaleX;
+			letter.offset.x -= newOffset * scaleX;
 		});
 		return alignment;
 	}
@@ -205,7 +205,7 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 
 /**
  * a single `Alphabet` character
- * only extends `FlxSpriteExt` just so i can rotate the offset property
+ * only extends `FlxSpriteExt` just so i can change some stuff with rendering
  */
 class AlphaCharacter extends FlxSpriteExt {
 	public static var ini:IniData;
@@ -237,11 +237,13 @@ class AlphaCharacter extends FlxSpriteExt {
 
 		antialiasing = true;
 		moves = false;
+		additiveOffset = true;
 		rotateOffset = true;
 		// change(char);
 	}
 
 	public var extraData:Dynamic = null;
+	public var letterOffset:Array<Float> = [0, 0];
 
 	public function change(char:String = '?') {
 		try {
@@ -261,15 +263,14 @@ class AlphaCharacter extends FlxSpriteExt {
 
 			animation.addByPrefix('idle', char, 24, true);
 			animation.play('idle', true);
-			updateHitbox();
 
 			if (ini.exists('transform')) {
 				for (k => v in ini.transform) {
 					if (k.contains(character)) {
 						// Log.print('hihiihiihih ' + character, 0x6600ff);
 						final spli:Array<String> = (v : String).split(',');
-						x += Std.parseFloat(spli[0]);
-						y += Std.parseFloat(spli[1]);
+						letterOffset[0] = Std.parseFloat(spli[0]);
+						letterOffset[1] = Std.parseFloat(spli[1]);
 						var flip = FlxAxes.fromString(spli[2] ?? 'none');
 						if (flip.x)
 							flipX = true;
@@ -281,8 +282,8 @@ class AlphaCharacter extends FlxSpriteExt {
 			}
 			if (ini.exists('equalsoffset') && character == '=') {
 				final spli:Array<String> = cast(ini.equalsoffset, String).split(',');
-				x += Std.parseFloat(spli[0]);
-				y += Std.parseFloat(spli[1]);
+				letterOffset[0] = Std.parseFloat(spli[0]);
+				letterOffset[1] = Std.parseFloat(spli[1]);
 			}
 
 			extraData = null;
@@ -312,6 +313,7 @@ class AlphaCharacter extends FlxSpriteExt {
 
 	override public function updateHitbox() {
 		super.updateHitbox();
-		origin.set(offset.x * scale.x * -1, offset.y * scale.y * -1);
+		offset.set(letterOffset[0], letterOffset[1]);
+		origin.set(0, 0);
 	}
 }

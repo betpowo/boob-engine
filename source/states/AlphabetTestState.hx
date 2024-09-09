@@ -70,6 +70,7 @@ class AlphabetTestState extends FlxState {
 	}
 
 	override public function update(elapsed:Float) {
+		input.update(elapsed);
 		super.update(elapsed);
 
 		test.text = input.text;
