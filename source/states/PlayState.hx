@@ -4,6 +4,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import flixel.util.FlxTimer;
 import objects.*;
 import objects.ui.*;
 import song.*;
@@ -337,6 +338,9 @@ class PlayState extends FlxState {
 
 		FlxG.sound.music.time = Conductor.time;
 		resyncVox();
+
+		FlxTween.globalManager.active = !p;
+		FlxTimer.globalManager.active = !p;
 
 		return Conductor.paused;
 	}

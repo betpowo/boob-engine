@@ -38,6 +38,7 @@ class Main extends Sprite {
 			Conductor.time = 0;
 
 			Ash.clear();
+			Paths.clear();
 		});
 
 		#if CRASH_HANDLER

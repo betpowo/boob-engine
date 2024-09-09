@@ -49,7 +49,6 @@ class PauseSubstate extends FlxSubState {
 				case 'regret':
 					close();
 					FlxG.switchState(new states.TitleState());
-					Paths.clear();
 				case 'restart':
 					close();
 					states.PlayState.pause(false);

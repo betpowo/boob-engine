@@ -45,7 +45,7 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<haxedef name="gl_stats" if="desktop" />
+	<!-- <haxedef name="gl_stats" if="desktop" /> -->
 
 	<define name="CRASH_HANDLER" if="desktop" />
 

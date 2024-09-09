@@ -1,14 +1,18 @@
 package util;
 
+import haxe.PosInfos;
+import flixel.FlxBasic;
+import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import hscript.Interp;
 import hscript.Parser;
 
 using StringTools;
 
-class HscriptHandler {
+class HscriptHandler implements IFlxDestroyable {
 	public var interpreter:Interp = new Interp();
 	public var parser:Parser = new Parser();
 	public var file:String = '';
+	public var active:Bool = true;
 
 	public static var _STOP:Int = 0;
 	public static var _CONTINUE:Int = 1;
@@ -25,6 +29,8 @@ class HscriptHandler {
 		setVariable('StringTools', StringTools);
 
 		setVariable('FlxG', flixel.FlxG);
+		setVariable('state', flixel.FlxG.state);
+
 		// other
 		setVariable('import', function(lib:String) {
 			var cool:Array<String> = lib.split('.');
@@ -32,6 +38,42 @@ class HscriptHandler {
 		});
 		setVariable('keyFromString', function(k:String) {
 			return flixel.input.keyboard.FlxKey.fromString(k);
+		});
+
+		setVariable('FlxSprite', flixel.FlxSprite);
+		setVariable('FlxSpriteExt', flixel.FlxSpriteExt);
+		setVariable('FlxText', flixel.text.FlxText);
+		setVariable('FlxMath', flixel.math.FlxMath);
+
+		setVariable('Conductor', song.Conductor);
+
+		setVariable('Alphabet', objects.Alphabet);
+		setVariable('Character', objects.Character);
+		setVariable('Note', objects.Note);
+		setVariable('StrumNote', objects.StrumNote);
+
+		setVariable('Paths', util.Paths);
+		setVariable('Options', util.Options);
+		setVariable('Ash', util.Ash);
+
+		setVariable('PlayState', states.PlayState);
+
+		setVariable('add', (obj:FlxBasic) -> {
+			FlxG.state.add(obj);
+		});
+		setVariable('insert', (pos:Int, obj:FlxBasic) -> {
+			FlxG.state.insert(pos, obj);
+		});
+		setVariable('remove', (obj:FlxBasic) -> {
+			FlxG.state.remove(obj);
+		});
+
+		setVariable('trace', (message:String) -> {
+			var color:FlxColor = 0x99cc99;
+			Sys.println('\033[38;2;${color.red};${color.green};${color.blue};1m'
+				+ '\033[7m ${root + (root.endsWith('/') ? '' : '/') + file}:${parser.line} \033[27;21m '
+				+ message
+				+ '\033[0m');
 		});
 
 		#if desktop
@@ -44,14 +86,19 @@ class HscriptHandler {
 		interpreter.variables.set(v, n);
 	}
 
-	public function callThingy(fucktion:String, ?args:Array<Dynamic>):Dynamic {
-		if (!interpreter.variables.exists(fucktion))
+	public function call(fucktion:String, ?args:Array<Dynamic>):Dynamic {
+		if (!interpreter.variables.exists(fucktion) && active)
 			return null;
 
 		if (args == null)
 			args = [];
 
-		return Reflect.callMethod(interpreter.variables, interpreter.variables.get(fucktion), args);
+		try {
+			return Reflect.callMethod(interpreter.variables, interpreter.variables.get(fucktion), args);
+		} catch (e) {
+			Log.print(e, 0xff3366);
+		}
+		return null;
 	}
 
 	function readOrSomething(the:String, ?ignoreTrace:Bool = false):Dynamic {
@@ -66,7 +113,11 @@ class HscriptHandler {
 			return _CONTINUE;
 		}
 		#else
-		trace('bruh tf are you doing hsript isnt supported!!!!!!!!!!');
+		trace('hscript is not supported!!!!!!!!!!');
 		#end
+	}
+
+	public function destroy() {
+		return null;
 	}
 }

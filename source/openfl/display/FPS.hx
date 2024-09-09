@@ -71,12 +71,11 @@ class FPS extends TextField {
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 
-		if (currentCount != cacheCount /*&& visible*/) {
-			text = '$currentFPS FPS';
+		if (currentCount != cacheCount && visible) {
+			var daBytes:Float = System.totalMemory;
+			// daBytes = ProcessMemory.getMemory();
 
-			#if openfl
-			text += " - " + FlxStringUtil.formatBytes(System.totalMemory);
-			#end
+			text = '$currentFPS FPS - ' + FlxStringUtil.formatBytes(daBytes);
 
 			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
 			text += "\ntotalDC: " + Context3DStats.totalDrawCalls();

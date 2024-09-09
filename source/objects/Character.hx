@@ -1,20 +1,25 @@
 package objects;
 
 import flixel.FlxSpriteExt;
+import flixel.util.FlxDestroyUtil;
 import tools.Ini.IniData;
 import tools.Ini;
+import util.HscriptHandler;
 
 class Character extends FlxSpriteExt {
 	public var ini:IniData;
 	public var holdDur:Float = 4;
 
 	var animOffsets:Map<String, Array<Float>> = [];
+	var script:HscriptHandler;
+	var initAlready:Bool = false;
+	var skipDance:Bool = false;
 
 	public function new(char:String = 'bf') {
 		super();
-		scaleOffsetX = scaleOffsetY = true;
+		rotateOffset = scaleOffsetX = scaleOffsetY = true;
 		build(char);
-
+		script?.call('create');
 		Conductor.beatHit.add(beatHit);
 	}
 
@@ -31,6 +36,13 @@ class Character extends FlxSpriteExt {
 	private var _danced:Bool = false;
 
 	public function build(char:String = 'bf'):Bool {
+		if (!initAlready)
+			initAlready = true;
+		else
+			script?.call('destroy');
+
+		script = FlxDestroyUtil.destroy(script);
+
 		try {
 			dancer = false;
 			ini = getIni(char);
@@ -100,6 +112,12 @@ class Character extends FlxSpriteExt {
 			dance();
 			updateHitbox();
 
+			if (Paths.exists('data/characters/' + char + '.hx')) {
+				script = new HscriptHandler(char, 'data/characters');
+				script.setVariable('this', this);
+				script?.call('build');
+			}
+
 			return true;
 		} catch (e) {
 			Log.print('EPIC FAIL (build) : $e', 0xff3366);
@@ -108,6 +126,9 @@ class Character extends FlxSpriteExt {
 	}
 
 	public function dance() {
+		if (skipDance)
+			return;
+
 		if (dancer) {
 			playAnim('dance' + (_danced ? 'Right' : 'Left'), false);
 			_danced = !_danced;
@@ -131,6 +152,7 @@ class Character extends FlxSpriteExt {
 				playAnim(animation.name + '-hold', true);
 			}
 		}
+		script?.call('update', [elapsed]);
 	}
 
 	public function beatHit() {
@@ -154,5 +176,14 @@ class Character extends FlxSpriteExt {
 			offset.x = val[0] * (flipX ? -1 : 1);
 			offset.y = val[1] * (flipY ? -1 : 1);
 		}
+
+		if (animation.curAnim != null && animation.curAnim?.curFrame == 0)
+			script?.call('playAnim', [anim, force, reverse, start]);
+	}
+
+	override function destroy() {
+		script?.call('destroy');
+		script = FlxDestroyUtil.destroy(script);
+		super.destroy();
 	}
 }
