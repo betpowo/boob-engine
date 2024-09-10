@@ -70,8 +70,9 @@ class HscriptHandler implements IFlxDestroyable {
 
 		setVariable('trace', (message:String) -> {
 			var color:FlxColor = 0x99cc99;
+			var pos:PosInfos = interpreter.posInfos();
 			Sys.println('\033[38;2;${color.red};${color.green};${color.blue};1m'
-				+ '\033[7m ${root + (root.endsWith('/') ? '' : '/') + file}:${parser.line} \033[27;21m '
+				+ '\033[7m ${root + (root.endsWith('/') ? '' : '/') + file}:${pos.lineNumber} \033[27;21m '
 				+ message
 				+ '\033[0m');
 		});

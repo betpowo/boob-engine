@@ -3,12 +3,14 @@ package states;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import objects.*;
 import objects.ui.*;
 import song.*;
 import song.Chart.ChartNote;
+import util.HscriptHandler;
 import util.Options;
 
 typedef NoteGroup = FlxTypedGroup<Note>;
@@ -72,6 +74,33 @@ class PlayState extends FlxState {
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
 	var camOverlay:FlxCamera;
+
+	var scripts:Array<HscriptHandler> = [];
+
+	public function call(f:String, ?args:Array<Dynamic>):Dynamic {
+		for (i in scripts) {
+			if (i != null) {
+				i.call(f, args);
+			}
+		}
+		return 0;
+	}
+
+	public function addScript(file:String, ?root:String = 'data/scripts'):HscriptHandler {
+		var h:HscriptHandler = new HscriptHandler(file, root);
+		h.setVariable('this', instance);
+		scripts.push(h);
+
+		return h;
+	}
+
+	public function addScriptPack(root:String) {
+		for (i in Paths.read(root)) {
+			if (i.endsWith('.hx')) {
+				addScript(i.replace('.hx', ''), root);
+			}
+		}
+	}
 
 	public function new() {
 		super();
@@ -147,7 +176,7 @@ class PlayState extends FlxState {
 
 		add(healthBar);
 		healthBar.x = 50;
-		healthBar.y = FlxG.height - healthBar.height - 50;
+		healthBar.y = FlxG.height - healthBar.frameHeight - 50;
 		healthBar.rightToLeft = true;
 		healthBar.percent = health;
 
@@ -194,6 +223,10 @@ class PlayState extends FlxState {
 		FlxG.sound.music.time = Conductor.time = 0;
 		resyncVox();
 		FlxG.sound.music.volume = 1;
+
+		addScriptPack('songs/darnell/scripts');
+
+		call('create');
 	}
 
 	static function resyncVox() {
@@ -218,35 +251,36 @@ class PlayState extends FlxState {
 
 	function noteHit(note:Note) {
 		var laneID = note.strum.parentLane.ID;
-		var char:Character = player;
+		var char:Character = note.character ?? player;
+
 		if (laneID == 1) {
 			var gwa = 0.01;
 			score += 100;
 			health += gwa;
-		} else {
-			char = opponent;
 		}
 
 		if (note.anim != null && char != null) {
 			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
 			char.playAnim(note.anim, true);
 		}
+
+		call('noteHit', [note, laneID]);
 	}
 
 	function noteHeldStep(note:Note) {
 		var laneID = note.strum.parentLane.ID;
+		var char:Character = note.character ?? player;
 
 		if (laneID == 1) {
 			health += 0.7 / 100;
-
-			if (note.anim != null) {
-				player.holdTime = Conductor.crochetSec * 2;
-				player.playAnim(note.anim, true);
-			}
-		} else {
-			opponent.holdTime = Conductor.crochetSec * 2;
-			opponent.playAnim(note.anim, true);
 		}
+
+		if (note.anim != null && char != null) {
+			char.holdTime = Conductor.crochetSec * 2;
+			char.playAnim(note.anim, true);
+		}
+
+		call('noteHeld', [note, laneID]);
 	}
 
 	function noteMiss(note:Note) {
@@ -284,6 +318,8 @@ class PlayState extends FlxState {
 		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER) {
 			openSubState(new substates.PauseSubstate());
 		}
+
+		call('update');
 	}
 
 	function spawnNote(i:ChartNote):Note {
@@ -296,18 +332,9 @@ class PlayState extends FlxState {
 		note.strum = strum;
 		note.sustain.length = i.length;
 		note.speed = chart.speed;
-		strum.notes.push(note);
 		note.rgb.copy(strum.rgb);
-
-		/*var clor = FlxColor.fromHSB(FlxG.random.int(0, 360), FlxG.random.float(0.2, 1), FlxG.random.float(0.6, 1));
-			note.rgb.set(clor, -1, clor.getDarkened(0.5)); */
-
-		noteGroup.add(note);
 		note.y -= 2000;
 		note.sustain.x -= 2000;
-
-		if (i.lane == 0)
-			note.scrollAngle = FlxG.random.float(-90, 90);
 
 		note.camera = note.sustain.camera = camHUD;
 
@@ -318,6 +345,13 @@ class PlayState extends FlxState {
 			case 3: 'singRIGHT';
 			case _: null;
 		}
+
+		note.character = i.lane == 0 ? opponent : player;
+
+		strum.notes.push(note);
+		noteGroup.add(note);
+
+		call('spawnNote', [note, i]);
 
 		return note;
 	}
@@ -342,6 +376,8 @@ class PlayState extends FlxState {
 		FlxTween.globalManager.active = !p;
 		FlxTimer.globalManager.active = !p;
 
+		instance.call('pause', [p]);
+
 		return Conductor.paused;
 	}
 
@@ -351,6 +387,9 @@ class PlayState extends FlxState {
 	}
 
 	override function destroy() {
+		call('destroy');
+		scripts = FlxDestroyUtil.destroyArray(scripts);
+
 		strumGroup.destroy();
 		noteGroup.destroy();
 		super.destroy();

@@ -48,6 +48,8 @@ class PauseSubstate extends FlxSubState {
 			switch (menu.list[a].toLowerCase()) {
 				case 'regret':
 					close();
+					FlxTween.globalManager.active = true;
+					FlxTimer.globalManager.active = true;
 					FlxG.switchState(new states.TitleState());
 				case 'restart':
 					close();

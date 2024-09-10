@@ -68,6 +68,14 @@ class Paths {
 		return result;
 	}
 
+	public static function read(folder:String):Array<String> {
+		var fil:String = file(folder);
+		if (FileSystem.isDirectory(fil))
+			return FileSystem.readDirectory(fil);
+
+		return [];
+	}
+
 	public static function exists(f:String):Bool {
 		return FileSystem.exists(file(f));
 	}

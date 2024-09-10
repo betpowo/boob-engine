@@ -1,5 +1,3 @@
-import ('lime.app.Application');
-
 function create() {
 	// this.scale.set(FlxG.random.float(0.5, 2), FlxG.random.float(0.5, 2));
 	this.angle = 90;
@@ -19,7 +17,5 @@ function playAnim(anim) {
 
 		FlxG.camera.shake(4 / FlxG.camera.width, 0.1);
 		PlayState.instance.camHUD.shake(5 / FlxG.camera.width, 0.1);
-
-		Application.current.window.opacity = FlxG.random.float(0.1, 1);
 	}
 }

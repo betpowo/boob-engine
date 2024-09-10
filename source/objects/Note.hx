@@ -21,6 +21,7 @@ class Note extends FlxSpriteExt {
 	public var sustain:Sustain;
 	public var anim:String = null;
 	public var editor:Bool = false;
+	public var character:Character = null;
 
 	var parentGroup:FlxTypedGroup<Note>;
 
