@@ -10,6 +10,8 @@ class TitleState extends FlxState {
 	override public function create() {
 		super.create();
 
+		bgColor = 0xff666666;
+
 		fuck(50, 'boob engine!', 0xff000000, 0xffffff);
 		fuck(150, 'I MAY BE STUPID', 0xffffff, 0xff000000);
 
@@ -41,11 +43,19 @@ class TitleState extends FlxState {
 			FlxG.switchState(new CharacterState());
 		}));
 
+		add(new FlxUIButton(butt.x, butt.y + 120, 'fri plei', function() {
+			FlxG.switchState(new FreeplayState());
+		}));
+
 		var FUCK = new objects.ui.FreeplayCapsule();
 		FUCK.text = 'EVIL capsule..,,';
 		FUCK.setPosition(50, 50);
 		FUCK.color = 0xff0000;
 		add(FUCK);
+
+		new FlxTimer().start(3, (_) -> {
+			FUCK.angularAcceleration = 4;
+		});
 
 		FlxG.sound.playMusic(Paths.sound('girlfriendsRingtone', 'music'));
 	}

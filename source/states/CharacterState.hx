@@ -31,7 +31,7 @@ class CharacterState extends FlxState {
 		gf.antialiasing = true;
 
 		add(gf);
-		gf.screenCenter();
+		gf.setPosition(FlxG.width * .5, FlxG.height * .5);
 
 		bf = new FlxAnimate(0, 0, Paths.file('images/menus/char-select/chars/bf/sprite'));
 		bf.anim.addBySymbol('idle', 'bf cs idle', 24, false);
@@ -44,7 +44,7 @@ class CharacterState extends FlxState {
 		bf.antialiasing = true;
 
 		add(bf);
-		// bf.screenCenter();
+		bf.setPosition(FlxG.width * .5, FlxG.height * .5);
 	}
 
 	override function update(elapsed:Float) {

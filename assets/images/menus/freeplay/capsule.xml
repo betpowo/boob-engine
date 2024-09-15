@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="capsule.png">
+	<!-- Created with Adobe Animate version 20.5.0.29329 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="capsule glow0000" x="2" y="126" width="584" height="120" frameX="-14" frameY="-1" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0001" x="2" y="126" width="584" height="120" frameX="-14" frameY="-1" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0002" x="2" y="2" width="576" height="122" frameX="-18" frameY="0" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0003" x="2" y="2" width="576" height="122" frameX="-18" frameY="0" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0004" x="2" y="364" width="612" height="108" frameX="0" frameY="-7" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0005" x="2" y="364" width="612" height="108" frameX="0" frameY="-7" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0006" x="2" y="248" width="590" height="114" frameX="-11" frameY="-4" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="capsule glow0007" x="2" y="248" width="590" height="114" frameX="-11" frameY="-4" frameWidth="612" frameHeight="122"/>
+	<SubTexture name="lcd screen backing0000" x="588" y="122" width="428" height="87"/>
+	<SubTexture name="lcd screen backing0001" x="594" y="211" width="428" height="87"/>
+	<SubTexture name="lcd screen backing0002" x="616" y="300" width="428" height="87"/>
+	<SubTexture name="lcd screen backing0003" x="616" y="389" width="428" height="87"/>
+	<SubTexture name="mp3 capsule0000" x="580" y="2" width="546" height="118"/>
+</TextureAtlas>

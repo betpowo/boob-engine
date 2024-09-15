@@ -29,6 +29,11 @@ class FlxSpriteExt extends FlxSprite {
 	**/
 	public var additiveOffset:Bool = false;
 
+	/**
+		useless, but just for fun
+	**/
+	public var offsetOffset:FlxPoint = new FlxPoint(0, 0);
+
 	override function drawComplex(camera:FlxCamera):Void {
 		/*
 			_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
@@ -61,10 +66,13 @@ class FlxSpriteExt extends FlxSprite {
 
 		var ogoffx = offset.x;
 		var ogoffy = offset.y;
+
+		offset.addPoint(offsetOffset);
+
 		if (scaleOffsetX)
-			offset.x = ogoffx * scale.x * scaleMult.x;
+			offset.x *= scale.x * scaleMult.x;
 		if (scaleOffsetY)
-			offset.y = ogoffy * scale.y * scaleMult.y;
+			offset.y *= scale.y * scaleMult.y;
 		if (rotateOffset)
 			offset.degrees += angle + angleOffset;
 

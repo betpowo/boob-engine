@@ -36,8 +36,7 @@ class PauseSubstate extends FlxSubState {
 		var fuck:FlxColor = new FlxColor(songNameColor);
 		fuck.brightness *= 0.6;
 		fuck.saturation = 1;
-		fuck.magenta += 30;
-		fuck.blue += 60;
+		fuck.magenta += 20;
 		fuck.alpha = 255;
 		songNameGM.black = fuck;
 
