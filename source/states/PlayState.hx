@@ -319,7 +319,7 @@ class PlayState extends FlxState {
 			openSubState(new substates.PauseSubstate());
 		}
 
-		call('update');
+		call('update', [elapsed]);
 	}
 
 	function spawnNote(i:ChartNote):Note {
@@ -373,8 +373,8 @@ class PlayState extends FlxState {
 		FlxG.sound.music.time = Conductor.time;
 		resyncVox();
 
-		FlxTween.globalManager.active = !p;
-		FlxTimer.globalManager.active = !p;
+		// FlxTween.globalManager.active = !p;
+		// FlxTimer.globalManager.active = !p;
 
 		instance.call('pause', [p]);
 

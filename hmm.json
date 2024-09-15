@@ -16,9 +16,14 @@
       "version": null
     },
     {
-      "name": "hscript",
-      "type": "haxelib",
-      "version": null
+      "name": "flxanimate",
+      "type": "git",
+      "url": "https://github.com/FunkinCrew/flxanimate"
+    },
+    {
+      "name": "hscript-improved",
+      "type": "git",
+      "url": "https://github.com/FNF-CNE-Devs/hscript-improved"
     },
     {
       "name": "hxcpp",

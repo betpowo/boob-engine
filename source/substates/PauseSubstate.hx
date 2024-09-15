@@ -1,7 +1,10 @@
 package substates;
 
+import flixel.graphics.frames.FlxBitmapFont;
+import flixel.text.FlxBitmapText;
 import objects.Alphabet;
 import objects.ui.AlphabetList;
+import util.GradientMap;
 
 class PauseSubstate extends FlxSubState {
 	var bg:FlxSprite;
@@ -17,6 +20,31 @@ class PauseSubstate extends FlxSubState {
 		bg.screenCenter();
 		bg.setColorTransform(0, 0, 0, 0);
 		add(bg);
+
+		var fontLetters:String = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890!?,.()-Ññ&\"'+[]/#";
+
+		var songName = new FlxBitmapText(50, 50, 'bleh', FlxBitmapFont.fromMonospace(Paths.image('ui/tardlingSpritesheet'), fontLetters, FlxPoint.get(49, 62)));
+		songName.letterSpacing = -15;
+		songName.antialiasing = true;
+		add(songName);
+
+		var songNameGM:GradientMap = new GradientMap();
+		songName.shader = songNameGM.shader;
+		var songNameColor:FlxColor = 0xFFf9feb1;
+		songNameGM.white = songNameColor;
+
+		var fuck:FlxColor = new FlxColor(songNameColor);
+		fuck.brightness *= 0.6;
+		fuck.saturation = 1;
+		fuck.magenta += 30;
+		fuck.blue += 60;
+		fuck.alpha = 255;
+		songNameGM.black = fuck;
+
+		songName.y -= 10;
+		songName.alpha = 0;
+		var bleh = FlxTween.tween(songName, {y: songName.y + 10, alpha: 1}, 0.1, {ease: FlxEase.quartOut, startDelay: 0.3});
+		bleh.active = true;
 
 		var rightArrow:Alphabet = new Alphabet('→');
 		var leftArrow:Alphabet = new Alphabet('←');

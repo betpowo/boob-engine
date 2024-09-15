@@ -196,7 +196,7 @@ class FlxSplash extends FlxState {
 
 	override function startOutro(onOutroComplete:() -> Void) {
 		FlxG.cameras.bgColor = _cachedBgColor;
-		FlxG.fixedTimestep = _cachedTimestep;
+		FlxG.fixedTimestep = false;
 		FlxG.autoPause = _cachedAutoPause;
 		#if FLX_KEYBOARD
 		FlxG.keys.enabled = true;

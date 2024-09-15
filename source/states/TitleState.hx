@@ -37,35 +37,17 @@ class TitleState extends FlxState {
 			FlxG.switchState(new OptionsState());
 		}));
 
-		var test = new FlxSprite().makeGraphic(50, 50, -1);
-		test.angularVelocity = 10;
-		test.screenCenter();
-		add(test);
+		add(new FlxUIButton(butt.x, butt.y + 80, 'chartacter serklsvct', function() {
+			FlxG.switchState(new CharacterState());
+		}));
 
-		var test = new FlxSprite().makeGraphic(50, 50, -1);
-		test.color = 0xff0000;
-		test.updateHitbox();
-		test.offset.x += 30;
-		test.angularVelocity = 10;
-		test.screenCenter();
-		add(test);
+		var FUCK = new objects.ui.FreeplayCapsule();
+		FUCK.text = 'EVIL capsule..,,';
+		FUCK.setPosition(50, 50);
+		FUCK.color = 0xff0000;
+		add(FUCK);
 
-		var test = new FlxSprite().makeGraphic(50, 50, -1);
-		test.color = 0xff00ff;
-		test.updateHitbox();
-		test.origin.x = 0;
-		test.angularVelocity = 10;
-		test.screenCenter();
-		add(test);
-
-		var test = new FlxSprite().makeGraphic(50, 50, -1);
-		test.color = 0x0000ff;
-		test.updateHitbox();
-		test.origin.x = 0;
-		test.offset.x += 30;
-		test.angularVelocity = 10;
-		test.screenCenter();
-		add(test);
+		FlxG.sound.playMusic(Paths.sound('girlfriendsRingtone', 'music'));
 	}
 
 	function fuck(_y:Float = 50, text:String = 'boob engine!', col:FlxColor = -1, outli:FlxColor = 0) {

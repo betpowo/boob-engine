@@ -12,6 +12,7 @@ class HscriptHandler implements IFlxDestroyable {
 	public var interpreter:Interp = new Interp();
 	public var parser:Parser = new Parser();
 	public var file:String = '';
+	public var root:String = '';
 	public var active:Bool = true;
 
 	public static var _STOP:Int = 0;
@@ -30,6 +31,9 @@ class HscriptHandler implements IFlxDestroyable {
 
 		setVariable('FlxG', flixel.FlxG);
 		setVariable('state', flixel.FlxG.state);
+
+		setVariable('FlxGroup', flixel.group.FlxGroup);
+		setVariable('FlxSpriteGroup', flixel.group.FlxSpriteGroup);
 
 		// other
 		setVariable('import', function(lib:String) {
@@ -53,6 +57,8 @@ class HscriptHandler implements IFlxDestroyable {
 		setVariable('StrumNote', objects.StrumNote);
 
 		setVariable('Paths', util.Paths);
+		setVariable('FlxAnimate', flxanimate.FlxAnimate);
+
 		setVariable('Options', util.Options);
 		setVariable('Ash', util.Ash);
 
@@ -80,6 +86,7 @@ class HscriptHandler implements IFlxDestroyable {
 		#if desktop
 		readOrSomething(sys.io.File.getContent(Paths.script(file, root)));
 		this.file = file;
+		this.root = root;
 		#end
 	}
 
@@ -97,7 +104,12 @@ class HscriptHandler implements IFlxDestroyable {
 		try {
 			return Reflect.callMethod(interpreter.variables, interpreter.variables.get(fucktion), args);
 		} catch (e) {
-			Log.print(e, 0xff3366);
+			var color:FlxColor = 0xff6666;
+			var pos:PosInfos = interpreter.posInfos();
+			Sys.println('\033[38;2;${color.red};${color.green};${color.blue};1m'
+				+ '\033[7m ${root + (root.endsWith('/') ? '' : '/') + file}:${pos.lineNumber} \033[27;21m '
+				+ ~/hscript:([0-9])+:\s/g.replace(e.toString(), '')
+				+ '\033[0m');
 		}
 		return null;
 	}

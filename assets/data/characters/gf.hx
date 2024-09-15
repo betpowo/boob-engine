@@ -1,7 +1,6 @@
 var speakers:FlxSpriteExt = new FlxSpriteExt();
 
 function build() {
-	trace('yo');
 	speakers.frames = Paths.sparrow('characters/props/speakers');
 	speakers.animation.addByPrefix('idle', 'speakers', 24, false);
 	speakers.animation.play('idle', true);

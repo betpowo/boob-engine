@@ -127,6 +127,9 @@ class Paths {
 	public static function ini(f:String, ?root:String = ''):String
 		return file('$root/$f.ini');
 
+	public static function font(f:String):String
+		return file('fonts/$f');
+
 	public static function script(f:String, ?root:String = 'data/scripts'):String
 		return file('$root/$f.hx');
 
