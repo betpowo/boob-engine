@@ -373,8 +373,11 @@ class PlayState extends FlxState {
 		FlxG.sound.music.time = Conductor.time;
 		resyncVox();
 
-		// FlxTween.globalManager.active = !p;
-		// FlxTimer.globalManager.active = !p;
+		// psych engine
+		FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if (!tmr.finished)
+			tmr.active = p);
+		FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
+			twn.active = p);
 
 		instance.call('pause', [p]);
 

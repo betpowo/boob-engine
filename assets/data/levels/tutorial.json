@@ -1,0 +1,48 @@
+{
+	"name": "TEACHING TIME",
+	"songs": [
+		"tutorial",
+		"test",
+        "darnell"
+	],
+	"story": {
+		"color": "F9CF51",
+		"props": [
+			{
+				"assetPath": "storymenu/props/gf", "scale": 1.0, "offsets": [80, 80],
+				"animations": [
+					{
+						"name": "danceLeft",
+						"prefix": "idle0",
+						"frameIndices": [
+							30,
+                            "range(0,14)"
+						]
+					},
+					{
+						"name": "danceRight",
+						"prefix": "idle0",
+						"frameIndices": [
+							"range(15,29)"
+						]
+					}
+				]
+			},
+			{
+				"assetPath": "storymenu/props/bf", "scale": 1.0, "offsets": [150, 80],
+				"animations": [
+					{
+						"name": "idle",
+						"prefix": "idle0",
+						"frameRate": 24
+					},
+					{
+						"name": "confirm",
+						"prefix": "confirm0",
+						"frameRate": 24
+					}
+				]
+			}
+		]
+	}
+}

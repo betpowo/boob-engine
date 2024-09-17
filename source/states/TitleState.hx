@@ -1,5 +1,6 @@
 package states;
 
+import sys.io.File;
 import flixel.addons.ui.FlxUIButton;
 import flixel.input.keyboard.FlxKey;
 import objects.Alphabet;
@@ -29,7 +30,7 @@ class TitleState extends FlxState {
 		bleh[2].inputs = [FlxKey.C];
 
 		var butt:FlxUIButton = new FlxUIButton(0, 0, '>w<', function() {
-			PlayState.chart = Chart.ChartConverter.convert(lime.utils.Assets.getText('assets/songs/darnell/charts/chart.json'));
+			PlayState.chart = Chart.ChartConverter.convert(File.getContent(Paths.file('songs/darnell/charts/chart.json')));
 			FlxG.switchState(new PlayState());
 		});
 		butt.screenCenter();

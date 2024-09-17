@@ -149,9 +149,9 @@ class Paths {
 	public static function song(sg:String, f:String = 'Inst', ?sub:String = ''):Sound {
 		if (!sub.endsWith('/'))
 			sub += '/';
-		if (exists(file('songs/$sg/$sub/$f.ogg')))
-			return sound(f, 'songs/$sg/$sub');
-		return sound(f, 'songs/$sg');
+		if (exists(file('songs/$sg/audio/$sub/$f.ogg')))
+			return sound(f, 'songs/$sg/audio/$sub');
+		return sound(f, 'songs/$sg/audio');
 	}
 
 	public static function exclude(s:String) {

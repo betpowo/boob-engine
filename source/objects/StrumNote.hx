@@ -144,7 +144,31 @@ class StrumNote extends Note {
 		holdSpr.update(elapsed);
 		dumpRGB.r = FlxColor.interpolate(strumRGB.r, rgb.r, 0.3).getDarkened(0.15);
 
-		if (inputs is Array && inputs != null) {
+		if (!blocked)
+			handleInput(autoHit);
+
+		if (confirmTime > 0)
+			confirmTime -= elapsed;
+		else if (confirmTime != -1) {
+			animation.play('idle', true);
+			confirmTime = -1;
+			holdSpr.visible = false;
+			enableStepConfirm = false;
+		}
+	}
+
+	function handleInput(auto:Bool = true) {
+		var pressed:Bool = false;
+		var justPressed:Bool = false;
+		var released:Bool = false;
+
+		if (inputs != null) {
+			pressed = FlxG.keys.anyPressed(inputs);
+			justPressed = FlxG.keys.anyJustPressed(inputs);
+			released = FlxG.keys.anyJustReleased(inputs);
+		}
+
+		if (!auto) {
 			for (note in notes) {
 				// misses
 				if (Conductor.time >= note.strumTime + 300) {
@@ -153,7 +177,7 @@ class StrumNote extends Note {
 				}
 			}
 
-			if (FlxG.keys.anyPressed(inputs) && !blocked) {
+			if (pressed) {
 				for (note in notes) {
 					// sustain notes
 					if ((note.hit == HELD && note._shouldDoHit)) {
@@ -173,7 +197,7 @@ class StrumNote extends Note {
 				}
 			}
 
-			if (FlxG.keys.anyJustPressed(inputs) && !blocked) {
+			if (justPressed) {
 				for (note in notes) {
 					// normal notes
 					if (Math.abs(note.strumTime - Conductor.time) <= hitWindow && note.hit == NONE) {
@@ -193,7 +217,7 @@ class StrumNote extends Note {
 				animation.play((pressingNote != null) ? 'confirm' : 'press', true);
 			}
 
-			if (FlxG.keys.anyJustReleased(inputs)) {
+			if (released) {
 				for (note in notes) {
 					// sustain notes
 					note._shouldDoHit = false;
@@ -206,47 +230,37 @@ class StrumNote extends Note {
 				animation.play('idle', true);
 			}
 		} else {
-			if (autoHit) {
-				for (note in notes) {
-					if (note.strumTime <= Conductor.time) {
-						if (note.hit != HIT) {
-							if (note.hit == NONE) {
-								animation.play('confirm', true);
-								if (note.sustain.length > 60) {
-									holdSpr.visible = true;
-									holdSpr.animation.play('start', true);
-									holdSpr.angle = note.totalAngle;
-								}
-								noteHit.dispatch(note);
-							}
-
-							confirmTime = 0.13;
-							note._shouldDoHit = true;
-							pressingNote = note;
-							note.doHit();
-
-							if (note.hit == HELD) {
-								enableStepConfirm = true;
-								confirmTime = Conductor.stepCrochet;
+			for (note in notes) {
+				if (note.strumTime <= Conductor.time) {
+					if (note.hit != HIT) {
+						if (note.hit == NONE) {
+							animation.play('confirm', true);
+							if (note.sustain.length > 60) {
 								holdSpr.visible = true;
+								holdSpr.animation.play('start', true);
 								holdSpr.angle = note.totalAngle;
-								noteHeld.dispatch(note);
-							} else if (note.hit == HIT) {
-								holdSpr.visible = false;
-								enableStepConfirm = false;
-								confirmTime = 0.13;
-								holdSpr.angle = 0;
 							}
+							noteHit.dispatch(note);
+						}
+
+						confirmTime = 0.13;
+						note._shouldDoHit = true;
+						pressingNote = note;
+						note.doHit();
+
+						if (note.hit == HELD) {
+							enableStepConfirm = true;
+							confirmTime = Conductor.stepCrochet;
+							holdSpr.visible = true;
+							holdSpr.angle = note.totalAngle;
+							noteHeld.dispatch(note);
+						} else if (note.hit == HIT) {
+							holdSpr.visible = false;
+							enableStepConfirm = false;
+							confirmTime = 0.13;
+							holdSpr.angle = 0;
 						}
 					}
-				}
-				if (confirmTime > 0)
-					confirmTime -= elapsed;
-				else if (confirmTime != -1) {
-					animation.play('idle', true);
-					confirmTime = -1;
-					holdSpr.visible = false;
-					enableStepConfirm = false;
 				}
 			}
 		}

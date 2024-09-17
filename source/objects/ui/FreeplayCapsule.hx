@@ -10,6 +10,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 	public var text(default, set):String = '';
 	public var icon:FlxSpriteExt;
 	public var difficulty(default, set):Int = 0;
+	public var colorMult(default, set):FlxColor = 0xFFffffff;
 
 	// public var color(default, set):FlxColor = 0xaadeff;
 	var frontGlow:FlxSpriteExt;
@@ -70,14 +71,21 @@ class FreeplayCapsule extends FlxSpriteGroup {
 
 	override public function set_color(c:FlxColor):FlxColor {
 		color = c;
+		c *= colorMult;
 		if (backGlow != null)
 			backGlow.color = c;
 		if (frontGlow != null)
 			frontGlow.color = c;
 		if (textObj != null) {
 			textObj.borderColor = c;
-			textObj.borderColor.alpha = 0x55;
+			textObj.borderColor.alphaFloat = 0.4;
 		}
+		return c;
+	}
+
+	public function set_colorMult(c:FlxColor) {
+		colorMult = c;
+		color = color;
 		return c;
 	}
 
@@ -97,7 +105,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 
 		bro('mp3 capsule');
 
-		frontGlow = bro('capsule glow', -54, -15);
+		frontGlow = bro('capsule glow', -54, -14);
 
 		add(textObj);
 
@@ -135,7 +143,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		super.update(elapsed);
 		if (active && visible && isOnScreen(camera)) {
 			el += elapsed;
-			textObj.borderSize = FlxMath.lerp(0.5, 2.5, (FlxMath.fastSin(el * 70) + 1) * 0.5);
+			textObj.borderSize = FlxMath.lerp(0.5, 0.95, (FlxMath.fastSin(el * 70) + 1) * 0.5);
 			textObj.clipRect.width = maxWidth;
 			textObj.clipRect.height = textObj.height;
 			textObj.clipRect = textObj.clipRect;

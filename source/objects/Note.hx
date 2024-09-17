@@ -13,7 +13,6 @@ class Note extends FlxSpriteExt {
 	public var strumTime:Float = 0;
 	public var strum:StrumNote;
 	public var speed:Float = 1.0;
-	public var speedMult:Float = 1.0;
 	public var strumIndex(default, set):Int = 2;
 	public var aocondc:Bool = true; // stands for: angleOffset change on strumIndex change
 	public var hit(default, set):NoteHitState = NONE;
@@ -205,15 +204,9 @@ class Sustain extends FlxSpriteExt {
 			alpha = strum.alpha;
 	}
 
-	var _lastShit = {
-		length: 0,
-		speed: 1,
-		speedMult: 1
-	}
-
-	private inline function updateVisual(l:Float, ?s:Float = 1, ?m:Float = 1) {
+	private inline function updateVisual(l:Float, ?s:Float = 1) {
 		animation.play('hold', true);
-		setGraphicSize(width, (l * 0.48 * s * m) + 2);
+		setGraphicSize(width, (l * 0.48 * s) + 2);
 		updateHitbox();
 		origin.y = 0;
 	}
@@ -223,10 +216,8 @@ class Sustain extends FlxSpriteExt {
 			followNote(parent);
 			shader = parent.shader;
 		}
-		if (parent != null)
-			updateVisual(length, parent.speed, parent.speedMult);
-		else
-			updateVisual(length);
+
+		updateVisual(length, parent?.speed ?? 1);
 
 		var bruh = height;
 		y -= bruh * 0.5;
