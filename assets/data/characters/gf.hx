@@ -1,4 +1,5 @@
 var speakers:FlxSpriteExt = new FlxSpriteExt();
+var added:Bool = false;
 
 function build() {
 	speakers.frames = Paths.sparrow('characters/props/speakers');
@@ -8,8 +9,6 @@ function build() {
 	speakers.updateHitbox();
 	Ash.attach(this, speakers, (this.frameWidth - speakers.frameWidth) * 0.5, this.frameHeight - 125);
 	Conductor.beatHit.add(beatHit);
-
-	insert(0, speakers);
 }
 
 function destroy() {
@@ -19,4 +18,15 @@ function destroy() {
 
 function beatHit() {
 	speakers.animation.play('idle', true);
+}
+
+function onSetStagePos() {
+	this.y -= speakers.frameHeight - 125;
+}
+
+function update() {
+	if (!added) {
+		added = true;
+		insert(state.members.indexOf(this), speakers);
+	}
 }

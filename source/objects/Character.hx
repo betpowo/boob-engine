@@ -15,9 +15,15 @@ class Character extends FlxSpriteExt {
 	var initAlready:Bool = false;
 	var skipDance:Bool = false;
 
-	public function new(char:String = 'bf') {
+	var debugMode:Bool = false;
+	var stagePos:FlxPoint = new FlxPoint(0, 0);
+
+	public function new(char:String = 'bf', ?debug:Bool = false) {
 		super();
 		rotateOffset = scaleOffsetX = scaleOffsetY = true;
+
+		debugMode = debug;
+
 		build(char);
 		script?.call('create');
 		Conductor.beatHit.add(beatHit);
@@ -34,6 +40,14 @@ class Character extends FlxSpriteExt {
 
 	var dancer:Bool = false; // uses danceLeft/Right instead of idle
 	private var _danced:Bool = false;
+
+	public function setStagePosition(_x:Float = 0, _y:Float = 0) {
+		setPosition(_x, _y);
+		x -= width * .5;
+		y -= height;
+		script?.call('onSetStagePos');
+		stagePos.set(_x, _y);
+	}
 
 	public function build(char:String = 'bf'):Bool {
 		if (!initAlready)
@@ -112,15 +126,18 @@ class Character extends FlxSpriteExt {
 			dance();
 			updateHitbox();
 
-			if (Paths.exists('data/characters/' + char + '.hx')) {
+			if (Paths.exists('data/characters/' + char + '.hx') && !debugMode) {
 				script = new HscriptHandler(char, 'data/characters');
 				script.setVariable('this', this);
 				script?.call('build');
 			}
 
+			setStagePosition(stagePos.x, stagePos.y);
+
 			return true;
 		} catch (e) {
 			Log.print('EPIC FAIL (build) : $e', 0xff3366);
+			setStagePosition(stagePos.x, stagePos.y);
 		}
 		return false;
 	}

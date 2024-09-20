@@ -1,5 +1,6 @@
 package states;
 
+import flixel.FlxSpriteExt;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -51,7 +52,7 @@ class PlayState extends FlxState {
 		FlxTween.cancelTweensOf(scoreNum);
 		FlxTween.cancelTweensOf(scoreNum.colorTransform);
 
-		scoreNum.offset.y += 7;
+		scoreNum.offset.y += 3;
 		if (diff > 0)
 			scoreNum.setColorTransform(1, 1, 1, 1, 20, 125, 90);
 		else if (diff < 0)
@@ -75,6 +76,9 @@ class PlayState extends FlxState {
 	var camHUD:FlxCamera;
 	var camOverlay:FlxCamera;
 
+	var defaultZoom:Float = 1;
+	var defaultHudZoom:Float = 1;
+
 	var scripts:Array<HscriptHandler> = [];
 
 	public function call(f:String, ?args:Array<Dynamic>):Dynamic {
@@ -83,6 +87,8 @@ class PlayState extends FlxState {
 				i.call(f, args);
 			}
 		}
+		// ??????
+		FunkinStage.call(f, args);
 		return 0;
 	}
 
@@ -106,6 +112,9 @@ class PlayState extends FlxState {
 		super();
 		instance = this;
 	}
+
+	var ratingSpr:FlxSprite;
+	var comboNum:Counter;
 
 	override public function create() {
 		super.create();
@@ -165,15 +174,6 @@ class PlayState extends FlxState {
 		Conductor.tracker = FlxG.sound.music;
 		Conductor.beatHit.add(beatHit);
 
-		for (str in strumGroup.members) {
-			str.forEach((i) -> {
-				i.noteHit.add(noteHit);
-				i.noteHeldStep.add(noteHeldStep);
-				// i.noteHeld.add(noteHeld);
-				i.noteMiss.add(noteMiss);
-			});
-		}
-
 		add(healthBar);
 		healthBar.x = 50;
 		healthBar.y = FlxG.height - healthBar.frameHeight - 50;
@@ -194,17 +194,36 @@ class PlayState extends FlxState {
 		timeNum.display = TIME;
 		timeNum.setColorTransform(-1, -1, -1, 1, 255, 255, 255);
 
-		opponentStrums.camera = playerStrums.camera = healthBar.camera = scoreNum.camera = timeNum.camera = camHUD;
+		// help
+		ratingSpr = new FlxSprite();
+		ratingSpr.antialiasing = true;
+		ratingSpr.loadGraphic(Paths.image('ui/ratings/shit'));
+		Paths.image('ui/ratings/good');
+		Paths.image('ui/ratings/bad');
+		Paths.image('ui/ratings/sick');
+		insert(0, ratingSpr);
+		ratingSpr.scale.set(0.6, 0.6);
+		ratingSpr.updateHitbox();
+
+		comboNum = new Counter();
+		comboNum.scale.set(0.5, 0.5);
+		comboNum.updateHitbox();
+		comboNum.alignment = CENTER;
+		insert(0, comboNum);
+
+		ratingSpr.alpha = comboNum.alpha = 0.001;
+
+		for (i in [opponentStrums, playerStrums, healthBar, scoreNum, timeNum, ratingSpr, comboNum]) {
+			i.camera = camHUD;
+		}
+
+		FunkinStage.init('stage');
 
 		add(spectator = new Character('gf'));
-		spectator.screenCenter();
 
 		add(opponent = new Character('dad'));
-		opponent.setPosition(50, 100);
-		// opponent.setColorTransform(-1, 0, 0, 1, 255);
 
 		add(player = new Character('bf'));
-		player.setPosition(700, 200);
 		player.flipX = !player.flipX;
 		// player.scale.x *= -1;
 
@@ -225,6 +244,15 @@ class PlayState extends FlxState {
 		FlxG.sound.music.volume = 1;
 
 		addScriptPack('songs/darnell/scripts');
+
+		for (str in strumGroup.members) {
+			str.forEach((i) -> {
+				i.noteHit.add(noteHit);
+				i.noteHeldStep.add(noteHeldStep);
+				i.noteHeld.add(noteHeldUpdate);
+				i.noteMiss.add(noteMiss);
+			});
+		}
 
 		call('create');
 	}
@@ -249,14 +277,36 @@ class PlayState extends FlxState {
 		}
 	}
 
+	// later
+	var combo:Int = 0;
+
+	function popupScore(rating:String) {
+		comboNum.number = combo;
+		ratingSpr.loadGraphic(Paths.image('ui/ratings/$rating'));
+		ratingSpr.updateHitbox();
+		ratingSpr.screenCenter();
+		ratingSpr.y = 100 - (ratingSpr.height * .5);
+
+		comboNum.x = FlxG.width * .5;
+		comboNum.y = 150;
+
+		ratingSpr.alpha = comboNum.alpha = 1;
+
+		// fnf
+		ratingSpr.x -= 25;
+		comboNum.x -= 25;
+	}
+
 	function noteHit(note:Note) {
 		var laneID = note.strum.parentLane.ID;
 		var char:Character = note.character ?? player;
 
 		if (laneID == 1) {
 			var gwa = 0.01;
-			score += 100;
+			score += note?.score(Conductor.time - note.strumTime) ?? 0;
 			health += gwa;
+			combo += 1;
+			popupScore(note?.judge(Conductor.time - note.strumTime) ?? 'sick');
 		}
 
 		if (note.anim != null && char != null) {
@@ -271,10 +321,6 @@ class PlayState extends FlxState {
 		var laneID = note.strum.parentLane.ID;
 		var char:Character = note.character ?? player;
 
-		if (laneID == 1) {
-			health += 0.7 / 100;
-		}
-
 		if (note.anim != null && char != null) {
 			char.holdTime = Conductor.crochetSec * 2;
 			char.playAnim(note.anim, true);
@@ -283,10 +329,22 @@ class PlayState extends FlxState {
 		call('noteHeld', [note, laneID]);
 	}
 
+	function noteHeldUpdate(note:Note) {
+		var laneID = note.strum.parentLane.ID;
+		if (laneID == 1) {
+			health += (7.5 / 100) * FlxG.elapsed;
+			var tempS:Float = score + (250 * FlxG.elapsed);
+			score = Std.int(tempS);
+		}
+
+		call('noteHeldUpdate', [note, laneID]);
+	}
+
 	function noteMiss(note:Note) {
 		var gwa = 0.02;
 		score -= 10;
 		health -= gwa;
+		combo = 0;
 	}
 
 	override public function update(elapsed:Float) {
@@ -297,8 +355,8 @@ class PlayState extends FlxState {
 				spawnNote(note);
 			}
 		}
-		camGame.zoom = FlxMath.lerp(camGame.zoom, 1, elapsed * 2.5);
-		camHUD.zoom = FlxMath.lerp(camHUD.zoom, 1, elapsed * 2.5);
+		camGame.zoom = FlxMath.lerp(camGame.zoom, defaultZoom, elapsed * 2.5);
+		camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudZoom, elapsed * 2.5);
 
 		timeNum.number = Math.floor(Conductor.time * 0.001);
 

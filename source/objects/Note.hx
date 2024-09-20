@@ -96,10 +96,13 @@ class Note extends FlxSpriteExt {
 			}
 
 			if (_shouldDoHit) {
-				if (_origLen == -1)
+				if (_origLen == -1) {
 					_origLen = sustain.length;
+					strumTime -= Conductor.delta;
+				} else {
+					strumTime = Conductor.time;
+				}
 
-				strumTime = Conductor.time;
 				sustain.length -= Conductor.delta;
 				hit = HELD;
 
@@ -158,6 +161,51 @@ class Note extends FlxSpriteExt {
 		note.sustain.length = not.length;
 
 		return note;
+	}
+
+	// dynamic, so you can edit scoring system cus why not
+	public dynamic function score(diff:Float = 0):Int {
+		// not gonna bother rewriting the pbot1 score system from scratch
+		var absTiming:Float = Math.abs(diff);
+
+		/**
+		 * The maximum score a note can receive.
+		 */
+		var PBOT1_MAX_SCORE:Int = 500;
+
+		/**
+		 * The offset of the sigmoid curve for the scoring function.
+		 */
+		var PBOT1_SCORING_OFFSET:Float = 54.99;
+
+		/**
+		 * The slope of the sigmoid curve for the scoring function.
+		 */
+		var PBOT1_SCORING_SLOPE:Float = 0.080;
+
+		/**
+		 * The minimum score a note can receive while still being considered a hit.
+		 */
+		var PBOT1_MIN_SCORE:Float = 9.0;
+
+		var factor:Float = 1.0 - (1.0 / (1.0 + Math.exp(-PBOT1_SCORING_SLOPE * (absTiming - PBOT1_SCORING_OFFSET))));
+
+		var score:Int = Std.int(PBOT1_MAX_SCORE * factor + PBOT1_MIN_SCORE);
+		score = Std.int(FlxMath.bound(score, 0, PBOT1_MAX_SCORE));
+
+		return score;
+		// return 0;
+	}
+
+	public dynamic function judge(diff:Float = 0):String {
+		var absTiming:Float = Math.abs(diff);
+		if (absTiming <= 45)
+			return 'sick';
+		if (absTiming <= 90)
+			return 'good';
+		if (absTiming <= 130)
+			return 'bad';
+		return 'shit';
 	}
 }
 

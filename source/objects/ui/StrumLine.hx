@@ -8,7 +8,7 @@ class StrumLine extends FlxTypedSpriteGroup<StrumNote> {
 
 	public function set_spacing(v:Float) {
 		forEach(function(note) {
-			note.x = v * note.ID;
+			note.x = x + (v * note.ID);
 		});
 		return spacing = v;
 	}

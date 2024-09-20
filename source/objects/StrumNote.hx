@@ -25,7 +25,7 @@ class StrumNote extends Note {
 	public var notes:Array<Note> = [];
 	public var autoHit:Bool = false;
 	public var blocked:Bool = false;
-	public var hitWindow:Float = 123.0;
+	public var hitWindow:Float = 160.0;
 
 	public override function set_hit(v:NoteHitState):NoteHitState {
 		return hit = NONE;
