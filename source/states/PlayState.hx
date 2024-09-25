@@ -140,7 +140,7 @@ class PlayState extends FlxState {
 		opponentStrums.autoHit = true;
 		opponentStrums.ID = 0;
 
-		playerStrums.setPosition(FlxG.width - playerStrums.width - 100, 50);
+		playerStrums.setPosition((FlxG.width * .5) + 50, 50);
 		strumGroup.add(playerStrums);
 		playerStrums.ID = 1;
 		// playerStrums.autoHit = true;
@@ -202,7 +202,7 @@ class PlayState extends FlxState {
 		Paths.image('ui/ratings/bad');
 		Paths.image('ui/ratings/sick');
 		insert(0, ratingSpr);
-		ratingSpr.scale.set(0.6, 0.6);
+		ratingSpr.scale.set(0.55, 0.55);
 		ratingSpr.updateHitbox();
 
 		comboNum = new Counter();
@@ -290,11 +290,27 @@ class PlayState extends FlxState {
 		comboNum.x = FlxG.width * .5;
 		comboNum.y = 150;
 
-		ratingSpr.alpha = comboNum.alpha = 1;
-
 		// fnf
-		ratingSpr.x -= 25;
-		comboNum.x -= 25;
+		ratingSpr.x -= 42;
+		comboNum.x -= 42;
+
+		ratingSpr.moves = comboNum.moves = ratingSpr.active = comboNum.active = true;
+		ratingSpr.velocity.y = -60;
+		ratingSpr.acceleration.y = ratingSpr.maxVelocity.y = 200;
+
+		comboNum.velocity.y = -80;
+		comboNum.acceleration.y = comboNum.maxVelocity.y = 150;
+
+		for (idx => bleh in [ratingSpr, comboNum]) {
+			FlxTween.cancelTweensOf(bleh);
+			bleh.alpha = 1;
+			FlxTween.tween(bleh, {alpha: 0}, 0.3, {
+				startDelay: 0.4 + (idx * 0.1),
+				onComplete: (_) -> {
+					bleh.moves = bleh.active = false;
+				}
+			});
+		}
 	}
 
 	function noteHit(note:Note) {

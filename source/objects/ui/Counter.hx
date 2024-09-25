@@ -53,7 +53,7 @@ class Counter extends FlxSprite {
 			x += separator;
 		} else if (alignment == CENTER) {
 			x -= ((frameWidth + separator) * scale.x * spli.length) * 0.5;
-			x += separator * 2;
+			x += separator * scale.x;
 		}
 		for (waaa in spli) {
 			var num = 0;
