@@ -4,12 +4,10 @@ var fuck = new FlxObject();
 
 function create() {
 	// this.scale.set(FlxG.random.float(0.5, 2), FlxG.random.float(0.5, 2));
-	FlxG.camera.target = fuck;
+	FlxG.camera.follow(fuck, null, 4);
 }
 
 function update(elapsed) {
-	FlxG.camera.followLerp = elapsed * 14;
-
 	fuck.setPosition(FlxG.width * .5, FlxG.height * .5);
 
 	if (StringTools.startsWith(this.animation.name, 'sing')) {

@@ -1,8 +1,11 @@
 {
     "display": "Darnell (BF Mix)",
     "color": null,
-    "artist": "Saruky",
-    "charter": "i forgor",
+
+    "art": null,
+    "music": "Saruky",
+    "chart": "Fabs + Spazkid",
+
     "diff": ["easy","normal","hard"],
     "custom": {}
 }
