@@ -1,0 +1,34 @@
+{
+	"stars": 4,
+	"notes": [],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "pico-playable"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "nene"
+		}
+	],
+	"bpm": [
+		{
+			"t": 0,
+			"bpm": 180
+		}
+	],
+	"speed": 1
+}

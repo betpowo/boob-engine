@@ -1,0 +1,37 @@
+{
+	"stars": 1,
+	"notes": [
+		"eF5NVFuSxCAIvNBUjQIN5ixTe/9rbCR2V7400g8EzG985t/3Z3hWjPHxe12FXuc0dGBuxNibDTFuGlOHPDfr3hrujxjjOQ1qBwlBdVAdVAcxoA22uh/RRdzCUb8G0zFlaErRmrx3vnEdTeGSIjOFK+GKKjbGScoG72JjMzo6FZ2Kdkm2ioWiff0+A0tjEAOKpqKdaXsky2Ip5eLNrexkb8UbuVHPVQN3KrubzsRw3siDFXK1zIO+3tnb54b3V/PPVwwyY1A3JvMMjU5MeoW8IhQNZhxgNwL0D81AaAj2QB3GJcZFDxh7ANOcG7kw4Vw4F87pi1Q0WVsUK4oSoxRdii52EksDvqSsGcbFvuBifqm5SdUlNUEJ05kY4I1Ss56aoNQEZb07mfXuZBkdSjUro0YZX3A5n3A5vcrZyWf34PiTKH//JUrTXikf5Vopn5JPyUcv9NnduH+IaxZb",
+		"eF5VlGtyxCAMgy+0MwX8grPs7P2v0UCjL91/JrYksB29R2vt1T8/7zHiDuL6YjuYFSewPuKkbNe0HajmBGMHdcNto65wxHVIsafYU8gUe4m9xF4iLRXXZrebtDcV9hY3f+/txnQn68G3g99R7LqTndRNWCZ1i7ollnF6dTrzNGtsxMkaWSN7urJZxiR71M63Re8XiKXsprs7et57mtzoexOz8fI9pjvb9SJL+FJvs4K5QBSI0ouMDtlEd6J7bj9eF/KcDv4++RDSh3jddE9nadyk5QkiyXJjL03DS/rBFgRbEE2I6EJEl0a4ZhCufoeDdeqCuqAupJtN2WzqbXb2vLPonSz/WA5NMvnLcsBMh9I0lzTdL9mbZEuTDcoFYoFYelHRq2KDig2q/n+S1f9Psrh7sfPF3QuLKDyiMIlizoVfFD5RX0ZRjg6zKQfl6AQ68dgFOgEi0IkvHRypsKTCk+oxpceVHlt6fOkxpgnfhG8+WfgWfAs+nOUvss8vuelB4w=="
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "bf"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "gf"
+		}
+	],
+	"bpm": [
+		{
+			"t": -1,
+			"bpm": 120
+		}
+	],
+	"speed": 1.8
+}

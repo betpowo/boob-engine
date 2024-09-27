@@ -1,0 +1,37 @@
+{
+	"stars": 12,
+	"notes": [
+		"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"
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "pico-playable"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "nene"
+		}
+	],
+	"bpm": [
+		{
+			"t": 0,
+			"bpm": 180
+		}
+	],
+	"speed": 2.6
+}

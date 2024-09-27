@@ -1,0 +1,37 @@
+{
+	"stars": 7,
+	"notes": [
+		"eF5NVVuSJCEIvFBHDG/xLBN7/2usIknPVyECkpBQv/Thfz+/YvSh/sr5WtJHzzft3d/vPTPlM2Shd8PWLiWUZksH5XhXJXT4F0dWtM0VrkaJno1yu6u2ewlXY9I25jF5Pne7j16NU0NxhyY6ecejcd8SCNc4pG0iGlcJpckOGLvdF7CXcOMsa5sF7GvfQn0OlnNIjiln1zO6apn5NLtS+Zwy3IO2A/NqpLfgKD2SZbH2ZlkCCfmyTo/0iM/DUUt2QysdUNnR75MwbkMROaJZwYvQ9I2W8P72f/drQtN4AnKh7CiiaJWogzJGYIh9OQmUYhuMcpT+SF0rcWQgHp29+JAxJpcAC5URRYe9ytf36eCrw2QVaWxaXD73WaSVhJfs7o7+YbL221c4dt1mtVtlxWlIocWK0m1uFutwQjc4qhu9Prn0+0YzG4wuGWMWTEB9E/Tfijs1RAKKm86oKSpjir6aGaKYNbIjwM7QYXNUwBzDbMW2N8TYKlZsK7tg5BxgrwXYa5F/am5L4LUUkRbmxVKQT2KbWV6k5ZuDtBj8Vsgg3eCP7e+C+W4Ybl+nWS2E/jttLCAGemdMmDMm7HTkejQWF+86uuBFr/ko25qP0hn65wZ8bmtuN6I4quc+ecfkXRNQdjEIApzzNXkv8NZXdl880StPb0Z6JuLtyXnP/t0xOmz7u3ifLghzHoQ5DwKiIEx81DSWnQBHzP8kBLMTkoJbIIqaRO1ah4KBoWBgGFDFpf5MaLwfzDv9BzDWoEw=",
+		"eF5NlllyLSkMRDfkiAZNwFpeeP/baBAcub4sczUrlap/Q9qP/P73b1r76fvvivt/b7P9tCNIu7/0mO+nuV90C9Kfssi8OmL85HLNJey9jLgvGs+hntjnJyW4ETSF49n06diJXkIqrxfC2zN3eVZOPk7Q2JldYTyrcepKAc9Ln/Ky52fNZ9XbSUh/dun538kqe9L80y/e1su5d/Lo/fRDfrSlvVZPtTxptVfL3k6DG1HNsDKa2m0Q3zueXPjV9Ws//M26j2OVujvppzuP1R1vvM70CRqkd2Hm+myl0x3ppSftNVOEyg443psyKdHCh7UGdshb7AyAvMUGnuzEufBq2c+d1e8F2/Pmhg8HJ+L0U6IAG/LBJ28WOePrM4JcY+JpNOKM/nopo7IeVnqBzwHcZAByGVXFBOYyq4JpxpuXXtUyq5er0f0l9HwxYVlMeCPu5bKlT33a2Ig9lIku2WpbbGvtvx4APik+26B9vfloEkK+FRHoSfm+HVc1VVV91amCty29+WhRghqI0uSC1DO2Ti3kU5NNPF1OIJbTIXU6tKWLsWuZRJEakXjEsnhDA1LQKN6KRZeTTfJtGBZFLDqyQ/icoPAUiRRv6nYZ5elaoyLr7I51qrFONdYhOtuLnLGyLhP224pfbKd4ena5yIyZmQnejOmZ+ZutJedcvdHQm2TibLE5TLElIjqccQbHG+yxty7RFDefWZ6KkWxq+5uyTfBqE7zaZBLnKjyrJR+822Ium0TIa7FNtha1r5W42LF/72m571v6ePMGO3ibHJ227A9RXozp/cvC3jl/nvyZln21v5l5cagLiHfxQOLOeLJp6qm8HXNVfCbD9jdlN1jAk2XT3kC0W7w+uNHRLc1PTgbDu8MHW4pPvcW87vT3rBi6cPCu483Bi4096l4HyPPgQniwGx5sqQes4gO8+KiOD5DnA+T5qL4nE1+9RVcG+PH5vfQ+uWKebFxTLB725OH0sdgkL0b2xc324mZfhZ1V9SzqicbGRuOiR2MTovGNEo3pRaOyaDDTXinjjWsTnWsTyenUEp3JRYexojOvECoIIe8QLmIki6dPZbNDwXUUY4eB3yiOjvpcC1f7261wJh/JyvBmRHUmqh+h7Q+DkRx9NYZ8LblmMWCHGFX14LrGqKons4wJIiM5unxO9j5W/8aqr8hRjD2Sp4+PUXy8Pxs+OBtChkPvN/D/6DGdUg=="
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "bf"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "gf"
+		}
+	],
+	"bpm": [
+		{
+			"t": 0,
+			"bpm": 125
+		}
+	],
+	"speed": 2.4
+}

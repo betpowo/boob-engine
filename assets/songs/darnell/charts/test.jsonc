@@ -23,7 +23,7 @@
     
     "lanes": [
         { "pos": "opp", "char": "darnell", "keys": 4 },
-        { "pos": "plr", "char": "bf", "keys": 4, "play": true },
+        { "pos": "plr", "char": "bf", "keys": 4, "play": true, "vox": "plr" },
         { "pos": "spc", "char": "gf", "keys": 0 }
     ]
 }

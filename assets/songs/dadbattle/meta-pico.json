@@ -1,0 +1,8 @@
+{
+	"chart": "Fabs + Spazkid",
+	"music": "Saruky",
+	"icon": "dad",
+	"stage": "stage-erect",
+	"display": "DadBattle",
+	"diff": ["easy", "normal", "hard"]
+}

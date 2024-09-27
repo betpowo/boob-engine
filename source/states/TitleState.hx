@@ -5,6 +5,7 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.input.keyboard.FlxKey;
 import objects.Alphabet;
 import objects.ui.ImageButton;
+import song.Song;
 import util.GradientMap;
 
 class TitleState extends FlxState {
@@ -30,7 +31,7 @@ class TitleState extends FlxState {
 		bleh[2].inputs = [FlxKey.C];
 
 		var butt:FlxUIButton = new FlxUIButton(0, 0, '>w<', function() {
-			PlayState.chart = Chart.ChartConverter.convert(File.getContent(Paths.file('songs/darnell/charts/chart.json')));
+			Song.load('bopeebo', 'hard', 'pico');
 			FlxG.switchState(new PlayState());
 		});
 		butt.screenCenter();

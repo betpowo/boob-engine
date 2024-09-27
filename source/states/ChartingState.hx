@@ -4,12 +4,15 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import objects.Note;
 import objects.ui.*;
+import song.Chart.ChartNote;
+import song.Chart.ChartParser;
 import util.*;
 
 class ChartingState extends FlxState {
 	var GRID_SIZE:Float = 100;
 
 	var chart = null;
+	var chartNotes:Array<ChartNote> = [];
 	var strumLine:StrumLine;
 	var note:ChartingNoteGroup;
 	var infoText:FlxText;
@@ -41,7 +44,7 @@ class ChartingState extends FlxState {
 		camHUD.bgColor = 0x00000000;
 		FlxG.cameras.add(camHUD, false);
 
-		strumLine = new StrumLine(4);
+		strumLine = new StrumLine({keys: 4});
 		strumLine.spacing = GRID_SIZE;
 		strumLine.forEach((n) -> {
 			n.setGraphicSize(GRID_SIZE);
@@ -64,7 +67,9 @@ class ChartingState extends FlxState {
 
 		add(strumLine);
 
-		add(note = new ChartingNoteGroup(chart, strumLine, [{base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}]));
+		chartNotes = ChartParser.parseNotes(chart.notes);
+
+		add(note = new ChartingNoteGroup(chartNotes, strumLine, [{base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}]));
 		note.gridSize = GRID_SIZE;
 		note.x = strumLine.x;
 
@@ -89,10 +94,10 @@ class ChartingState extends FlxState {
 
 		timeNum.camera = infoText.camera = camHUD;
 
-		Conductor.bpm = chart.bpm;
+		Conductor.bpm = chart.bpm[0].bpm;
 
 		inst = new FlxSound();
-		inst.loadEmbedded(Paths.song('darnell'), true);
+		inst.loadEmbedded(Paths.song(Song.song, 'Inst', Song.variation), true);
 		inst.volume = 0.7;
 		inst.autoDestroy = false;
 		FlxG.sound.list.add(inst);
@@ -113,6 +118,7 @@ class ChartingState extends FlxState {
 		changeLayer(0);
 	}
 
+	@:allow(song.Song)
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
@@ -168,7 +174,8 @@ class ChartingState extends FlxState {
 		}
 
 		if (FlxG.keys.justPressed.ENTER) {
-			PlayState.chart = chart;
+			Song.chart.notes = ChartParser.encodeNotes(chartNotes);
+			Song.parsedNotes = chartNotes;
 			inst.stop();
 			FlxG.sound.music.stop();
 			FlxG.switchState(new states.PlayState());
@@ -239,26 +246,26 @@ class ChartingState extends FlxState {
 						FlxG.sound.play(Paths.sound('charter/noteLay'));
 						var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - GRID_SIZE * 0.5) / GRID_SIZE : valueY) * Conductor.stepCrochet;
 						// trace('note is at $daTime');
-						chart.notes.push({
+						chartNotes.push({
 							time: daTime,
 							index: valueX,
 							length: shittyLength,
 							lane: layer
 						});
-						note.chart = chart; // lame
+						note.chart = chartNotes; // lame
 						releaseTime = 0;
 					} else {
 						FlxG.sound.play(Paths.sound('charter/noteErase'));
-						chart.notes.sort((a, b) -> {
+						chartNotes.sort((a, b) -> {
 							if (a.time < b.time)
 								return -1;
 							if (a.time > b.time)
 								return 1;
 							return 0;
 						});
-						chart = note.chart; // lame
+						note.chart = chartNotes; // lame
 					}
-					chart.notes.sort((a, b) -> {
+					chartNotes.sort((a, b) -> {
 						if (a.time < b.time)
 							return -1;
 						if (a.time > b.time)
@@ -319,7 +326,7 @@ class ChartingState extends FlxState {
 
 class ChartingNoteGroup extends Note {
 	public var strumLine:StrumLine;
-	public var chart:Chart;
+	public var chart:Array<ChartNote>;
 	public var layer:Int = -1;
 	public var gridSize(default, set):Float = 110;
 
@@ -356,7 +363,7 @@ class ChartingNoteGroup extends Note {
 		ogy = y;
 		selecting = false;
 		if (strumLine != null && chart != null) {
-			for (idx => bruh in chart.notes) {
+			for (idx => bruh in chart) {
 				var shouldDraw = (bruh.time + bruh.length) >= (Conductor.time - Conductor.crochet * 2)
 					&& bruh.time <= (Conductor.time + (Conductor.crochet * 3));
 				var gwa = rgbs[bruh.lane] ?? rgbs[0];
@@ -388,12 +395,11 @@ class ChartingNoteGroup extends Note {
 	}
 
 	function handleSelection(idx:Int = 0) {
-		/*
-			// ill figure out moving notes later
-			if (FlxG.mouse.pressed)
-			{
-				var valueX:Float = Math.floor((FlxG.mouse.x - ogx) / gridSize);
-				var valueY:Float = Math.floor((FlxG.mouse.y - ogy) / gridSize);
+		// ill figure out moving notes later
+		if (FlxG.mouse.pressed) {
+			var valueX:Float = (FlxG.mouse.x - ogx) / gridSize;
+			chart[idx].index = Std.int((valueX % 1 >= 0.75) ? valueX + 1 : valueX);
+			/*var valueY:Float = Math.floor((FlxG.mouse.y - ogy) / gridSize);
 				var unsnapped = FlxG.keys.pressed.SHIFT;
 
 				if (unsnapped)
@@ -402,16 +408,16 @@ class ChartingNoteGroup extends Note {
 				var daTime = valueY * Conductor.stepCrochet;
 				trace('hi $daTime');
 
-				chart.notes[idx].time = daTime;
-		}*/
+				chart[idx].time = daTime; */
+		}
 
-		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart.notes[idx].lane) {
-			chart.notes.splice(idx, 1);
+		if (FlxG.mouse.justReleased && ChartingState.releaseTime >= 0.1 && layer == chart[idx].lane) {
+			chart.splice(idx, 1);
 		}
 
 		if (FlxG.keys.anyJustPressed([Q, E])) {
 			FlxG.sound.play(Paths.sound('charter/stretch${FlxG.random.int(1, 2)}_UI'));
-			chart.notes[idx].length += Conductor.stepCrochet * (FlxG.keys.justPressed.Q ? -1 : 1);
+			chart[idx].length += Conductor.stepCrochet * (FlxG.keys.justPressed.Q ? -1 : 1);
 		}
 	}
 }

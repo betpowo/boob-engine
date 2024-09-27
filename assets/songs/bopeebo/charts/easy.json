@@ -1,0 +1,37 @@
+{
+	"stars": 1,
+	"notes": [
+		"eF5NkdsRQyEIRBu6M1He1JJJ/21EXol/ImeRXd/rgc/rLWs9+BCvc96Qxbk6Bdkp9oNZMJ1idXH6f8xjwA7xSnWeOOg81ZBCN9EQpKNiHJZjEgzrMPfOo/Ka5kkArZ4BhE0ASe7ZhAUfJsH3EF5OwuopEaWfQfRGkLhlSPf6aJQLVlaBRwoVCXo93NEh9GqEswKl+bz7mY+Humvrmk0m12yqKLrHYNnbVh+j0iNYxwAb3B4FqD0KaCOC2DLJBMajKMy9TuyiNnrb080sRhWiIhTmKxS8Wa00iv0CYH2LMQ==",
+		"eF5NkdkNwzAMQxcKUN2yZwm6/xq1rsI/gWQ/0SLzkgA89P28DKfgRxSisWzO9zROp8GHq1mngW6WXBhSKGBWOZ7VDjwqLpVmbQ3hOFPuw65QomYJrc8Jd08RldouwqQ1yHwIh1y0CI7lyiZqE4xlJa7acj3DxoPYnjG/1xdYuWCFJVgxVCZC9XCTar2a2KwgaT7P/ubF5z8oyKWtCJe2VhRzp5R34eO0sX9JGIwBA7s9mqz2aCFciPqMZQLj0bbN+Z7YHajnHbRvPbOYKRcZQuZXuPKwlUayP/+vi8I="
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "bf"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "gf"
+		}
+	],
+	"bpm": [
+		{
+			"t": 0,
+			"bpm": 100
+		}
+	],
+	"speed": null
+}

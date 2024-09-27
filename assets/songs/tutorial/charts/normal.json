@@ -1,0 +1,37 @@
+{
+	"stars": 0,
+	"notes": [
+		"eF49j9EJACEMQxc6uNgWSWeR23+Ns9L493gxwa6cwIPvXQPc5EUGOTe5LLJNhtg0isaUM8qR3XWgU6/Bk7pF7zm14olL2gtoL4bexflVdYNqBF0NzpumXPZFPybaM5c=",
+		"eF49kNsNxTAIQxeqdAnYJLtU3X+NW1KcvyODzeMegNllz+8ezJeiKJe0Fz7NUeRF9JdGUULazNYisr2B1dWSujq98xBKQSwRlAcqD3n69lblpaE12mwHhzblCGmuafTjjePdF9kmTeO+bXt5HKkPceoH/O69Ju35AwtvSLA="
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "gf"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "bf"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "gf"
+		}
+	],
+	"bpm": [
+		{
+			"t": -1,
+			"bpm": 100
+		}
+	],
+	"speed": 1
+}

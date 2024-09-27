@@ -1,0 +1,37 @@
+{
+	"stars": 6,
+	"notes": [
+		"eF5NU9GRBSEIa+jNHAIBreXN9d/Gra7J3NcqkBgC+7XP+P35Ot4vzD7xfGfjfMdwnMTYFbYPu8T3oS9m7OLn6HguafZGk5RJziQpSAqSgqTYpHG5JtMTl3QZH/ediyvsKvMNPtmgigHKGC/1PpWzrkg8Stk28rVaXWJZrHNjnRuzblTgw27XPpQ9jh1ECptUsNu4CFCfQ4gSS9FPL2WbvnjTF28yhxwKp/qQQxGumBDBPiI5g9AcI/luvJo/T/m5Hfy9pRGZRt6UKzmoJEN1oVjSgUxqz3wseLPQjoE7mNqV1LLkFEJ7k0t1K5pZdgvnXOD6I5x8kHsI8iFUF3QFJRbtF5qdo4VovTsVm3QZU3xSj8VZYZG55FAl9ZUcKrhiQoDvVtGN0laVtqrerbrzrP433T/d4fPx",
+		"eF5dlmu25CAIhDfUZ0YBRddyz+x/GxMf9XX3/Ucij6JSYH6slPKq//7+mLVrtOdNkWHLGNle/hherW0fX87Lx+Wzje2TN4+vqMe09jx0lek78lVH/tnvFdZX2DJyeRoOqUrpF0QKX6rSFPSpbFNHtZQLsJYF3relnLW0Ij/Vr3Wd2sVda8q3ioW6OdvvIK2aSle4qS7IFZqqky9ESY0V4aoYy2P7Nuo06rSV85w2TonYNO+KSZ1cuHfsIN+AlWGKHSvzOYWVASsTtJNY6K7wbVWxx/JtCZ/BnJm+hplxivKMfK6ODF4NNs2Fz+DqWOcdmTdD9TJsHal3sWRJfC5kO2prb2dKeskn+PqBcVARhm18Do/eSUEGm4Z2bV6MV/hehN6LePHSL2teGLOqXF6vjpSBb+H7C3ycNGHyM5jvk66evTPa2yofPtRGZZ7siAEeVOaDrINe0NaxdsTR1iv8VprqIM4cgiFMnIfpe4WpSpgUFy4Mxyrb0hoLJ8KphKYiiAiy/NpfgYIiQcTOCpZWpNiMBBsKChQUKKiV70ptf3F7PeDPc5VyWhXiFoalaW6hyi1UrzEjjRlpZ5+8nuf1xDy0pE5Sh+/Zhrppk4gpftskO7uizc6puFsiPKe9CG0v71Npq6P1Tve9fs9NZ5909kk3zU1ns3Qn11bBR4Zzl308f2uvo/o+vqenw0s/8/9x8ivHu/ep7rIIUTL7yewnE5+bBWdK8sz5+5ktm9xPCRfH2rm515OJSLZscqMn+za53PPc7sviHkumJIMsQZZo+I17h+US8fFrYi651461Izodsbuz48emyk5HSUfvP4gEC9OYzGAmHbHBkg2WgyyDLNyTOeho0tGkownSu8/+A4rZIX8="
+	],
+	"lanes": [
+		{
+			"play": false, "vox": "opp",
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"char": "dad"
+		},
+		{
+			"play": true, "vox": "plr",
+			"pos": "plr",
+			"keys": 4,
+			"strumPos": "right",
+			"char": "pico-playable"
+		},
+		{
+			"visible": false,
+			"pos": "spc",
+			"keys": 0,
+			"strumPos": "center",
+			"char": "nene"
+		}
+	],
+	"bpm": [
+		{
+			"t": 0,
+			"bpm": 120
+		}
+	],
+	"speed": 2.3
+}

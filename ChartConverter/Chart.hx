@@ -5,15 +5,20 @@
 
 	@:optional var stars:Int;
 	@:optional var speed:Float;
-	@:optional var events:{order:Array<String>, events:String};
 	@:optional var meta:ChartMetadata;
+}
+
+@:structInit typedef ChartEvents = {
+	?order:Array<String>,
+	?events:Array<Dynamic>
 }
 
 @:structInit typedef ChartNote = {
 	time:Float,
 	index:Int,
 	?length:Float,
-	?lane:Int
+	?lane:Int,
+	?kind:String
 }
 
 // no structinit for you AAHAHHHAHHA no one likes you no one USES you you dumb
@@ -23,7 +28,10 @@ typedef ChartLane = {
 	?char:String,
 	?pos:String,
 	?keys:Int,
-	?play:Bool
+	?play:Bool,
+	?visible:Bool,
+	?strumPos:String,
+	?vox:String
 }
 
 @:structInit typedef ChartMetadata = {

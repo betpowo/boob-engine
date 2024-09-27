@@ -10,7 +10,7 @@ import util.GradientMap;
 class PauseSubstate extends FlxSubState {
 	var bg:FlxSprite;
 
-	function makeTardlingText(text:String, col1:FlxColor = 0xffffff, col2:FlxColor = 0x222222):FlxBitmapText {
+	function makeTardlingText(text:String, col1:FlxColor = 0xff000000, col2:FlxColor = 0xffffff):FlxBitmapText {
 		var fontLetters:String = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890!?,.()-Ññ&\"'+[]/#";
 
 		var text = new FlxBitmapText(0, 0, text, FlxBitmapFont.fromMonospace(Paths.image('ui/tardlingSpritesheet'), fontLetters, FlxPoint.get(49, 62)));
@@ -36,7 +36,7 @@ class PauseSubstate extends FlxSubState {
 		bg.setColorTransform(0, 0, 0, 0);
 		add(bg);
 
-		var songNameColor:FlxColor = 0xFFf9feb1;
+		var songNameColor:FlxColor = FlxColor.fromString(Song.meta.color ?? '#f9feb1');
 		var fuck:FlxColor = new FlxColor(songNameColor);
 		// agony
 		fuck.brightness *= 0.85;
@@ -50,30 +50,37 @@ class PauseSubstate extends FlxSubState {
 		fuck.yellow *= 1.03;
 		fuck.alpha = 255;
 
-		var songName = makeTardlingText('Darnell (BF Mix)', songNameColor, fuck);
+		var songName = makeTardlingText(Song.meta.display ?? Song.song, songNameColor, fuck);
 		add(songName);
 		songName.setPosition(50, 50);
 
-		var diffAsset:FlxGraphic = Paths.image('menus/results/diffs/hard') ?? Paths.image('menus/results/diffs/_default');
+		var diffAsset:FlxGraphic = Paths.image('menus/results/diffs/${Song.difficulty}') ?? Paths.image('menus/results/diffs/_default');
 		var diff:FlxSprite = new FlxSprite(50, 50).loadGraphic(diffAsset);
 		add(diff);
 		songName.x += diff.width + 25;
 
-		var compName = makeTardlingText('by Saruky');
+		var compName = makeTardlingText('${Song.meta.art ?? '(undefined)'}\n\n${Song.meta.music ?? '(undefined)'}\n\n${Song.meta.chart ?? '(undefined)'}');
 		add(compName);
-		compName.setPosition(50, 50);
 		compName.scale.set(0.6, 0.6);
-		compName.updateHitbox;
+		compName.updateHitbox();
+		compName.setPosition(50, FlxG.height - 50 - compName.height);
 
 		songName.y -= 10;
 		diff.y -= 10;
 
-		compName.y += 55;
+		var compIcon:FlxSprite = new FlxSprite(50, -50).loadGraphic(Paths.image('ui/pause-icons'));
+		add(compIcon);
+		diff.antialiasing = compIcon.antialiasing = true;
+		compIcon.y += FlxG.height - compIcon.height;
+		compName.y -= 10;
+		compName.x += compIcon.width + 2;
 
-		songName.alpha = diff.alpha = compName.alpha = 0.001;
+		songName.alpha = diff.alpha = compName.alpha = compIcon.alpha = 0.001;
 
 		FlxTween.tween(diff, {y: diff.y + 10, alpha: 1}, 0.1, {ease: FlxEase.quartOut, startDelay: 0.25});
 		FlxTween.tween(songName, {y: songName.y + 10, alpha: 1}, 0.1, {ease: FlxEase.quartOut, startDelay: 0.3});
+
+		FlxTween.tween(compIcon, {y: compIcon.y + 10, alpha: 1}, 0.1, {ease: FlxEase.quartOut, startDelay: 0.35});
 		FlxTween.tween(compName, {y: compName.y + 10, alpha: 1}, 0.1, {ease: FlxEase.quartOut, startDelay: 0.35});
 
 		var rightArrow:Alphabet = new Alphabet('→');
