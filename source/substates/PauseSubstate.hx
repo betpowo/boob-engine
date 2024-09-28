@@ -5,12 +5,13 @@ import flixel.graphics.frames.FlxBitmapFont;
 import flixel.text.FlxBitmapText;
 import objects.Alphabet;
 import objects.ui.AlphabetList;
+import states.PlayState;
 import util.GradientMap;
 
 class PauseSubstate extends FlxSubState {
 	var bg:FlxSprite;
 
-	function makeTardlingText(text:String, col1:FlxColor = 0xff000000, col2:FlxColor = 0xffffff):FlxBitmapText {
+	function makeTardlingText(text:String, col1:FlxColor = 0xffffff, col2:FlxColor = 0xff000000):FlxBitmapText {
 		var fontLetters:String = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890!?,.()-Ññ&\"'+[]/#";
 
 		var text = new FlxBitmapText(0, 0, text, FlxBitmapFont.fromMonospace(Paths.image('ui/tardlingSpritesheet'), fontLetters, FlxPoint.get(49, 62)));
@@ -25,7 +26,7 @@ class PauseSubstate extends FlxSubState {
 	}
 
 	override public function create() {
-		states.PlayState.pause(true);
+		PlayState.pause(true);
 
 		super.create();
 
@@ -39,15 +40,9 @@ class PauseSubstate extends FlxSubState {
 		var songNameColor:FlxColor = FlxColor.fromString(Song.meta.color ?? '#f9feb1');
 		var fuck:FlxColor = new FlxColor(songNameColor);
 		// agony
-		fuck.brightness *= 0.85;
-		fuck.saturation *= 1.2;
-		fuck.magenta += 10;
-		fuck.yellow += 10;
-		fuck.redFloat *= 1.05;
-		fuck.blueFloat *= 0.95;
-		fuck.saturation *= 0.6;
-		fuck.brightness *= 1.1;
-		fuck.yellow *= 1.03;
+		fuck *= 0xee55bb;
+		fuck.blueFloat *= songNameColor.blueFloat;
+		fuck.saturation *= 1.1;
 		fuck.alpha = 255;
 
 		var songName = makeTardlingText(Song.meta.display ?? Song.song, songNameColor, fuck);
@@ -113,16 +108,17 @@ class PauseSubstate extends FlxSubState {
 			switch (menu.list[a].toLowerCase()) {
 				case 'regret':
 					close();
+					PlayState.cachedTransNotes = [];
 					FlxTween.globalManager.active = true;
 					FlxTimer.globalManager.active = true;
 					FlxG.switchState(new states.TitleState());
 				case 'restart':
 					close();
-					states.PlayState.pause(false);
+					// PlayState.pause(false);
 					FlxG.resetState();
 				default:
 					close();
-					states.PlayState.pause(false);
+					PlayState.pause(false);
 			}
 		}
 		add(menu);
@@ -134,7 +130,7 @@ class PauseSubstate extends FlxSubState {
 			bg.alpha = FlxMath.bound(bg.alpha + (elapsed * 3), 0, 0.6);
 		if (FlxG.keys.justPressed.ESCAPE) {
 			close();
-			states.PlayState.pause(false);
+			PlayState.pause(false);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package states;
 
 import flixel.FlxSpriteExt;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -63,10 +64,6 @@ class PlayState extends FlxState {
 	var healthBar:HealthBar = new HealthBar();
 	var scoreNum:Counter = new Counter();
 	var timeNum:Counter = new Counter();
-
-	var player:Character;
-	var opponent:Character;
-	var spectator:Character;
 
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
@@ -220,6 +217,9 @@ class PlayState extends FlxState {
 		for (i in [strumGroup, healthBar, scoreNum, timeNum, ratingSpr, comboNum]) {
 			i.camera = camHUD;
 		}
+
+		if (cachedTransNotes.length > 0)
+			doNoteTransition();
 
 		for (idx => i in chars) {
 			if (i.char != null) {
@@ -422,6 +422,93 @@ class PlayState extends FlxState {
 		return note;
 	}
 
+	public static var cachedTransNotes:Array<Array<Dynamic>> = [];
+
+	public function cacheTransNotes() {
+		cachedTransNotes = [];
+		noteGroup.forEach((n) -> {
+			final time = (n.strumTime - Conductor.time);
+			if ((time <= (Conductor.crochet * 3)) && (time >= Conductor.crochet * -1)) {
+				if (n.strum.parentLane.visible) {
+					cachedTransNotes.push([n.x, n.y, n.strumIndex, n.sustain.length, n.speed, n.rgb.r]);
+					// trace('a ${n.strumTime}');
+				}
+			}
+		});
+	}
+
+	var fakeNoteGroup:NoteGroup;
+
+	// im not adding note splashes :3
+	var fakeSplashGroup:FlxSpriteGroup;
+
+	public function doNoteTransition() {
+		fakeSplashGroup = new FlxSpriteGroup();
+		insert(0, fakeSplashGroup);
+
+		fakeNoteGroup = new NoteGroup();
+		insert(0, fakeNoteGroup);
+
+		fakeNoteGroup.camera = fakeSplashGroup.camera = camHUD;
+
+		// order: x, y, index, length, speed, rgb
+		for (bleh in cachedTransNotes) {
+			var note = fakeNoteGroup.recycle(Note);
+			note.strumIndex = bleh[2];
+			note.setPosition(bleh[0], bleh[1]);
+			note.sustain.length = bleh[3];
+			note.speed = bleh[4];
+			note.moves = true;
+			note.acceleration.y = FlxG.random.float(500, 800);
+			note.velocity.y = FlxG.random.float(-140, -240);
+			note.velocity.x = FlxG.random.float(-1, 1) * 50;
+			note.angularVelocity = note.scrollAngularVelocity = FlxG.random.float(-1, 1) * 400;
+			if (FlxG.random.bool(50)) {
+				// reroll
+				note.scrollAngularVelocity = FlxG.random.float(-1, 1) * 200;
+			}
+			fakeNoteGroup.add(note);
+
+			FlxTween.tween(note, {alpha: 0}, 0.2, {startDelay: 2.5});
+
+			note.camera = note.sustain.camera = camHUD;
+
+			var splash = fakeSplashGroup.recycle(FlxSprite);
+			fakeSplashGroup.add(splash);
+			splash.frames = Paths.sparrow('ui/splashEffect');
+			splash.animation.addByPrefix('idle', 'splash ${FlxG.random.int(1, 2)}', 12, false);
+			splash.animation.play('idle', true);
+			splash.animation.finishCallback = function(a) {
+				splash.kill();
+				fakeSplashGroup.remove(splash);
+				remove(splash);
+				splash.destroy();
+			}
+
+			var rgb:FlxColor = bleh[5];
+			splash.updateHitbox();
+			splash.setColorTransform(1, 1, 1, 1, rgb.red, rgb.green, rgb.blue);
+			splash.setPosition(note.getMidpoint().x, note.getMidpoint().y);
+			splash.x -= splash.width * .5;
+			splash.y -= splash.height * .5;
+
+			splash.blend = SCREEN;
+		}
+
+		new FlxTimer().start(3, (_) -> {
+			fakeNoteGroup.forEachExists((n) -> {
+				n.kill();
+				fakeNoteGroup.remove(n);
+				remove(n);
+				n.destroy();
+			});
+		});
+
+		// trace(fakeNoteGroup.members);
+
+		cachedTransNotes = [];
+	}
+
 	public static function pause(p:Bool = true):Bool {
 		Conductor.paused = p;
 		FlxG.sound.music.time = Conductor.time;
@@ -444,6 +531,8 @@ class PlayState extends FlxState {
 			tmr.active = p);
 		FlxTween.globalManager.forEach(function(twn:FlxTween) if (!twn.finished)
 			twn.active = p);
+
+		instance.cacheTransNotes();
 
 		instance.call('pause', [p]);
 

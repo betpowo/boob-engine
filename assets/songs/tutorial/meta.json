@@ -4,5 +4,6 @@
 	"icon": "gf",
 	"stage": "stage",
 	"display": "Tutorial",
+	"color": "#fc58a8",
 	"diff": ["easy", "normal", "hard"]
 }

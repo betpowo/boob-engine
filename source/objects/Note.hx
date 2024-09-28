@@ -21,6 +21,7 @@ class Note extends FlxSpriteExt {
 	public var anim:String = null;
 	public var editor:Bool = false;
 	public var character:Character = null;
+	public var scrollAngularVelocity:Float = 0;
 
 	var parentGroup:FlxTypedGroup<Note>;
 
@@ -59,6 +60,9 @@ class Note extends FlxSpriteExt {
 	}
 
 	override function update(elapsed:Float) {
+		if (moves) {
+			scrollAngle += scrollAngularVelocity * elapsed;
+		}
 		super.update(elapsed);
 		if (strum != null) {
 			followStrum(strum);

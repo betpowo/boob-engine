@@ -1,17 +1,10 @@
 {
 	"stars": 0,
 	"notes": [
-		"eF49j9EJACEMQxc6uNgWSWeR23+Ns9L493gxwa6cwIPvXQPc5EUGOTe5LLJNhtg0isaUM8qR3XWgU6/Bk7pF7zm14olL2gtoL4bexflVdYNqBF0NzpumXPZFPybaM5c=",
-		"eF49kNsNxTAIQxeqdAnYJLtU3X+NW1KcvyODzeMegNllz+8ezJeiKJe0Fz7NUeRF9JdGUULazNYisr2B1dWSujq98xBKQSwRlAcqD3n69lblpaE12mwHhzblCGmuafTjjePdF9kmTeO+bXt5HKkPceoH/O69Ju35AwtvSLA="
+		"eF49kNsNxTAIQxeqdAnYJLtU3X+NW1KcvyODzeMegNllz+8ezJeiKJe0Fz7NUeRF9JdGUULazNYisr2B1dWSujq98xBKQSwRlAcqD3n69lblpaE12mwHhzblCGmuafTjjePdF9kmTeO+bXt5HKkPceoH/O69Ju35AwtvSLA=",
+		"eF49j9EJACEMQxc6uNgWSWeR23+Ns9L493gxwa6cwIPvXQPc5EUGOTe5LLJNhtg0isaUM8qR3XWgU6/Bk7pF7zm14olL2gtoL4bexflVdYNqBF0NzpumXPZFPybaM5c="
 	],
 	"lanes": [
-		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "gf"
-		},
 		{
 			"play": true, "vox": "plr",
 			"pos": "plr",
@@ -20,10 +13,10 @@
 			"char": "bf"
 		},
 		{
-			"visible": false,
+			"play": false, "vox": "opp",
 			"pos": "spc",
-			"keys": 0,
-			"strumPos": "center",
+			"keys": 4,
+			"strumPos": "left",
 			"char": "gf"
 		}
 	],
