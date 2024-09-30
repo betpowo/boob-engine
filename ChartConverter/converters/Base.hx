@@ -58,7 +58,7 @@ class Base {
 		print('');
 
 		print('- adding bpm changes...');
-		var metaResult:ChartMetadata = {};
+		var metaResult:ChartMetadata = {diff: []};
 		var starsMap:Map<String, Int> = [];
 		var bpmChanges:Array<{t:Float, bpm:Float}> = [];
 		var lanes:Array<ChartLane> = [];
@@ -73,20 +73,20 @@ class Base {
 		var playData:Dynamic = meta.playData;
 		if (playData != null) {
 			lanes.push({
-				char: playData.characters.opponent ?? 'dad',
-				pos: 'opp',
-				keys: 4,
-				play: false,
-				strumPos: 'left',
-				vox: '-opp'
-			});
-			lanes.push({
 				char: playData.characters.player ?? 'bf',
 				pos: 'plr',
 				keys: 4,
 				play: true,
 				strumPos: 'right',
-				vox: '-plr'
+				vox: 'plr'
+			});
+			lanes.push({
+				char: playData.characters.opponent ?? 'dad',
+				pos: 'opp',
+				keys: 4,
+				play: false,
+				strumPos: 'left',
+				vox: 'opp'
 			});
 			lanes.push({
 				char: playData.characters.girlfriend ?? 'gf',
@@ -105,7 +105,7 @@ class Base {
 			metaResult.chart = meta.charter;
 
 			// vro
-			metaResult.icon = lanes[0].char.split('-')[0];
+			metaResult.icon = lanes[1].char.split('-')[0];
 		}
 
 		print('finished!');
@@ -117,6 +117,9 @@ class Base {
 		var allCharts:Map<String, Dynamic> = [];
 
 		for (i in (Reflect.fields(data.notes) : Array<Dynamic>)) {
+			// might need to manually edit this since i dont think it will automatically
+			// give you the easy normal hard order so
+			metaResult.diff.push(Std.string(i));
 			var result:Chart = {
 				stars: starsMap.get(i),
 				speed: 1,
@@ -143,7 +146,7 @@ class Base {
 					time: bruh.t,
 					index: Std.int(bruh.d % 4),
 					length: bruh.l,
-					lane: (bruh.d < 4) ? 1 : 0,
+					lane: (bruh.d < 4) ? 0 : 1,
 					kind: bruh.k ?? null
 				});
 			}
@@ -225,7 +228,11 @@ class Base {
 			File.saveContent('bin/$song/charts$dir/$idx.json', Json.stringify(i, null, '\t'));
 		}
 		File.saveContent('bin/$song/meta${va.length > 0 ? '-' : ''}$va.json', Json.stringify(metaResult, null, '\t'));
-		File.saveContent('bin/$song/events${va.length > 0 ? '-' : ''}$va.json', Json.stringify(events, null, '\t'));
+
+		if (!FileSystem.exists('bin/$song/events'))
+			FileSystem.createDirectory('bin/$song/events');
+
+		File.saveContent('bin/$song/events/events${va.length > 0 ? '-' : ''}$va.json', Json.stringify(events, null, '\t'));
 	}
 
 	static function convertEvents(data:Dynamic):{order:Array<String>, events:Array<Dynamic>} {
@@ -245,7 +252,7 @@ class Base {
 			index = result.order.indexOf(i.e);
 
 			if (i.v != null)
-				result.events[index].push([i.t, i.v]);
+				result.events[index].push([i.t, 0, i.v]);
 		}
 		print('finished!');
 		if (args.contains('debug'))

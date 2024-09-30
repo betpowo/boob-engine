@@ -1,23 +1,25 @@
 {
 	"stars": 1,
 	"notes": [
-		"eF5Fk9txBSEMQxu6MwG/MLVk0n8bCezq5M9jYUkI8z1HVX3s5+t7zjHGZ9zK3d/eQW/PDnp79tf8+K3OuQeFxWGpU81bca7Oudtb8K2DPj3U+qBXow96KpvSMBNq1u+sOT2XmoXuYSFdS/mzBE3pWsmVD/V80iMXJxe/aTyVNJwM3FOzAUvInwcsqaw8dV9P+P5dFWgxu1KzN7+LNg5a6XozsVHbuN/cbUs3htAY0g32JaZYYmojYupuQULB5oSJJV1q6TqXJJQklCG1jNYsL5i8YPKC2XKfm3NbGeQW34n0cV9DajWUX01tU5mYy+WvcF+4L3atApbUy1TSK7kqfkDxA4ofUA3a+Gu5X+SySGORxiKNxeYs/uAqZnHQpNGk0SPfDHoo055y2pOevbO/jCn5/A==",
-		"eF5Fk2tyxDAIgy/UmRrMwznLTu9/jS7J6tv8YhAgoeCX7ff343+/L9tV9bMmirXWk4tBn9ygT+68c3uinLobTaYkU85ENtFF3TV1T07zfA1qdyQ2X4MOh9ugd9RS5b0/CvzYh8PPNycFDseGY8OxF6hJ3zbtEaa6MNWFS0E46BA/0dZugZMxzU8H/gWuRTIl5VWU9o1iXtHboE0vHgQeBB7Epc3jouOC7ZL6XNotl3hzgfIXEofSNCVNF5Gu3RKH0qU+N1MKtqKOLbOZ0rB1qre1Wx6mHE0pk/oy1ZXLg3LNK5f62mKrLf9q6/7qgB56j5QWl13cWi9t2bd/w9H419xVo6XR0mhp3mVzTc27bHxp3GjcaNxolDZK+6IXzQcFBwVn28eDw2WfkJMnvrmn9x+2NPo0"
+		"eF5Fk2tyxDAIgy/UmRrMwznLTu9/jS7J6tv8YhAgoeCX7ff343+/L9tV9bMmirXWk4tBn9ygT+68c3uinLobTaYkU85ENtFF3TV1T07zfA1qdyQ2X4MOh9ugd9RS5b0/CvzYh8PPNycFDseGY8OxF6hJ3zbtEaa6MNWFS0E46BA/0dZugZMxzU8H/gWuRTIl5VWU9o1iXtHboE0vHgQeBB7Epc3jouOC7ZL6XNotl3hzgfIXEofSNCVNF5Gu3RKH0qU+N1MKtqKOLbOZ0rB1qre1Wx6mHE0pk/oy1ZXLg3LNK5f62mKrLf9q6/7qgB56j5QWl13cWi9t2bd/w9H419xVo6XR0mhp3mVzTc27bHxp3GjcaNxolDZK+6IXzQcFBwVn28eDw2WfkJMnvrmn9x+2NPo0",
+		"eF5Fk9txBSEMQxu6MwG/MLVk0n8bCezq5M9jYUkI8z1HVX3s5+t7zjHGZ9zK3d/eQW/PDnp79tf8+K3OuQeFxWGpU81bca7Oudtb8K2DPj3U+qBXow96KpvSMBNq1u+sOT2XmoXuYSFdS/mzBE3pWsmVD/V80iMXJxe/aTyVNJwM3FOzAUvInwcsqaw8dV9P+P5dFWgxu1KzN7+LNg5a6XozsVHbuN/cbUs3htAY0g32JaZYYmojYupuQULB5oSJJV1q6TqXJJQklCG1jNYsL5i8YPKC2XKfm3NbGeQW34n0cV9DajWUX01tU5mYy+WvcF+4L3atApbUy1TSK7kqfkDxA4ofUA3a+Gu5X+SySGORxiKNxeYs/uAqZnHQpNGk0SPfDHoo055y2pOevbO/jCn5/A=="
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

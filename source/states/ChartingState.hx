@@ -2,6 +2,7 @@ package states;
 
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
+import objects.Character;
 import objects.Note;
 import objects.ui.*;
 import song.Chart.ChartNote;
@@ -69,7 +70,21 @@ class ChartingState extends FlxState {
 
 		chartNotes = ChartParser.parseNotes(chart.notes);
 
-		add(note = new ChartingNoteGroup(chartNotes, strumLine, [{base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}]));
+		maxLayers = chart.lanes.length;
+
+		// {base: 0xffF9393F, outline: 0xff651038}, {base: 0xff12FA05, outline: 0xff0A4447}
+		add(note = new ChartingNoteGroup(chartNotes, strumLine, [
+			for (idx => i in chart.lanes) {
+				var col = FlxColor.fromString(Character.getIni(i.char)?.global?.color) ?? 0x717171;
+				var outlin = new FlxColor(col);
+				outlin.brightness *= 0.55;
+				outlin.greenFloat *= 0.5;
+				{
+					base: col,
+					outline: outlin
+				}
+			}
+		]));
 		note.gridSize = GRID_SIZE;
 		note.x = strumLine.x;
 
@@ -148,7 +163,7 @@ class ChartingState extends FlxState {
 		timeNum.number = FlxMath.roundDecimal(Conductor.time * 0.001, 2);
 
 		var intendedText = ' Beat: ${Conductor.beat}\n Step: ${Conductor.step}\n Layer:\n ';
-		intendedText += (layer == -1) ? '[ALL]' : 'Unnamed [' + Std.string(layer) + ']';
+		intendedText += (layer == -1) ? '[ALL]' : '$layerCharName [' + Std.string(layer) + ']';
 		if (infoText.text != intendedText)
 			infoText.text = intendedText;
 
@@ -305,6 +320,8 @@ class ChartingState extends FlxState {
 		}
 	}
 
+	var layerCharName:String = 'Unnamed';
+
 	function changeLayer(ch:Int = 0) {
 		if (ch != 0) {
 			layer += ch;
@@ -317,6 +334,12 @@ class ChartingState extends FlxState {
 		} else {
 			gridShader.set(0xeeeeff, -1, 0x808099);
 		}
+
+		for (i in strumLine.members) {
+			i.rgb.copy(gridShader);
+		}
+
+		layerCharName = Character.getIni(chart.lanes[layer]?.char)?.global?.name ?? 'Unnamed';
 	}
 
 	public static function stepFromMS(ms:Float):Float {

@@ -1,23 +1,25 @@
 {
 	"stars": 1,
 	"notes": [
-		"eF5NU9sRwzAIWyh3xTydWXrdf40ax1L7FYKQePot1/i83iFy2foOjccx2qNt1PG4yDEQHCv6YTdL2mhoG82yawWsnwl4xpG4BeoKrDPDt8ltmRy9kYxLiIxkXDGuoKIip0wVNKWDvvHz1VFWJ+roo4s6cUEGu9QkmhiKJvUKXWqhZlNwzcA1I2rNbYY5+jWO2xzKtqvSa8Xsv82/FvnTawLTBbo+UIlzrz6Qy5nLnahjth6YrQfyOzfqXKlPMm4ybuQIxWxDMcdQokbUiBqyRRLN331helFkFNFJdPJYJ/V4fXGj+uTGk50nd59794+PjED1ydtMXkHyCrL+d5X1v6tSZCgFsziBMmyjDI+weHHFXFV4h1WopDCLL48R3/k=",
-		"eF5NU9uRAzEIa2hnjjd2LZn030Zsx9Llj0VIYMG+TEQeff+9LFfgK/AVnYzvjO2gb6ZQXChutTyZ3izZwYZOsFn+rIL1oQJcJa+IqtwGGkQjmTv8HaVcSR2sG1QZrJusm1Cx8z4/Ed5lzpz/5/oq2yA68BSbdGmSMYFuueuY0ESBnvOVrpjZi9wmt4ke5w6D7/VB5UHlM5U9q+Z8Hf6zdNZXGJhh0A3HJMHVhqNXFBlFtOBtNLyNRv/kTpM7TQEjFYxU9MiAtxnwMYNoEk2iiW4lQEvgXikPUsEoJcrbLh53GfXoRjmmL268eFXF3dfZ/TdHxsT0TTeaV9C8gtbfXbX+7qoDHTrIpAOd2EYn/sMeZPAuevJXnJzk3ugHVHzhNA=="
+		"eF5NU9uRAzEIa2hnjjd2LZn030Zsx9Llj0VIYMG+TEQeff+9LFfgK/AVnYzvjO2gb6ZQXChutTyZ3izZwYZOsFn+rIL1oQJcJa+IqtwGGkQjmTv8HaVcSR2sG1QZrJusm1Cx8z4/Ed5lzpz/5/oq2yA68BSbdGmSMYFuueuY0ESBnvOVrpjZi9wmt4ke5w6D7/VB5UHlM5U9q+Z8Hf6zdNZXGJhh0A3HJMHVhqNXFBlFtOBtNLyNRv/kTpM7TQEjFYxU9MiAtxnwMYNoEk2iiW4lQEvgXikPUsEoJcrbLh53GfXoRjmmL268eFXF3dfZ/TdHxsT0TTeaV9C8gtbfXbX+7qoDHTrIpAOd2EYn/sMeZPAuevJXnJzk3ugHVHzhNA==",
+		"eF5NU9sRwzAIWyh3xTydWXrdf40ax1L7FYKQePot1/i83iFy2foOjccx2qNt1PG4yDEQHCv6YTdL2mhoG82yawWsnwl4xpG4BeoKrDPDt8ltmRy9kYxLiIxkXDGuoKIip0wVNKWDvvHz1VFWJ+roo4s6cUEGu9QkmhiKJvUKXWqhZlNwzcA1I2rNbYY5+jWO2xzKtqvSa8Xsv82/FvnTawLTBbo+UIlzrz6Qy5nLnahjth6YrQfyOzfqXKlPMm4ybuQIxWxDMcdQokbUiBqyRRLN331helFkFNFJdPJYJ/V4fXGj+uTGk50nd59794+PjED1ydtMXkHyCrL+d5X1v6tSZCgFsziBMmyjDI+weHHFXFV4h1WopDCLL48R3/k="
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

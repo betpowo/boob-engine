@@ -1,8 +1,12 @@
 {
 	"chart": "Fabs + Spazkid",
 	"music": "Xploshi (ft. Saster)",
+	"diff": [
+		"easy",
+		"normal",
+		"hard"
+	],
 	"icon": "dad",
 	"stage": "stage-erect",
-	"display": "Fresh",
-	"diff": ["easy", "normal", "hard"]
+	"display": "Fresh (Pico Mix)"
 }

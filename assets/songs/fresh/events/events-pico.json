@@ -1,0 +1,512 @@
+{
+	"events": [
+		[
+			[
+				0,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				2000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				4000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				6000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				8250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				10000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				12250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				14000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				16250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				18000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				20000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				22000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				24000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				25000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 200,
+					"y": 80,
+					"char": 1
+				}
+			],
+			[
+				28000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				32500,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				36000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				40000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				42000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				44250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				46250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				48250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				50250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				52000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				54250,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				56000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				57000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 200,
+					"y": 80,
+					"char": 1
+				}
+			],
+			[
+				60000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			],
+			[
+				64500,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 1
+				}
+			],
+			[
+				68000,
+				0,
+				{
+					"ease": "CLASSIC",
+					"duration": 4,
+					"x": 0,
+					"y": 0,
+					"char": 0
+				}
+			]
+		],
+		[
+			[
+				25075,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.75
+				}
+			],
+			[
+				28075,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				40062,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 1
+				}
+			],
+			[
+				44000,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				46312,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.95
+				}
+			],
+			[
+				48000,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				50312,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.95
+				}
+			],
+			[
+				51812,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				54312,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.95
+				}
+			],
+			[
+				56062,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 8,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				57075,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.75
+				}
+			],
+			[
+				60075,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.85
+				}
+			],
+			[
+				68062,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 0.9
+				}
+			],
+			[
+				70000,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 1
+				}
+			],
+			[
+				71000,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 1.1
+				}
+			],
+			[
+				71500,
+				0,
+				{
+					"ease": "expoOut",
+					"duration": 16,
+					"mode": "direct",
+					"zoom": 1.15
+				}
+			],
+			[
+				72000,
+				0,
+				{
+					"ease": "circOut",
+					"duration": 60,
+					"mode": "direct",
+					"zoom": 0.8
+				}
+			]
+		]
+	],
+	"order": [
+		"FocusCamera",
+		"ZoomCamera"
+	]
+}

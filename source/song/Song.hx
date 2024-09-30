@@ -88,7 +88,7 @@ class Song {
 
 		final songLocation:String = Paths.file('songs/$song');
 
-		var data = Json.parse(File.getContent(songLocation + '/events' + (vari != null ? '-$vari' : '') + '.json'));
+		var data = Json.parse(File.getContent(songLocation + '/events/events' + (vari != null ? '-$vari' : '') + '.json'));
 		result = data ?? result;
 		return result;
 	}

@@ -1,8 +1,12 @@
 {
 	"chart": "Fabs + Spazkid",
 	"music": "Saruky",
+	"diff": [
+		"easy",
+		"normal",
+		"hard"
+	],
 	"icon": "dad",
 	"stage": "stage-erect",
-	"display": "DadBattle",
-	"diff": ["easy", "normal", "hard"]
+	"display": "DadBattle (Pico Mix)"
 }

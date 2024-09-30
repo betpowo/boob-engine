@@ -1,23 +1,25 @@
 {
 	"stars": 6,
 	"notes": [
-		"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"
+		"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"
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

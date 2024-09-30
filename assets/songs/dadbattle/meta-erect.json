@@ -1,8 +1,11 @@
 {
 	"chart": "Jenny Crowe + fabs + Spazkid",
 	"music": "Kawai Sprite",
+	"diff": [
+		"erect",
+		"nightmare"
+	],
 	"icon": "dad",
 	"stage": "stage-erect",
-	"display": "DadBattle",
-	"diff": ["erect", "nightmare"]
+	"display": "DadBattle"
 }

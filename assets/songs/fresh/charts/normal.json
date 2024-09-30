@@ -1,23 +1,25 @@
 {
 	"stars": 1,
 	"notes": [
-		"eF5NVNGxwyAMW6h3Bdmyk1l6b/81XqBI1y8IsmRji3zGa/69P+B35RiveNarudc5wQ3MFTHWZoVgbfpw5gp+tuDzkWN8T1OSKc2UKCVKiVKiXKJxtC7BF4/oPZQcrgcuCJu8drHiNlqOK4nMclw7rqWCMU69GLoCxmJsdBqdRncnlgrS6L71PqM6AppBo2V0V7pzlDqGsnLr5mic6tG6UUB64R5ESDkCPjMjdKNIdSg8qUjljV09Xk/4/tr885VDzBzSzak600bJqVzpXJlGUxUnNY2k8qc9kDbB8tFh3GbcykFoBoRdDXEJx4XjwnGhvCyjpd6y1VG2GW30MnppkrzUUV5Wtod5ay68VV/ZN+W+lB1UhM/MoG5U9nrZQWUHVf9Osvp3kg1laPesIY2GHm6HXm6HcnVokh36I3T8/hLaHu+yuivssnpbva2ud/kPpqENsQ==",
-		"eF5NVFuOAzEIu1Cl8iY5S7X3v8ZOUOz2j4yxSQzMx0TkpX/vj1neIJ8vfoLVOYGr5UB+cuQEJ8dO0JflJ/kJLZ9DQbQgWhAtiDZEG6IN0T6ifrVUgKvklVWVm6pBNJLfhn+iPHmDLuYtqizmbeZtqNg4Mz58rbHDGNSJOtExQ8Y5olNtvm06vcnYQI/cNXLeO94KTHOBsvPlpykXVbzIi3qFt3lTucloMhovcjrki3UX687t7fUw5zT8ewoDMwy64bhncFbCUSuKjCLKG0ejG9Gon5yC5BSkgJEKRipqZKAHGfA7g9xgXjIvmZeoWwK0BN6WcryV861EuVFl6GRxp8qoTIfK0Zdy3K84N8UpLU5QbTI2GRsvanrVnKDmBLX+drL1t5MdqND0rIMawd1NLm9+t5frm/gpdP7+FXpRfVGds9aL6pvqm+p3L/8BTuMPXA=="
+		"eF5NVFuOAzEIu1Cl8iY5S7X3v8ZOUOz2j4yxSQzMx0TkpX/vj1neIJ8vfoLVOYGr5UB+cuQEJ8dO0JflJ/kJLZ9DQbQgWhAtiDZEG6IN0T6ifrVUgKvklVWVm6pBNJLfhn+iPHmDLuYtqizmbeZtqNg4Mz58rbHDGNSJOtExQ8Y5olNtvm06vcnYQI/cNXLeO94KTHOBsvPlpykXVbzIi3qFt3lTucloMhovcjrki3UX687t7fUw5zT8ewoDMwy64bhncFbCUSuKjCLKG0ejG9Gon5yC5BSkgJEKRipqZKAHGfA7g9xgXjIvmZeoWwK0BN6WcryV861EuVFl6GRxp8qoTIfK0Zdy3K84N8UpLU5QbTI2GRsvanrVnKDmBLX+drL1t5MdqND0rIMawd1NLm9+t5frm/gpdP7+FXpRfVGds9aL6pvqm+p3L/8BTuMPXA==",
+		"eF5NVNGxwyAMW6h3Bdmyk1l6b/81XqBI1y8IsmRji3zGa/69P+B35RiveNarudc5wQ3MFTHWZoVgbfpw5gp+tuDzkWN8T1OSKc2UKCVKiVKiXKJxtC7BF4/oPZQcrgcuCJu8drHiNlqOK4nMclw7rqWCMU69GLoCxmJsdBqdRncnlgrS6L71PqM6AppBo2V0V7pzlDqGsnLr5mic6tG6UUB64R5ESDkCPjMjdKNIdSg8qUjljV09Xk/4/tr885VDzBzSzak600bJqVzpXJlGUxUnNY2k8qc9kDbB8tFh3GbcykFoBoRdDXEJx4XjwnGhvCyjpd6y1VG2GW30MnppkrzUUV5Wtod5ay68VV/ZN+W+lB1UhM/MoG5U9nrZQWUHVf9Osvp3kg1laPesIY2GHm6HXm6HcnVokh36I3T8/hLaHu+yuivssnpbva2ud/kPpqENsQ=="
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

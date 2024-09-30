@@ -1,23 +1,25 @@
 {
 	"stars": 1,
 	"notes": [
-		"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"
+		"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"
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

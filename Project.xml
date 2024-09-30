@@ -33,7 +33,7 @@
 	<source path="source" />
 	<assets path="assets" />
 	<assets path="alsoft.ini" />
-	<assets path="ChartConverter" />
+	<assets path="ChartConverter" exclude="bin" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

@@ -1,8 +1,12 @@
 {
 	"chart": "Fabs + Spazkid",
 	"music": "ThatAndyGuy (feat. Saruky)",
+	"diff": [
+		"easy",
+		"normal",
+		"hard"
+	],
 	"icon": "dad",
 	"stage": "stage-erect",
-	"display": "Bopeebo",
-	"diff": ["easy", "normal", "hard"]
+	"display": "Bopeebo (Pico Mix)"
 }

@@ -1,8 +1,12 @@
 {
 	"chart": "ninjamuffin99 + MtH",
 	"music": "Kawai Sprite",
+	"diff": [
+		"easy",
+		"normal",
+		"hard"
+	],
 	"icon": "dad",
 	"stage": "stage",
-	"display": "DadBattle",
-	"diff": ["easy", "normal", "hard"]
+	"display": "DadBattle"
 }

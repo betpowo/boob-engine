@@ -1,23 +1,25 @@
 {
 	"stars": 1,
 	"notes": [
-		"eF5NkdcNQjEMRRd6Eom7Z0HsvwZxg/xELsft5r0e+LzestaDz3mPveFyyI6zH0yH6TirnZP/Yy4Xtld2SIujIq1q1COIhiCNeFiMw3J0g2EdJu48VV7dPAmg1T2AsAkgyV2bsODjUPA9hNc1ce5xEbERROmBiN4wEk+W7kPQKFc96fC8NCkZ0GuFFhKhlyScZShlyBgxjzWCxMjmbF1TyOSaQiVP5xgsc9vqw1S6Beucwgb33QK7EQHquwW0YfmpIijX3aIwcZ1PEbWpt1/P1GeqdGvHo7xYhfkyBZ9saVVVX/BqlPM=",
-		"eF5NkdmNBDEIRBNqaQBDYccy2vzT2OYa+Y+CB6bwV5Tokb/Pd9EbrAdEIXAJl1fws0rsV1CLrRfGQhfHkiMyOtES0apJzWMP4Rz5jHzYHdOkWWF0Xvh0l0hNO0VAe4bAh3DKZYtYsWBZZWticdmJUkjzQUD94MIaGGeqfhtR2rmqWiquo9QZVGqFJg29pGKW0TxD5Y519DuI+vyPkV6vGNP1itV5pmaStfD2ynBSI0BjBYTbN9QG0d2+EU8U/LsKQJdvHEz+zKc4Sfc7zUzP+0yXK09edVidL3NbU61bZdc/vJ2Vkw=="
+		"eF5NkdmNBDEIRBNqaQBDYccy2vzT2OYa+Y+CB6bwV5Tokb/Pd9EbrAdEIXAJl1fws0rsV1CLrRfGQhfHkiMyOtES0apJzWMP4Rz5jHzYHdOkWWF0Xvh0l0hNO0VAe4bAh3DKZYtYsWBZZWticdmJUkjzQUD94MIaGGeqfhtR2rmqWiquo9QZVGqFJg29pGKW0TxD5Y519DuI+vyPkV6vGNP1itV5pmaStfD2ynBSI0BjBYTbN9QG0d2+EU8U/LsKQJdvHEz+zKc4Sfc7zUzP+0yXK09edVidL3NbU61bZdc/vJ2Vkw==",
+		"eF5NkdcNQjEMRRd6Eom7Z0HsvwZxg/xELsft5r0e+LzestaDz3mPveFyyI6zH0yH6TirnZP/Yy4Xtld2SIujIq1q1COIhiCNeFiMw3J0g2EdJu48VV7dPAmg1T2AsAkgyV2bsODjUPA9hNc1ce5xEbERROmBiN4wEk+W7kPQKFc96fC8NCkZ0GuFFhKhlyScZShlyBgxjzWCxMjmbF1TyOSaQiVP5xgsc9vqw1S6Beucwgb33QK7EQHquwW0YfmpIijX3aIwcZ1PEbWpt1/P1GeqdGvHo7xYhfkyBZ9saVVVX/BqlPM="
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,

@@ -1,23 +1,25 @@
 {
 	"stars": 2,
 	"notes": [
-		"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"
+		"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"
 	],
 	"lanes": [
 		{
-			"play": false, "vox": "opp",
-			"pos": "opp",
-			"keys": 4,
-			"strumPos": "left",
-			"char": "dad"
-		},
-		{
-			"play": true, "vox": "plr",
+			"play": true,
 			"pos": "plr",
 			"keys": 4,
 			"strumPos": "right",
+			"vox": "plr",
 			"char": "bf"
+		},
+		{
+			"play": false,
+			"pos": "opp",
+			"keys": 4,
+			"strumPos": "left",
+			"vox": "opp",
+			"char": "dad"
 		},
 		{
 			"visible": false,
