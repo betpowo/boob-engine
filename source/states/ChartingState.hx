@@ -11,6 +11,7 @@ import objects.ui.*;
 import song.Chart.ChartEvents;
 import song.Chart.ChartNote;
 import song.Chart.ChartParser;
+import substates.popup.EditorPopupWindow;
 import util.*;
 
 class ChartingState extends FlxState {
@@ -147,11 +148,34 @@ class ChartingState extends FlxState {
 					'uhhh... more soon i forgot'
 				].join('\n'), 'chart editor help'); */
 
-			openSubState(new substates.popup.EditorPopupWindow());
+			openSubState(new EditorPopupWindow());
 		}, 'help', 0x6699ff, 0x330099, [FlxKey.F1]);
 
 		editButton = addButton(function() {
-			Application.current.window.alert(['this is meant for layer/strumline options', 'im doing it later'].join('\n'), 'fuck');
+			// Application.current.window.alert(['this is meant for layer/strumline options', 'im doing it later'].join('\n'), 'fuck');
+			if (layer >= 0) {
+				var lane = chart.lanes[layer];
+				openSubState(new EditorPopupWindow(1180, 620, 'Edit Layer [$layer]', [
+					{
+						type: 'check',
+						checked: lane.play ?? false,
+						label: 'Playable',
+						pos: [0, 0],
+						onChange: function() {
+							lane.play = !lane.play;
+						}
+					},
+					{
+						type: 'check',
+						checked: lane.visible ?? true,
+						label: 'Visible',
+						pos: [400, 0],
+						onChange: function() {
+							lane.visible = !lane.visible;
+						}
+					}
+				]));
+			}
 		}, 'pencil', 0xcccccc, 0x333333, [FlxKey.M]);
 		editButton.y += 110;
 

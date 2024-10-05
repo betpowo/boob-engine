@@ -1,29 +1,14 @@
 package substates;
 
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxBitmapFont;
-import flixel.text.FlxBitmapText;
 import objects.Alphabet;
 import objects.ui.AlphabetList;
 import states.PlayState;
+import util.CoolUtil;
 import util.GradientMap;
 
 class PauseSubstate extends FlxSubState {
 	var bg:FlxSprite;
-
-	function makeTardlingText(text:String, col1:FlxColor = 0xffffff, col2:FlxColor = 0xff000000):FlxBitmapText {
-		var fontLetters:String = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890!?,.()-Ññ&\"'+[]/#";
-
-		var text = new FlxBitmapText(0, 0, text, FlxBitmapFont.fromMonospace(Paths.image('ui/tardlingSpritesheet'), fontLetters, FlxPoint.get(49, 62)));
-		text.letterSpacing = -15;
-		text.antialiasing = true;
-
-		var songNameGM:GradientMap = new GradientMap();
-		text.shader = songNameGM.shader;
-		songNameGM.set(col1, col2);
-
-		return text;
-	}
 
 	override public function create() {
 		PlayState.pause(true);
@@ -45,7 +30,7 @@ class PauseSubstate extends FlxSubState {
 		fuck.saturation *= 1.1;
 		fuck.alpha = 255;
 
-		var songName = makeTardlingText(Song.meta.display ?? Song.song, songNameColor, fuck);
+		var songName = CoolUtil.makeTardlingText(Song.meta.display ?? Song.song, songNameColor, fuck);
 		add(songName);
 		songName.setPosition(50, 50);
 
@@ -54,7 +39,7 @@ class PauseSubstate extends FlxSubState {
 		add(diff);
 		songName.x += diff.width + 25;
 
-		var compName = makeTardlingText('${Song.meta.art ?? '(undefined)'}\n\n${Song.meta.music ?? '(undefined)'}\n\n${Song.meta.chart ?? '(undefined)'}');
+		var compName = CoolUtil.makeTardlingText('${Song.meta.art ?? '(undefined)'}\n\n${Song.meta.music ?? '(undefined)'}\n\n${Song.meta.chart ?? '(undefined)'}');
 		add(compName);
 		compName.scale.set(0.6, 0.6);
 		compName.updateHitbox();

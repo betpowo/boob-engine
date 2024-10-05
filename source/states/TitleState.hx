@@ -33,6 +33,22 @@ class TitleState extends FlxState {
 
 		bleh[2].quickColor(0xff3399, 0x660066);
 		bleh[2].inputs = [FlxKey.C];
+		bleh[2].onPress.add(function() {
+			openSubState(new substates.popup.EditorPopupWindow(1180, 620, 'asdfghjklñ', [
+				{
+					type: 'check',
+					checked: true,
+					pos: [0, 0],
+					label: 'gay'
+				},
+				{
+					type: 'check',
+					checked: false,
+					pos: [0, 80],
+					label: 'also gay'
+				}
+			]));
+		});
 
 		var butt:FlxUIButton = new FlxUIButton(0, 0, '>w<', function() {
 			Song.load('bopeebo', 'hard', 'pico');

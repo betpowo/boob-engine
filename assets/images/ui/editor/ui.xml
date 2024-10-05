@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ui.png">
+	<!-- Created with Adobe Animate version 20.5.0.29329 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="checkbox0000" x="235" y="151" width="71" height="69" frameX="-3" frameY="-2" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0001" x="448" y="115" width="66" height="64" frameX="-5" frameY="-4" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0002" x="448" y="115" width="66" height="64" frameX="-5" frameY="-4" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0003" x="154" y="158" width="79" height="74"/>
+	<SubTexture name="checkbox0004" x="154" y="158" width="79" height="74"/>
+	<SubTexture name="checkbox0005" x="228" y="80" width="73" height="69" frameX="-3" frameY="-2" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0006" x="250" y="222" width="69" height="66" frameX="-4" frameY="-3" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0007" x="250" y="222" width="69" height="66" frameX="-4" frameY="-3" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0008" x="303" y="80" width="71" height="69" frameX="-3" frameY="-2" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="checkbox0009" x="303" y="80" width="71" height="69" frameX="-3" frameY="-2" frameWidth="79" frameHeight="74"/>
+	<SubTexture name="number0000" x="2" y="80" width="224" height="76" frameX="-3" frameY="0" frameWidth="231" frameHeight="76"/>
+	<SubTexture name="number0001" x="232" y="2" width="227" height="76" frameX="0" frameY="0" frameWidth="231" frameHeight="76"/>
+	<SubTexture name="number0002" x="2" y="2" width="228" height="76" frameX="-3" frameY="0" frameWidth="231" frameHeight="76"/>
+	<SubTexture name="slider0000" x="2" y="261" width="246" height="28"/>
+	<SubTexture name="slider_handle0000" x="308" y="151" width="71" height="64" frameX="-6" frameY="-36" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="slider_handle0001" x="376" y="80" width="70" height="63" frameX="-6" frameY="-36" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="slider_handle0002" x="384" y="245" width="86" height="43" frameX="0" frameY="-45" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="slider_handle0003" x="461" y="2" width="56" height="111" frameX="-14" frameY="0" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="slider_handle0004" x="2" y="158" width="74" height="101" frameX="-5" frameY="-7" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="slider_handle0005" x="78" y="158" width="74" height="100" frameX="-5" frameY="-7" frameWidth="86" frameHeight="111"/>
+	<SubTexture name="tooltip-tail0000" x="321" y="217" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0001" x="321" y="217" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0002" x="321" y="217" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0003" x="381" y="145" width="63" height="62" frameX="0" frameY="0" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0004" x="381" y="145" width="63" height="62" frameX="0" frameY="0" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0005" x="381" y="145" width="63" height="62" frameX="0" frameY="0" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0006" x="446" y="181" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0007" x="446" y="181" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+	<SubTexture name="tooltip-tail0008" x="446" y="181" width="61" height="62" frameX="-1" frameY="-1" frameWidth="63" frameHeight="63"/>
+</TextureAtlas>

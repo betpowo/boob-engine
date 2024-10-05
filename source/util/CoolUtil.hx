@@ -1,7 +1,10 @@
 package util;
 
 import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.graphics.frames.FlxBitmapFont;
+import flixel.text.FlxBitmapText;
 import openfl.geom.Rectangle;
+import util.GradientMap;
 
 // baby
 class CoolUtil {
@@ -31,5 +34,19 @@ class CoolUtil {
 		splash.blend = SCREEN;
 
 		return splash;
+	}
+
+	public static function makeTardlingText(text:String, col1:FlxColor = 0xffffff, col2:FlxColor = 0xff000000):FlxBitmapText {
+		var fontLetters:String = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890!?,.()-Ññ&\"'+[]/#";
+
+		var text = new FlxBitmapText(0, 0, text, FlxBitmapFont.fromMonospace(Paths.image('ui/tardlingSpritesheet'), fontLetters, FlxPoint.get(49, 62)));
+		text.letterSpacing = -15;
+		text.antialiasing = true;
+
+		var songNameGM:GradientMap = new GradientMap();
+		text.shader = songNameGM.shader;
+		songNameGM.set(col1, col2);
+
+		return text;
 	}
 }
