@@ -73,7 +73,7 @@ class FPS extends TextField {
 
 		if (currentCount != cacheCount && visible) {
 			var daBytes:Float = System.totalMemory;
-			// daBytes = ProcessMemory.getMemory();
+			daBytes = ProcessMemory.get();
 
 			text = '$currentFPS FPS - ' + FlxStringUtil.formatBytes(daBytes);
 
@@ -86,4 +86,16 @@ class FPS extends TextField {
 
 		cacheCount = currentCount;
 	}
+}
+
+#if cpp @:include('./include/memory.h')
+extern #end class ProcessMemory {
+	#if cpp
+	@:native('get_memory_usage')
+	public static function get():Float;
+	#else
+	public static function get():Float {
+		return System.totalMemory;
+	}
+	#end
 }

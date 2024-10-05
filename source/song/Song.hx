@@ -77,8 +77,11 @@ class Song {
 		var result:ChartMetadata = DEFAULT_META;
 
 		final songLocation:String = Paths.file('songs/$song');
+		var metaFile = songLocation + '/meta' + (vari != null ? '-$vari' : '') + '.json';
+		if (!Paths.exists(metaFile))
+			metaFile = songLocation + '/meta.json';
 
-		var data = Json.parse(File.getContent(songLocation + '/meta' + (vari != null ? '-$vari' : '') + '.json'));
+		var data = Json.parse(File.getContent(metaFile));
 		result = data ?? result;
 		return result;
 	}

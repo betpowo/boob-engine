@@ -1,5 +1,7 @@
 package states;
 
+import flixel.FlxBasic;
+import flixel.FlxObject;
 import flixel.FlxSpriteExt;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
@@ -11,13 +13,16 @@ import flixel.util.FlxTimer;
 import objects.*;
 import objects.ui.*;
 import song.*;
+import song.Chart.ChartEvents;
 import song.Chart.ChartNote;
 import song.Chart.ChartParser;
 import song.Song;
+import util.CoolUtil;
 import util.HscriptHandler;
 import util.Options;
 
 typedef NoteGroup = FlxTypedGroup<Note>;
+typedef InGameEvent = {t:Float, e:String, data:Dynamic, ?spawned:Bool}
 
 class PlayState extends FlxState {
 	public static var instance:PlayState;
@@ -33,6 +38,8 @@ class PlayState extends FlxState {
 	function set_health(v:Float):Float {
 		health = FlxMath.bound(v, 0, 1);
 		healthBar.percent = health;
+		if (health <= 0)
+			initDeath();
 		return health;
 	}
 
@@ -72,6 +79,16 @@ class PlayState extends FlxState {
 	var defaultZoom:Float = 1;
 	var defaultHudZoom:Float = 1;
 
+	var currentZoom:Float = 1;
+	final defaultCamIntensity:Float = 1.023;
+	var camBopData = {
+		_mult: 1.0,
+		rate: 4,
+		intensity: 1.023,
+		lerp: 2.4,
+		enabled: true
+	};
+
 	var scripts:Array<HscriptHandler> = [];
 
 	public function call(f:String, ?args:Array<Dynamic>):Dynamic {
@@ -109,6 +126,10 @@ class PlayState extends FlxState {
 	var ratingSpr:FlxSprite;
 	var comboNum:Counter;
 
+	var eventsList:Array<InGameEvent> = [];
+
+	var followPoint:FlxObject;
+
 	override public function create() {
 		super.create();
 
@@ -122,6 +143,11 @@ class PlayState extends FlxState {
 		camOverlay = new FlxCamera();
 		camOverlay.bgColor = 0x00000000;
 		FlxG.cameras.add(camOverlay, false);
+
+		followPoint = new FlxObject(0, 0, 1, 1);
+		followPoint.screenCenter();
+
+		camGame.follow(followPoint, LOCKON, 0.06);
 
 		FunkinStage.init(Song.meta.stage);
 
@@ -173,7 +199,7 @@ class PlayState extends FlxState {
 		Conductor.tracker = FlxG.sound.music;
 		Conductor.beatHit.add(beatHit);
 
-		defaultZoom = camGame.zoom = FunkinStage.zoom;
+		defaultZoom = currentZoom = camGame.zoom = FunkinStage.zoom;
 
 		add(healthBar);
 		healthBar.x = 50;
@@ -218,17 +244,30 @@ class PlayState extends FlxState {
 			i.camera = camHUD;
 		}
 
-		if (cachedTransNotes.length > 0)
-			doNoteTransition();
+		doNoteTransition();
 
 		for (idx => i in chars) {
 			if (i.char != null) {
 				var char = i.char;
 				char.setStagePosition(i.pos[0], i.pos[1]);
 				add(char);
+				if (char.script != null) {
+					scripts.push(char.script);
+				}
 				if (i.flip) {
 					char.flipX = !char.flipX;
 				}
+			}
+		}
+
+		for (idx => i in Song.events.events) {
+			for (ev in (i : Array<Dynamic>)) {
+				eventsList.push({
+					t: ev[0],
+					e: Song.events.order[idx],
+					data: ev[2],
+					spawned: false
+				});
 			}
 		}
 
@@ -263,18 +302,12 @@ class PlayState extends FlxState {
 	}
 
 	function beatHit() {
-		/*strumGroup.members[0].forEach((n) ->
-			{
-				n.scrollAngle = Conductor.beat % 2 == 0 ? -15 : 15;
-		});*/
-
-		if (Conductor.beat % 4 == 0) {
-			camGame.zoom += 0.015;
-			camHUD.zoom += 0.03;
+		if (camBopData.rate > 0 && Conductor.beat % camBopData.rate == 0) {
+			camBopData._mult += (camBopData.intensity - 1);
+			camHUD.zoom += (camBopData.intensity - 1) * 2;
 		}
 	}
 
-	// later
 	var combo:Int = 0;
 
 	function popupScore(rating:String) {
@@ -308,18 +341,24 @@ class PlayState extends FlxState {
 				}
 			});
 		}
+		call('popupScore', []);
 	}
 
 	function noteHit(note:Note) {
 		var lane = note.strum.parentLane;
 		var char:Character = note.character;
-
+		call('preNoteHit', [note, lane]);
 		if (!lane.autoHit) {
 			var gwa = 0.01;
 			score += note?.score(Conductor.time - note.strumTime) ?? 0;
 			health += gwa;
 			combo += 1;
-			popupScore(note?.judge(Conductor.time - note.strumTime) ?? 'sick');
+			if (lane.vocals != null)
+				lane.vocals.volume = 1;
+
+			var judge = note.judge(Conductor.time - note.strumTime);
+			note.rating = judge;
+			popupScore(judge ?? 'sick');
 		}
 
 		if (note.anim != null && char != null) {
@@ -335,7 +374,7 @@ class PlayState extends FlxState {
 		var char:Character = note.character;
 
 		if (note.anim != null && char != null) {
-			char.holdTime = Conductor.crochetSec * 2;
+			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
 			char.playAnim(note.anim, true);
 		}
 
@@ -353,40 +392,72 @@ class PlayState extends FlxState {
 		call('noteHeldUpdate', [note, lane]);
 	}
 
+	var lastMissChar:Character;
+
 	function noteMiss(note:Note) {
-		var gwa = 0.02;
-		score -= 10;
-		health -= gwa;
-		combo = 0;
+		var lane = note.strum.parentLane;
+		if (!lane.autoHit) {
+			var gwa = 0.02;
+			score -= 10;
+			health -= gwa;
+			combo = 0;
+			if (lane.vocals != null)
+				lane.vocals.volume = 0;
+		}
+
+		if (note.character != null && note.anim != null && note.character.animation.exists(note.anim + 'miss')) {
+			note.character.playAnim(note.anim + 'miss', true);
+			note.character.holdTime = Conductor.stepCrochetSec * note.character.holdDur;
+		}
+
+		lastMissChar = note.character;
+
+		call('noteMiss', [note, lane]);
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
-		for (idx => note in Song.parsedNotes) {
-			if (Conductor.time >= note.time - (3000 / Song.chart.speed) && !note.spawned) {
-				note.spawned = true;
-				spawnNote(note);
+
+		camBopData._mult = FlxMath.lerp(camBopData._mult, 1, elapsed * camBopData.lerp);
+		camGame.zoom = currentZoom * camBopData._mult;
+		camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudZoom, elapsed * camBopData.lerp);
+		if (!died) {
+			for (idx => note in Song.parsedNotes) {
+				if (Conductor.time >= note.time - (3000 / Song.chart.speed) && !note.spawned) {
+					note.spawned = true;
+					spawnNote(note);
+				}
 			}
-		}
-		camGame.zoom = FlxMath.lerp(camGame.zoom, defaultZoom, elapsed * 2.5);
-		camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudZoom, elapsed * 2.5);
 
-		timeNum.number = Math.floor(Conductor.time * 0.001);
+			for (idx => event in eventsList) {
+				if (Conductor.time >= event.t && !event.spawned) {
+					event.spawned = true;
+					triggerEvent(event);
+				}
+			}
 
-		// todo: rework chartingstate maybe
-		if (FlxG.keys.justPressed.SEVEN) {
-			FlxG.sound.music.stop();
-			FlxG.switchState(new states.ChartingState(Song.chart));
+			timeNum.number = Math.floor(Conductor.time * 0.001);
+
+			if (FlxG.keys.justPressed.R)
+				health = 0;
+
+			// todo: rework chartingstate maybe
+			if (FlxG.keys.justPressed.SEVEN) {
+				FlxG.sound.music.stop();
+				FlxG.switchState(new states.ChartingState(Song.chart));
+			}
+
+			if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER) {
+				openSubState(new substates.PauseSubstate());
+			}
+
+			call('update', [elapsed]);
+		} else {
+			call('deadUpdate', [elapsed]);
 		}
 
 		if (FlxG.keys.justPressed.F5)
 			FlxG.resetState();
-
-		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER) {
-			openSubState(new substates.PauseSubstate());
-		}
-
-		call('update', [elapsed]);
 	}
 
 	function spawnNote(i:ChartNote):Note {
@@ -399,13 +470,14 @@ class PlayState extends FlxState {
 		note.strum = strum;
 		note.sustain.length = i.length;
 		note.speed = Song.chart.speed;
-		note.rgb.copy(strum.rgb);
+		if (note.strum != null)
+			note.rgb.copy(strum.rgb);
 		note.y -= 2000;
 		note.sustain.x -= 2000;
 
 		note.camera = note.sustain.camera = camHUD;
 
-		note.anim = switch (note.strumIndex) {
+		note.anim = switch (i.index) {
 			case 0: 'singLEFT';
 			case 1: 'singDOWN';
 			case 2: 'singUP';
@@ -420,6 +492,61 @@ class PlayState extends FlxState {
 		call('spawnNote', [note, i]);
 
 		return note;
+	}
+
+	function triggerEvent(event:InGameEvent) {
+		// trace('event !!!! $event');
+
+		final data = event.data;
+		switch (event.e) {
+			case 'FocusCamera':
+				var resultX:Float = FlxG.width * .5;
+				var resultY:Float = FlxG.height * .5;
+				var charNum:Int = (data is Int) ? cast(data, Int) : (data.char : Int);
+
+				if (data.x != null)
+					resultX = data.x;
+
+				if (data.y != null)
+					resultY = data.y;
+
+				if (charNum != -1) {
+					final lane:StrumLine = strumGroup.members[charNum];
+					final char:Character = lane.char;
+					if (char != null) {
+						final mid = char.getMidpoint();
+						resultX += mid.x;
+						resultY += mid.y;
+
+						if (FunkinStage.camOffsets.exists(lane.data.pos)) {
+							final awa:Array<Float> = FunkinStage.camOffsets.get(lane.data.pos) ?? [0, 0];
+							resultX += awa[0];
+							resultY += awa[1];
+						}
+					}
+				}
+
+				followPoint.setPosition(resultX, resultY);
+
+			case 'ZoomCamera':
+				var resultZoom:Float = defaultZoom;
+				if (data.mode == 'stage')
+					resultZoom *= data.zoom;
+				else {
+					resultZoom = data.zoom;
+				}
+
+				final ease = Reflect.field(FlxEase, data.ease) ?? FlxEase.linear;
+				if (data.duration > 0) {
+					FlxTween.cancelTweensOf(this, ['currentZoom']);
+					FlxTween.tween(this, {currentZoom: resultZoom}, Conductor.stepCrochetSec * data.duration, {ease: ease});
+				}
+			case 'SetCameraBop':
+				camBopData.rate = (data.rate : Int) ?? 4;
+				camBopData.intensity = (defaultCamIntensity - 1) * ((data.intensity : Float) ?? 1.0) + 1;
+		}
+
+		call('event', [event]);
 	}
 
 	public static var cachedTransNotes:Array<Array<Dynamic>> = [];
@@ -473,26 +600,14 @@ class PlayState extends FlxState {
 
 			note.camera = note.sustain.camera = camHUD;
 
-			var splash = fakeSplashGroup.recycle(FlxSprite);
+			var splash = CoolUtil.doSplash(note.getMidpoint().x, note.getMidpoint().y, bleh[5]);
 			fakeSplashGroup.add(splash);
-			splash.frames = Paths.sparrow('ui/splashEffect');
-			splash.animation.addByPrefix('idle', 'splash ${FlxG.random.int(1, 2)}', 12, false);
-			splash.animation.play('idle', true);
 			splash.animation.finishCallback = function(a) {
 				splash.kill();
 				fakeSplashGroup.remove(splash);
 				remove(splash);
 				splash.destroy();
 			}
-
-			var rgb:FlxColor = bleh[5];
-			splash.updateHitbox();
-			splash.setColorTransform(1, 1, 1, 1, rgb.red, rgb.green, rgb.blue);
-			splash.setPosition(note.getMidpoint().x, note.getMidpoint().y);
-			splash.x -= splash.width * .5;
-			splash.y -= splash.height * .5;
-
-			splash.blend = SCREEN;
 		}
 
 		new FlxTimer().start(3, (_) -> {
@@ -510,6 +625,11 @@ class PlayState extends FlxState {
 	}
 
 	public static function pause(p:Bool = true):Bool {
+		if (PlayState.instance == null) {
+			trace('why you tryna pause out of playstate bro');
+			return p;
+		}
+
 		Conductor.paused = p;
 		FlxG.sound.music.time = Conductor.time;
 		resyncVox();
@@ -533,6 +653,7 @@ class PlayState extends FlxState {
 			twn.active = p);
 
 		instance.cacheTransNotes();
+		instance.camGame.active = !p;
 
 		instance.call('pause', [p]);
 
@@ -552,5 +673,119 @@ class PlayState extends FlxState {
 		noteGroup.destroy();
 		super.destroy();
 		Paths.clear();
+	}
+
+	var died:Bool = false;
+
+	function initDeath() {
+		call('preDeath', []);
+		if (!died) {
+			died = true;
+			call('death', []);
+			Conductor.paused = true;
+			cachedTransNotes = [];
+			if (FlxG.sound.music != null)
+				FlxTween.tween(FlxG.sound.music, {pitch: 0}, 0.5, {
+					onComplete: (_) -> {
+						FlxG.sound.music.volume = 0;
+					}
+				});
+
+			strumGroup.forEachAlive((s) -> {
+				s.forEachAlive((sn) -> {
+					if (!s.autoHit) {
+						sn.moves = true;
+						sn.acceleration.y = FlxG.random.float(900, 1300);
+						sn.velocity.y = FlxG.random.float(-160, -300);
+						sn.velocity.x = FlxG.random.float(-1, 1) * 50;
+						sn.angularVelocity = FlxG.random.float(-1, 1) * 40;
+						for (n in sn.notes) {
+							if (n != null) {
+								n.strum = null;
+								sn.notes.remove(n);
+								n.moves = true;
+								n.acceleration.y = FlxG.random.float(900, 1300);
+								n.velocity.y = FlxG.random.float(0, -2) * 150 * n.speed;
+								n.velocity.x = FlxG.random.float(-1, 1) * 80;
+								n.angularVelocity = n.scrollAngularVelocity = FlxG.random.float(-1, 1) * 40;
+								if (FlxG.random.bool(50)) {
+									// reroll
+									n.scrollAngularVelocity = FlxG.random.float(-1, 1) * 200;
+								}
+							}
+						}
+					} else {
+						for (n in sn.notes) {
+							if (n != null) {
+								n.strum = null;
+								sn.notes.remove(n);
+								FlxTween.tween(n, {y: n.y - (100 * n.speed), alpha: 0}, 2, {ease: FlxEase.expoOut});
+							}
+						}
+						FlxTween.tween(sn, {alpha: 0}, 0.2);
+					}
+					sn.notes = [];
+				});
+			});
+
+			for (v in vocals) {
+				if (v != null) {
+					v.fadeOut(0.4);
+				}
+			}
+
+			var excludeMembers:Array<FlxBasic> = [
+				lastMissChar,
+				scoreNum,
+				timeNum,
+				healthBar,
+				strumGroup,
+				fakeNoteGroup,
+				fakeSplashGroup
+			];
+
+			forEachOfType(FlxSprite, (i:FlxSprite) -> {
+				if (i == null || excludeMembers.contains(i))
+					return;
+
+				final fucj = function(_:FlxSprite) {
+					if (_.colorTransform != null) {
+						FlxTween.tween(_.colorTransform, {
+							redMultiplier: 0,
+							greenMultiplier: 0,
+							blueMultiplier: 0,
+							redOffset: 0,
+							greenOffset: 0,
+							blueOffset: 0
+						}, 0.2, {
+							onComplete: (why) -> {
+								FlxG.camera.bgColor.alpha = 0;
+								if (_.colorTransform != null) {
+									FlxTween.tween(_.colorTransform, {
+										alphaMultiplier: 0,
+										alphaOffset: 0
+									}, 0.2);
+								}
+							}
+						});
+					}
+				}
+
+				fucj(i);
+			});
+
+			FlxTween.cancelTweensOf(this, ['currentZoom']);
+			FlxTween.cancelTweensOf(followPoint);
+
+			FlxTween.tween(this, {currentZoom: 1}, 1, {ease: FlxEase.backInOut});
+			if (lastMissChar != null) {
+				final mid = lastMissChar.getMidpoint();
+				FlxTween.tween(followPoint, {x: mid.x, y: mid.y}, 3, {
+					ease: FlxEase.expoOut,
+					startDelay: 1,
+				});
+			}
+			call('postDeath', []);
+		}
 	}
 }

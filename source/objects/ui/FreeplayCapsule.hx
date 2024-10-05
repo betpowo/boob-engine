@@ -1,6 +1,7 @@
 package objects.ui;
 
 import flixel.FlxSpriteExt;
+import flixel.group.FlxGroupedSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
@@ -18,7 +19,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 	var textObj:FlxText;
 	var maxWidth:Float = 373;
 
-	var _diffGroup:FlxSpriteGroup;
+	var _diffGroup:FlxGroupedSprite;
 
 	public function set_text(v:String):String {
 		if (textObj != null && textObj.text != v) {
@@ -42,7 +43,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		for (idx => i in stri.split('')) {
 			var num = _diffGroup.members[idx];
 			if (num == null) {
-				num = _diffGroup.recycle(FlxSprite);
+				num = new FlxSprite();
 				num.frames = Paths.sparrow('menus/freeplay/nums');
 				for (jdx => j in animMap) {
 					num.animation.addByPrefix(Std.string(jdx), j, 24, true);
@@ -60,7 +61,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 			var letter = _diffGroup.members[_diffGroup.members.length - 1];
 			if (letter != null) {
 				letter.kill();
-				_diffGroup.members.remove(letter);
+				_diffGroup.remove(letter);
 				remove(letter);
 			}
 		}
@@ -105,6 +106,10 @@ class FreeplayCapsule extends FlxSpriteGroup {
 
 		bro('mp3 capsule');
 
+		_diffGroup = new FlxGroupedSprite();
+		add(_diffGroup);
+		_diffGroup.setPosition(456, 15);
+
 		frontGlow = bro('capsule glow', -54, -14);
 
 		add(textObj);
@@ -112,10 +117,6 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		frontGlow.blend = ADD;
 
 		textObj.clipRect = new FlxRect(0, 0, maxWidth, textObj.height);
-
-		_diffGroup = new FlxSpriteGroup();
-		add(_diffGroup);
-		_diffGroup.setPosition(456, 15);
 
 		origin.set(0, 0);
 
@@ -149,6 +150,9 @@ class FreeplayCapsule extends FlxSpriteGroup {
 			textObj.clipRect = textObj.clipRect;
 
 			textObj.origin.set((x - textObj.x), (y - textObj.y)); // why
+			textObj.borderColor.alphaFloat = 0.4;
+
+			_diffGroup.origin.set((x - _diffGroup.x), (y - _diffGroup.y));
 		}
 	}
 }

@@ -13,7 +13,7 @@ class FunkinStage {
 	public static var zoom:Float = 1;
 
 	public static var positions:Map<String, Array<Float>> = ['opp' => [335, 885], 'spc' => [751, 787], 'plr' => [989, 885]];
-	public static var camOffsets:Map<String, Array<Float>> = ['opp' => [150, 100], 'plr' => [-100, -100]];
+	public static var camOffsets:Map<String, Array<Float>> = ['opp' => [150, -100], 'plr' => [-100, -100]];
 	public static var flipPos:Array<String> = ['plr'];
 
 	public static function init(stage:String = 'stage') {

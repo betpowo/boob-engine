@@ -127,7 +127,8 @@ class Note extends FlxSpriteExt {
 		y: true,
 		angle: true,
 		angleOffset: true,
-		alpha: true
+		alpha: true,
+		visible: true
 	};
 
 	public var totalAngle(get, never):Float;
@@ -156,6 +157,9 @@ class Note extends FlxSpriteExt {
 
 		if (copyProps.alpha)
 			alpha = strum.alpha;
+
+		if (copyProps.visible)
+			visible = strum.visible;
 	}
 
 	public static function fromChartNote(not:ChartNote):Note {
@@ -168,6 +172,7 @@ class Note extends FlxSpriteExt {
 	}
 
 	// dynamic, so you can edit scoring system cus why not
+	// should i make it static ? idk
 	public dynamic function score(diff:Float = 0):Int {
 		// not gonna bother rewriting the pbot1 score system from scratch
 		var absTiming:Float = Math.abs(diff);
@@ -211,6 +216,8 @@ class Note extends FlxSpriteExt {
 			return 'bad';
 		return 'shit';
 	}
+
+	public var rating:String = null;
 }
 
 class Sustain extends FlxSpriteExt {
@@ -239,7 +246,8 @@ class Sustain extends FlxSpriteExt {
 		x: true,
 		y: true,
 		alpha: true,
-		scrollAngle: true
+		scrollAngle: true,
+		visible: true
 	};
 
 	function followNote(strum:Note, ?speed:Float = 1) {
@@ -254,6 +262,9 @@ class Sustain extends FlxSpriteExt {
 
 		if (copyProps.alpha)
 			alpha = strum.alpha;
+
+		if (copyProps.visible)
+			visible = strum.visible;
 	}
 
 	private inline function updateVisual(l:Float, ?s:Float = 1) {

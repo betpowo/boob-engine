@@ -1,14 +1,17 @@
 package objects.ui;
 
-import flixel.FlxSpriteExt;
+import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.graphics.FlxGraphic;
+import flixel.group.FlxGroupedSprite;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal;
+import util.CoolUtil;
 import util.GradientMap;
 
-class ImageButton extends FlxSpriteExt {
+class ImageButton extends FlxGroupedSprite {
 	public var gradient:GradientMap = new GradientMap();
-	public var sprite:FlxSpriteExt;
+	public var sprite:FlxSprite;
+	public var button:FlxUI9SliceSprite;
 	public var inputs:Array<FlxKey> = null;
 
 	public var colors:Array<FlxColor> = [0xcccccc, 0x333333];
@@ -17,30 +20,21 @@ class ImageButton extends FlxSpriteExt {
 
 	public function new(?img:FlxGraphic) {
 		super();
-		shader = gradient.shader;
 
-		loadGraphic(Paths.image('ui/editor/_image_button'));
-		updateHitbox();
+		button = CoolUtil.make9Slice('ui/editor/image_button', [25, 25, 75, 75], 100, 100);
+		add(button);
 
-		sprite = new FlxSpriteExt();
+		sprite = new FlxSprite();
 		sprite.loadGraphic(img);
 		sprite.updateHitbox();
+		add(sprite);
 
+		sprite.x = (button.width - sprite.width) * .5;
+		sprite.y = (button.height - sprite.height) * .5;
+
+		button.shader = sprite.shader = gradient.shader;
+		button.camera = sprite.camera = camera;
 		gradient.set(0xcccccc, 0x333333);
-	}
-
-	override function draw() {
-		sprite.camera = camera;
-		sprite.shader = shader;
-
-		if (visible && alpha > 0) {
-			super.draw();
-			if (sprite.visible && sprite.alpha >= 0) {
-				sprite.x = getMidpoint().x - sprite.width * 0.5;
-				sprite.y = getMidpoint().y - sprite.height * 0.5;
-				sprite.draw();
-			}
-		}
 	}
 
 	public function quickColor(col:FlxColor = 0xcccccc, out:FlxColor = 0x333333) {
@@ -53,12 +47,6 @@ class ImageButton extends FlxSpriteExt {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
-		sprite.angle = angle;
-		sprite.alpha = alpha;
-		sprite.scale.copyFrom(scale);
-		sprite.updateHitbox();
-		sprite.scaleMult.copyFrom(scaleMult);
-		sprite.update(elapsed);
 
 		var cols:Array<FlxColor> = colors;
 		if (FlxG.mouse.overlaps(this, camera)) {

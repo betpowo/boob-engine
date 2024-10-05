@@ -63,6 +63,8 @@ class FreeplayState extends FlxState {
 				cap.add(cap.icon);
 			}
 
+			cap.scale.set(0.8, 0.8);
+
 			if (cap.ID < 6)
 				doCapsuleAnim(cap);
 		}
@@ -70,7 +72,7 @@ class FreeplayState extends FlxState {
 		randomCapsule = capsuleGrp.members[0];
 		@:privateAccess randomCapsule._diffGroup.visible = false;
 
-		capsuleGrp.setPosition((FlxG.width * (2 / 3)) - 250, (FlxG.height * .5) - 50);
+		capsuleGrp.setPosition((FlxG.width * .5) - 250, (FlxG.height * .5) - 50);
 
 		var black = new FlxSprite().makeGraphic(1, 1, -1);
 		black.setGraphicSize(FlxG.width, 90);
@@ -179,50 +181,57 @@ class FreeplayState extends FlxState {
 
 	function doCapsuleAnim(cap:FreeplayCapsule) {
 		cap.offset.x = FlxG.width * -1;
+		cap.scale.set(1, 0.6);
 		FlxTween.tween(cap.offset, {x: 30}, 0.3, {
 			startDelay: (cap.ID * 0.2),
 			ease: FlxEase.sineIn,
 			onComplete: (_) -> {
+				cap.scale.set(0.6, 1.1);
 				var bounce = FlxTween.tween(cap.offset, {x: 0}, 1, {
 					startDelay: 0.01,
 					ease: FlxEase.backOut
 				});
+				var bounce = FlxTween.tween(cap.scale, {x: 0.8, y: 0.8}, 1.1, {
+					startDelay: 0.01,
+					ease: FlxEase.expoOut
+				});
+				/*
+					switch (FlxG.random.int(1, 3) - 1) {
+						case 0:
+							FlxTween.tween(cap, {angle: FlxG.random.float(-1, -6)}, 0.1, {
+								startDelay: 0.01,
+								ease: FlxEase.sineOut,
+								onComplete: (_) -> {
+									FlxTween.tween(cap, {angle: 0}, 1, {
+										ease: FlxEase.bounceOut
+									});
+								}
+							});
+						case 1:
+							bounce.cancel();
+							FlxTween.tween(cap.offset, {x: -60}, 0.3, {
+								startDelay: 0.02,
+								ease: FlxEase.sineOut,
+								onComplete: (_) -> {
+									FlxTween.tween(cap.offset, {x: 0}, 1, {
+										ease: FlxEase.bounceOut
+									});
+								}
+							});
+						default:
+							cap.scale.set(0.4, 1.2);
 
-				switch (FlxG.random.int(1, 3) - 1) {
-					case 0:
-						FlxTween.tween(cap, {angle: FlxG.random.float(-1, -6)}, 0.1, {
-							startDelay: 0.01,
-							ease: FlxEase.sineOut,
-							onComplete: (_) -> {
-								FlxTween.tween(cap, {angle: 0}, 1, {
-									ease: FlxEase.bounceOut
-								});
-							}
-						});
-					case 1:
-						bounce.cancel();
-						FlxTween.tween(cap.offset, {x: -60}, 0.3, {
-							startDelay: 0.02,
-							ease: FlxEase.sineOut,
-							onComplete: (_) -> {
-								FlxTween.tween(cap.offset, {x: 0}, 1, {
-									ease: FlxEase.bounceOut
-								});
-							}
-						});
-					default:
-						cap.scale.set(0.4, 1.2);
+							cap.offset.y = 5;
+							FlxTween.tween(cap.offset, {y: 0}, 1, {
+								startDelay: 0.01,
+								ease: FlxEase.backOut
+							});
 
-						cap.offset.y = 5;
-						FlxTween.tween(cap.offset, {y: 0}, 1, {
-							startDelay: 0.01,
-							ease: FlxEase.backOut
-						});
-
-						FlxTween.tween(cap.scale, {x: 1, y: 1}, 0.5, {
-							ease: FlxEase.expoOut
-						});
-				}
+							FlxTween.tween(cap.scale, {x: 1, y: 1}, 0.5, {
+								ease: FlxEase.expoOut
+							});
+					}
+				 */
 			}
 		});
 	}

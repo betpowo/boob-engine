@@ -82,7 +82,7 @@ class Paths {
 
 	public static var useGPU:Bool = true;
 
-	public static function image(f:String, ?root:String = 'images'):FlxGraphic {
+	public static function image(f:String, ?root:String = 'images', ?disableGPU:Bool = false):FlxGraphic {
 		var key:String = file('$root/$f.png');
 		var mapKey:String = key;
 		/*if (useGPU)
@@ -92,7 +92,7 @@ class Paths {
 		if (FileSystem.exists(key) && !assetsLoaded.exists(mapKey)) {
 			var b:BitmapData = BitmapData.fromFile(key);
 			#if !hl
-			if (useGPU) {
+			if (useGPU && !disableGPU) {
 				// from da psych engine cus im lazy
 				var texture:RectangleTexture = FlxG.stage.context3D.createRectangleTexture(b.width, b.height, BGRA, true);
 				texture.uploadFromBitmapData(b);

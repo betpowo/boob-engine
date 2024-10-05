@@ -49,10 +49,12 @@ class StrumLine extends FlxTypedSpriteGroup<StrumNote> {
 		}
 
 		if (data.char != null)
-			char = new Character(data.char);
+			char = new Character(data.char, false, false);
 
 		if (data.play != null)
 			autoHit = !data.play;
+		else
+			autoHit = true;
 
 		if (data.vox != null) {
 			vocals = new FlxSound().loadEmbedded(Paths.song(Song.song, 'Voices' + (data.vox.length > 0 ? '-${data.vox}' : ''), Song.variation));

@@ -10,23 +10,35 @@ class Character extends FlxSpriteExt {
 	public var ini:IniData;
 	public var holdDur:Float = 4;
 
-	var animOffsets:Map<String, Array<Float>> = [];
-	var script:HscriptHandler;
+	public var animOffsets:Map<String, Array<Float>> = [];
+	public var skipDance:Bool = false;
+
+	public var stagePos:FlxPoint = new FlxPoint(0, 0);
+
+	public var script:HscriptHandler;
+
 	var initAlready:Bool = false;
-	var skipDance:Bool = false;
-
 	var debugMode:Bool = false;
-	var stagePos:FlxPoint = new FlxPoint(0, 0);
 
-	public function new(char:String = 'bf', ?debug:Bool = false) {
+	// character will call script create and update functions automatically if true
+	// (auto = doesnt require a parent state for it to call (e.g. PlayState))
+	var autoCallBasicShit:Bool = true;
+
+	public function new(char:String = 'bf', ?debug:Bool = false, ?autocall:Bool = true) {
 		super();
 		rotateOffset = scaleOffsetX = scaleOffsetY = true;
 
 		debugMode = debug;
+		autoCallBasicShit = autocall;
 
 		build(char);
-		script?.call('create');
+		if (autoCallBasicShit)
+			call('create');
 		Conductor.beatHit.add(beatHit);
+	}
+
+	public function call(f:String, ?args:Array<Dynamic>) {
+		script?.call(f, args);
 	}
 
 	public static function getIni(char:String = 'bf'):IniData {
@@ -45,7 +57,7 @@ class Character extends FlxSpriteExt {
 		setPosition(_x, _y);
 		x -= width * .5;
 		y -= height;
-		script?.call('onSetStagePos');
+		call('onSetStagePos');
 		stagePos.set(_x, _y);
 	}
 
@@ -53,7 +65,7 @@ class Character extends FlxSpriteExt {
 		if (!initAlready)
 			initAlready = true;
 		else
-			script?.call('destroy');
+			call('destroy');
 
 		script = FlxDestroyUtil.destroy(script);
 
@@ -129,7 +141,7 @@ class Character extends FlxSpriteExt {
 			if (Paths.exists('data/characters/' + char + '.hx') && !debugMode) {
 				script = new HscriptHandler(char, 'data/characters');
 				script.setVariable('this', this);
-				script?.call('build');
+				call('build');
 			}
 
 			setStagePosition(stagePos.x, stagePos.y);
@@ -169,7 +181,8 @@ class Character extends FlxSpriteExt {
 				playAnim(animation.name + '-hold', true);
 			}
 		}
-		script?.call('update', [elapsed]);
+		if (autoCallBasicShit)
+			call('update', [elapsed]);
 	}
 
 	public function beatHit() {
@@ -187,7 +200,9 @@ class Character extends FlxSpriteExt {
 				anim = anim.replace('RIGHT', 'LEFT');
 		}
 
-		animation.play(anim, force, reverse, start);
+		if (animation.exists(anim))
+			animation.play(anim, force, reverse, start);
+
 		if (animOffsets.exists(anim)) {
 			var val = animOffsets[anim];
 			offset.x = val[0] * (flipX ? -1 : 1);
@@ -195,11 +210,11 @@ class Character extends FlxSpriteExt {
 		}
 
 		if (animation.curAnim != null && animation.curAnim?.curFrame == 0)
-			script?.call('playAnim', [anim, force, reverse, start]);
+			call('playAnim', [anim, force, reverse, start]);
 	}
 
 	override function destroy() {
-		script?.call('destroy');
+		call('destroy');
 		script = FlxDestroyUtil.destroy(script);
 		super.destroy();
 	}

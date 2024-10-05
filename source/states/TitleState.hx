@@ -1,10 +1,12 @@
 package states;
 
 import sys.io.File;
+// import flixel.addons.ui.FlxUI9SliceSprite as NineSliceSprite;
 import flixel.addons.ui.FlxUIButton;
 import flixel.input.keyboard.FlxKey;
 import objects.Alphabet;
 import objects.ui.ImageButton;
+import openfl.geom.Rectangle;
 import song.Song;
 import util.GradientMap;
 
@@ -17,9 +19,11 @@ class TitleState extends FlxState {
 		fuck(50, 'boob engine!', 0xff000000, 0xffffff);
 		fuck(150, 'I MAY BE STUPID', 0xffffff, 0xff000000);
 
+		// do9slice();
+
 		var bleh:Array<ImageButton> = [];
 		for (idx => i in ['cog', 'paper', 'delete']) {
-			var button:ImageButton = new ImageButton(Paths.image('ui/editor/$i'));
+			var button:ImageButton = new ImageButton(Paths.image('ui/editor/image_button/$i'));
 			button.setPosition(50 + (111 * idx), FlxG.height - 150);
 			add(button);
 			bleh.push(button);
@@ -60,6 +64,23 @@ class TitleState extends FlxState {
 		});
 
 		FlxG.sound.playMusic(Paths.sound('girlfriendsRingtone', 'music'));
+	}
+
+	function do9slice() {
+		var test = util.CoolUtil.make9Slice('ui/editor/image_button', [25, 25, 75, 75]);
+		test.resize(300, 400);
+		add(test);
+
+		new FlxTimer().start(3, (_) -> {
+			test.angularAcceleration = 20;
+		});
+
+		FlxTween.tween(test, {width: 600, height: 200}, 1, {
+			startDelay: 6,
+			onUpdate: (_) -> {
+				test.resize(test.width, test.height);
+			}
+		});
 	}
 
 	function fuck(_y:Float = 50, text:String = 'boob engine!', col:FlxColor = -1, outli:FlxColor = 0) {

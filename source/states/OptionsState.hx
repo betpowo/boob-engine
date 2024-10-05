@@ -36,7 +36,7 @@ class OptionsState extends FlxState {
 			FlxTween.tween(menu.members[a], {angle: 360}, 1);
 		}
 
-		var button:ImageButton = new ImageButton(Paths.image('ui/editor/plus'));
+		var button:ImageButton = new ImageButton(Paths.image('ui/editor/image_button/plus'));
 		add(button);
 		button.setPosition(FlxG.width - 270, FlxG.height - 150);
 		button.quickColor(0x33cccc, 0x336666);
@@ -68,7 +68,7 @@ class OptionsState extends FlxState {
 			}
 		});
 
-		var button:ImageButton = new ImageButton(Paths.image('ui/editor/minus'));
+		var button:ImageButton = new ImageButton(Paths.image('ui/editor/image_button/minus'));
 		add(button);
 		button.setPosition(FlxG.width - 150, FlxG.height - 150);
 		button.quickColor(0xff3399, 0x660099);
@@ -78,7 +78,7 @@ class OptionsState extends FlxState {
 			menu.refresh();
 		});
 
-		var button:ImageButton = new ImageButton(Paths.image('ui/editor/reset'));
+		var button:ImageButton = new ImageButton(Paths.image('ui/editor/image_button/reset'));
 		add(button);
 		button.setPosition(FlxG.width - 150, FlxG.height - 270);
 		button.quickColor(0xffcc99, 0x990066);
