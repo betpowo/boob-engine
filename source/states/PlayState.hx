@@ -147,7 +147,7 @@ class PlayState extends FlxState {
 		followPoint = new FlxObject(0, 0, 1, 1);
 		followPoint.screenCenter();
 
-		camGame.follow(followPoint, LOCKON, 0.06);
+		camGame.follow(followPoint, LOCKON, 0.05);
 
 		FunkinStage.init(Song.meta.stage);
 
@@ -182,7 +182,8 @@ class PlayState extends FlxState {
 		}
 
 		add(strumGroup);
-		add(noteGroup);
+		// testing smth
+		// add(noteGroup);
 
 		noteGroup.memberAdded.add(function(note) {
 			@:privateAccess {
@@ -302,7 +303,7 @@ class PlayState extends FlxState {
 	}
 
 	function beatHit() {
-		if (camBopData.rate > 0 && Conductor.beat % camBopData.rate == 0) {
+		if (camBopData.enabled && camBopData.rate > 0 && Conductor.beat % camBopData.rate == 0) {
 			camBopData._mult += (camBopData.intensity - 1);
 			camHUD.zoom += (camBopData.intensity - 1) * 2;
 		}
@@ -353,13 +354,14 @@ class PlayState extends FlxState {
 			score += note?.score(Conductor.time - note.strumTime) ?? 0;
 			health += gwa;
 			combo += 1;
-			if (lane.vocals != null)
-				lane.vocals.volume = 1;
 
 			var judge = note.judge(Conductor.time - note.strumTime);
 			note.rating = judge;
 			popupScore(judge ?? 'sick');
 		}
+
+		if (lane.vocals != null)
+			lane.vocals.volume = 1;
 
 		if (note.anim != null && char != null) {
 			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
@@ -372,6 +374,9 @@ class PlayState extends FlxState {
 	function noteHeldStep(note:Note) {
 		var lane = note.strum.parentLane;
 		var char:Character = note.character;
+
+		if (lane.vocals != null)
+			lane.vocals.volume = 1;
 
 		if (note.anim != null && char != null) {
 			char.holdTime = Conductor.stepCrochetSec * char.holdDur;
@@ -401,9 +406,10 @@ class PlayState extends FlxState {
 			score -= 10;
 			health -= gwa;
 			combo = 0;
-			if (lane.vocals != null)
-				lane.vocals.volume = 0;
 		}
+
+		if (lane.vocals != null)
+			lane.vocals.volume = 0;
 
 		if (note.character != null && note.anim != null && note.character.animation.exists(note.anim + 'miss')) {
 			note.character.playAnim(note.anim + 'miss', true);
@@ -415,13 +421,19 @@ class PlayState extends FlxState {
 		call('noteMiss', [note, lane]);
 	}
 
+	public var canDoGameplay:Bool = true;
+
+	public static var __charterStartTime:Float = 0;
+
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		camBopData._mult = FlxMath.lerp(camBopData._mult, 1, elapsed * camBopData.lerp);
-		camGame.zoom = currentZoom * camBopData._mult;
-		camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudZoom, elapsed * camBopData.lerp);
-		if (!died) {
+		if (camBopData.enabled) {
+			camBopData._mult = FlxMath.lerp(camBopData._mult, 1, elapsed * camBopData.lerp);
+			camGame.zoom = currentZoom * camBopData._mult;
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudZoom, elapsed * camBopData.lerp);
+		}
+		if (canDoGameplay || !died) {
 			for (idx => note in Song.parsedNotes) {
 				if (Conductor.time >= note.time - (3000 / Song.chart.speed) && !note.spawned) {
 					note.spawned = true;
@@ -443,8 +455,48 @@ class PlayState extends FlxState {
 
 			// todo: rework chartingstate maybe
 			if (FlxG.keys.justPressed.SEVEN) {
-				FlxG.sound.music.stop();
-				FlxG.switchState(new states.ChartingState(Song.chart));
+				canDoGameplay = camBopData.enabled = false;
+				if (FlxG.sound.music != null) {
+					FlxTween.tween(FlxG.sound.music, {pitch: 0}, 0.6, {
+						onComplete: (_) -> {
+							__charterStartTime = Conductor.time;
+							FlxG.switchState(new states.ChartingState(Song.chart));
+						}
+					});
+					Conductor.threshold = 0;
+					for (v in vocals) {
+						if (v != null) {
+							FlxTween.tween(v, {pitch: 0}, 0.3);
+						}
+					}
+					FlxTween.tween(camHUD, {zoom: 1}, 0.4, {ease: FlxEase.expoOut});
+					FlxTween.tween(camGame, {zoom: (currentZoom * 0.2)}, 0.4, {ease: FlxEase.expoIn});
+					camGame.fade(0xFF000000, 0.3, false, null, true);
+
+					strumGroup.forEach((s) -> {
+						FlxTween.tween(s, {x: (FlxG.width - s.width) / 2}, 0.34, {ease: FlxEase.sineInOut});
+						FlxTween.tween(s, {y: (s.height * -3)}, 0.5, {ease: FlxEase.sineIn});
+					});
+
+					FlxTween.tween(healthBar, {alpha: 0}, 0.1);
+					FlxTween.tween(scoreNum, {alpha: 0}, 0.2);
+					FlxTween.tween(timeNum, {
+						x: 50,
+						y: 50,
+						"scale.x": 0.4,
+						"scale.y": 0.4
+					}, 0.5, {
+						ease: FlxEase.expoOut,
+						onUpdate: (_) -> {
+							timeNum.updateHitbox();
+						}
+					});
+					timeNum.display = TIME_MS;
+					timeNum.setColorTransform(-1, -1, -1, 1, 255, 255, 255);
+				} else {
+					__charterStartTime = Conductor.time;
+					FlxG.switchState(new states.ChartingState(Song.chart));
+				}
 			}
 
 			if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER) {
@@ -685,7 +737,7 @@ class PlayState extends FlxState {
 			Conductor.paused = true;
 			cachedTransNotes = [];
 			if (FlxG.sound.music != null)
-				FlxTween.tween(FlxG.sound.music, {pitch: 0}, 0.5, {
+				FlxTween.tween(FlxG.sound.music, {pitch: 0}, 0.7, {
 					onComplete: (_) -> {
 						FlxG.sound.music.volume = 0;
 					}
@@ -739,6 +791,8 @@ class PlayState extends FlxState {
 				scoreNum,
 				timeNum,
 				healthBar,
+				ratingSpr,
+				comboNum,
 				strumGroup,
 				fakeNoteGroup,
 				fakeSplashGroup
@@ -781,7 +835,7 @@ class PlayState extends FlxState {
 			if (lastMissChar != null) {
 				final mid = lastMissChar.getMidpoint();
 				FlxTween.tween(followPoint, {x: mid.x, y: mid.y}, 3, {
-					ease: FlxEase.expoOut,
+					ease: FlxEase.expoInOut,
 					startDelay: 1,
 				});
 			}

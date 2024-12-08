@@ -15,7 +15,7 @@ import substates.popup.EditorPopupWindow;
 import util.*;
 
 class ChartingState extends FlxState {
-	var GRID_SIZE:Float = 100;
+	public static var gridSize:Float = 100;
 
 	var chart:Chart = null;
 	var chartNotes:Array<ChartNote> = [];
@@ -47,6 +47,8 @@ class ChartingState extends FlxState {
 
 	var camHUD:FlxCamera;
 
+	final OUTLINE_MULTIPLIER:FlxColor = 0x3355dd;
+
 	override public function create() {
 		FlxG.camera.bgColor = FlxColor.fromHSB(0, 0, 0.3);
 		camHUD = new FlxCamera();
@@ -54,15 +56,15 @@ class ChartingState extends FlxState {
 		FlxG.cameras.add(camHUD, false);
 
 		strumLine = new StrumLine({keys: getMaxKeyCount()});
-		strumLine.spacing = GRID_SIZE;
+		strumLine.spacing = gridSize;
 		strumLine.forEach((n) -> {
-			n.setGraphicSize(GRID_SIZE);
+			n.setGraphicSize(gridSize);
 			n.updateHitbox();
 		});
 		strumLine.y = 50;
 
 		grid = new ChartingGrid(FlxGridOverlay.createGrid(1, 1, 1, 2, true, 0x665d005d, 0x660000bb), Y);
-		grid.scale.set(GRID_SIZE, GRID_SIZE);
+		grid.scale.set(gridSize, gridSize);
 		grid.updateHitbox();
 		grid.columns = Std.int(Math.max(getMaxKeyCount(), 1)); // make sure youll still be able to place events with 0 keys
 		add(grid);
@@ -84,19 +86,17 @@ class ChartingState extends FlxState {
 		add(note = new ChartingNoteGroup(chartNotes, strumLine, [
 			for (idx => i in chart.lanes) {
 				var col = FlxColor.fromString(Character.getIni(i.char)?.global?.color) ?? 0x717171;
-				var outlin = new FlxColor(col);
-				outlin.brightness *= 0.55;
-				outlin.greenFloat *= 0.45;
-				outlin.blueFloat *= 1.15;
 				{
 					base: col,
-					outline: outlin
+					outline: col * OUTLINE_MULTIPLIER
 				}
 			}
 		]));
-		note.gridSize = GRID_SIZE;
+		note.gridSize = gridSize;
 		note.events = Song.events;
 		note.x = strumLine.x;
+
+		Conductor.threshold = 30;
 
 		timeNum = new Counter();
 		timeNum.x = timeNum.y = 50;
@@ -135,7 +135,7 @@ class ChartingState extends FlxState {
 		previewNote.rgb.set(0x333333, -1, 0x111111);
 		previewNote.alpha = 0.75;
 		previewNote.blend = ADD;
-		previewNote.setGraphicSize(GRID_SIZE);
+		previewNote.setGraphicSize(gridSize);
 		previewNote.updateHitbox();
 		previewNote.editor = note.editor = true;
 		previewNote.speed = note.speed = 2;
@@ -160,7 +160,7 @@ class ChartingState extends FlxState {
 						type: 'check',
 						checked: lane.play ?? false,
 						label: 'Playable',
-						pos: [0, 0],
+						pos: [200, 222],
 						onChange: function() {
 							lane.play = !lane.play;
 						}
@@ -169,9 +169,27 @@ class ChartingState extends FlxState {
 						type: 'check',
 						checked: lane.visible ?? true,
 						label: 'Visible',
-						pos: [400, 0],
+						pos: [600, 222],
 						onChange: function() {
+							if (lane.visible == null)
+								lane.visible = true;
 							lane.visible = !lane.visible;
+						}
+					},
+					{
+						type: 'char-button',
+						pos: [100, 20],
+						inputs: [FlxKey.C],
+						char: lane.char,
+						charList: Paths.read('data/characters').filter((a:String) -> {
+							return a.endsWith('.ini');
+						}),
+						after: function(a) {
+							lane.char = a;
+
+							var col = FlxColor.fromString(Character.getIni(a)?.global?.color) ?? 0x717171;
+							note.rgbs[layer].set(col, -1, col * OUTLINE_MULTIPLIER);
+							changeLayer(0);
 						}
 					}
 				]));
@@ -182,7 +200,7 @@ class ChartingState extends FlxState {
 		addStrButton = addButton(function() {
 			if (layer >= 0) {
 				chart.lanes[layer].keys += 1;
-				grid.columns = getMaxKeyCount();
+				grid.columns = Std.int(Math.max(getMaxKeyCount(), 1));
 				grid.allowedColumns = chart.lanes[layer].keys;
 				updateStrumCount(grid.columns);
 				changeLayer(0);
@@ -199,7 +217,8 @@ class ChartingState extends FlxState {
 		delStrButton = addButton(function() {
 			if (layer >= 0) {
 				chart.lanes[layer].keys -= 1;
-				grid.columns = getMaxKeyCount();
+				chart.lanes[layer].keys = Std.int(Math.max(chart.lanes[layer].keys, 1));
+				grid.columns = Std.int(Math.max(getMaxKeyCount(), 1));
 				grid.allowedColumns = chart.lanes[layer].keys;
 				updateStrumCount(grid.columns);
 				changeLayer(0);
@@ -212,6 +231,8 @@ class ChartingState extends FlxState {
 		delStrButton.scale.set(.77, .77);
 		delStrButton.updateHitbox();
 		delStrButton.centerOriginPoint();
+
+		Conductor.time = PlayState.__charterStartTime;
 
 		changeLayer(0);
 	}
@@ -226,7 +247,7 @@ class ChartingState extends FlxState {
 			for (_i in 0...diff) {
 				var strum = strumLine.recycle(StrumNote);
 				strum.strumIndex = strum.ID = keys - 1;
-				strum.setGraphicSize(GRID_SIZE);
+				strum.setGraphicSize(gridSize);
 				strum.updateHitbox();
 				strumLine.add(strum);
 				strumLine.spacing = strumLine.spacing;
@@ -286,9 +307,9 @@ class ChartingState extends FlxState {
 		if (FlxG.keys.anyJustPressed([D, RIGHT]))
 			changeLayer(1);
 
-		grid.x = FlxMath.lerp(grid.x, (FlxG.width - (grid.columns * GRID_SIZE)) * .5, elapsed * 13);
+		grid.x = FlxMath.lerp(grid.x, (FlxG.width - (grid.columns * gridSize)) * .5, elapsed * 13);
 		strumLine.x = note.x = grid.x;
-		grid.y = strumLine.y + stepFromMS(Conductor.time) * GRID_SIZE * -1;
+		grid.y = strumLine.y + stepFromMS(Conductor.time) * gridSize * -1;
 		note.y = grid.y;
 
 		timeNum.number = FlxMath.roundDecimal(Conductor.time * 0.001, 2);
@@ -314,7 +335,7 @@ class ChartingState extends FlxState {
 			updatePreviewNote(elapsed);
 		}
 
-		addStrButton.x = grid.x + (grid.columns * GRID_SIZE);
+		addStrButton.x = grid.x + (grid.columns * gridSize);
 		delStrButton.x = grid.x - delStrButton.width;
 
 		super.update(elapsed);
@@ -354,20 +375,20 @@ class ChartingState extends FlxState {
 		if (ogColors.length < 1 && previewNote != null)
 			ogColors = [previewNote.rgb.r, previewNote.rgb.g, previewNote.rgb.b];
 
-		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + (GRID_SIZE * grid.columns))) {
-			var valueX = Math.floor((FlxG.mouse.x - grid.x) / GRID_SIZE);
-			var valueY = Math.floor((FlxG.mouse.y - grid.y) / GRID_SIZE);
+		if (FlxG.mouse.x >= grid.x && FlxG.mouse.x < (grid.x + (gridSize * grid.columns))) {
+			var valueX = Math.floor((FlxG.mouse.x - grid.x) / gridSize);
+			var valueY = Math.floor((FlxG.mouse.y - grid.y) / gridSize);
 			var unsnapped = false;
 
 			previewNote.visible = !note.selecting;
-			previewNote.x = valueX * GRID_SIZE;
+			previewNote.x = valueX * gridSize;
 			previewNote.x += grid.x;
 			previewNote.strumIndex = valueX;
 			if (FlxG.keys.pressed.SHIFT) {
-				previewNote.y = FlxG.mouse.y - GRID_SIZE * 0.5;
+				previewNote.y = FlxG.mouse.y - gridSize * 0.5;
 				unsnapped = true;
 			} else {
-				previewNote.y = valueY * GRID_SIZE;
+				previewNote.y = valueY * gridSize;
 				previewNote.y += grid.y;
 			}
 			previewNote.sustain.blend = previewNote.blend;
@@ -380,7 +401,7 @@ class ChartingState extends FlxState {
 
 				shittyLength = Math.max(0, shittyLength);
 
-				previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * GRID_SIZE);
+				previewNote.sustain.length = Math.max(0, stepFromMS(shittyLength) * gridSize);
 			}
 
 			if (FlxG.mouse.justPressed) {
@@ -403,7 +424,7 @@ class ChartingState extends FlxState {
 				if (layer >= 0 && valueX < grid.allowedColumns) {
 					if (!note.selecting) {
 						FlxG.sound.play(Paths.sound('charter/noteLay'));
-						var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - GRID_SIZE * 0.5) / GRID_SIZE : valueY) * Conductor.stepCrochet;
+						var daTime = (unsnapped ? (FlxG.mouse.y - grid.y - gridSize * 0.5) / gridSize : valueY) * Conductor.stepCrochet;
 						// trace('note is at $daTime');
 						chartNotes.push({
 							time: daTime,
@@ -420,12 +441,8 @@ class ChartingState extends FlxState {
 							return 0;
 						});
 						note.chart = chartNotes; // lame
-						add(CoolUtil.doSplash(grid.x
-							+ (valueX * GRID_SIZE)
-							+ (GRID_SIZE * .5),
-							grid.y
-							+ ((daTime / Conductor.stepCrochet) * GRID_SIZE)
-							+ (GRID_SIZE * .5), gridShader.r));
+						add(CoolUtil.doSplash(grid.x + (valueX * gridSize) + (gridSize * .5),
+							grid.y + ((daTime / Conductor.stepCrochet) * gridSize) + (gridSize * .5), gridShader.r));
 					}
 					releaseTime = 0;
 				} else {
@@ -546,7 +563,7 @@ class ChartingNoteGroup extends Note {
 		eventSprite.setGraphicSize(v);
 		eventSprite.updateHitbox();
 
-		sustain.scale.x = (v / sustain.frameWidth) * 0.7;
+		sustain.scale.x = scale.x;
 		return v;
 	}
 

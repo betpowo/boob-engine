@@ -8,6 +8,7 @@ import objects.Alphabet;
 import objects.ui.ImageButton;
 import openfl.geom.Rectangle;
 import song.Song;
+import substates.popup.EditorPopupWindow;
 import util.GradientMap;
 
 class TitleState extends FlxState {
@@ -34,7 +35,7 @@ class TitleState extends FlxState {
 		bleh[2].quickColor(0xff3399, 0x660066);
 		bleh[2].inputs = [FlxKey.C];
 		bleh[2].onPress.add(function() {
-			openSubState(new substates.popup.EditorPopupWindow(1180, 620, 'asdfghjklñ', [
+			openSubState(new EditorPopupWindow(1180, 620, 'asdfghjklñ', [
 				{
 					type: 'check',
 					checked: true,
@@ -46,6 +47,25 @@ class TitleState extends FlxState {
 					checked: false,
 					pos: [0, 80],
 					label: 'also gay'
+				},
+				{
+					type: 'slider',
+					label: 'gay meter',
+					pos: [300, 30],
+					min: 0.5,
+					max: 3,
+					value: FlxG.sound.music.pitch,
+					onChange: (value) -> {
+						FlxG.sound.music.pitch = value;
+					}
+				},
+				{
+					type: 'slider',
+					label: 'gayer meter',
+					pos: [0, 300],
+					min: 0,
+					max: 100,
+					width: 500
 				}
 			]));
 		});

@@ -50,6 +50,7 @@ class HscriptHandler implements IFlxDestroyable {
 		setVariable('FlxMath', flixel.math.FlxMath);
 		setVariable('FlxTween', flixel.tweens.FlxTween);
 		setVariable('FlxEase', flixel.tweens.FlxEase);
+		setVariable('FlxRuntimeShader', flixel.addons.display.FlxRuntimeShader);
 
 		setVariable('Conductor', song.Conductor);
 		setVariable('Song', song.Song);

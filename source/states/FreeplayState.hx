@@ -8,6 +8,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import objects.ui.Counter;
 import objects.ui.FreeplayCapsule;
+import util.RGBPalette;
 
 class FreeplayState extends FlxState {
 	var capsuleGrp:FlxTypedSpriteGroup<FreeplayCapsule> = new FlxTypedSpriteGroup<FreeplayCapsule>();
@@ -19,6 +20,8 @@ class FreeplayState extends FlxState {
 		?icon:String
 	}> = [{name: 'Random!', color: 0xcc6666}];
 	var randomCapsule:FreeplayCapsule;
+	var arrows:Array<FlxSprite> = [new FlxSprite(), new FlxSprite()];
+	var diffSprite:FlxSpriteExt = new FlxSpriteExt();
 
 	override function create() {
 		super.create();
@@ -44,6 +47,7 @@ class FreeplayState extends FlxState {
 						diff: 0
 					});
 				}
+				songArray.push(s);
 			}
 		}
 
@@ -63,8 +67,6 @@ class FreeplayState extends FlxState {
 				cap.add(cap.icon);
 			}
 
-			cap.scale.set(0.8, 0.8);
-
 			if (cap.ID < 6)
 				doCapsuleAnim(cap);
 		}
@@ -72,7 +74,7 @@ class FreeplayState extends FlxState {
 		randomCapsule = capsuleGrp.members[0];
 		@:privateAccess randomCapsule._diffGroup.visible = false;
 
-		capsuleGrp.setPosition((FlxG.width * .5) - 250, (FlxG.height * .5) - 50);
+		capsuleGrp.setPosition((FlxG.width * .5) - 10, (FlxG.height * .5) - 50);
 
 		var black = new FlxSprite().makeGraphic(1, 1, -1);
 		black.setGraphicSize(FlxG.width, 90);
@@ -86,9 +88,31 @@ class FreeplayState extends FlxState {
 		scoreNum.updateHitbox();
 		add(scoreNum);
 
+		var shader = new RGBPalette();
+
+		for (i in arrows) {
+			i.frames = Paths.sparrow('menus/freeplay/arrow');
+			i.animation.addByPrefix('idle', 'arrow pointer loop', 24, true);
+			i.animation.play('idle');
+			i.updateHitbox();
+			i.shader = shader.shader;
+			add(i);
+		}
+
+		shader.set(0x16abfe, 0xaaffff, 0x000000);
+		arrows[0].setPosition(10, 100);
+		arrows[1].setPosition(333, 100);
+		arrows[1].flipX = true;
+
+		// graphic and position setup is automatically handled by changeDiff
+		diffSprite.setPosition(FlxMath.lerp(arrows[0].getMidpoint().x, arrows[1].getMidpoint().x, 0.5), arrows[0].getMidpoint().y);
+		diffSprite.antialiasing = true;
+		add(diffSprite);
+
 		FlxG.sound.playMusic(Paths.sound('freeplayRandom', 'music'));
 
 		changeSelection(0);
+		changeDiff(0);
 	}
 
 	function addCapsule(?name:String, ?col:Int, ?diff:Int) {
@@ -102,6 +126,10 @@ class FreeplayState extends FlxState {
 		return cap;
 	}
 
+	var songArray:Array<String> = [null];
+	var diffArray:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+
+	var curDiffSelected:Int = 1;
 	var curSelected:Int = 1;
 	var curSelectedLerp:Float = 1;
 	var elapsedTime:Float = 0;
@@ -119,6 +147,21 @@ class FreeplayState extends FlxState {
 
 		if (FlxG.keys.justPressed.DOWN)
 			changeSelection(1);
+
+		if (FlxG.keys.justPressed.LEFT) {
+			arrows[0].setColorTransform(1, 1, 1, 1, 128, 100, 10);
+			changeDiff(-1);
+		}
+
+		if (FlxG.keys.justPressed.RIGHT) {
+			arrows[1].setColorTransform(1, 1, 1, 1, 128, 100, 10);
+			changeDiff(1);
+		}
+
+		if (FlxG.keys.justReleased.LEFT)
+			arrows[0].setColorTransform();
+		if (FlxG.keys.justReleased.RIGHT)
+			arrows[1].setColorTransform();
 
 		curSelectedLerp = FlxMath.lerp(curSelectedLerp, curSelected, elapsed * 13);
 
@@ -153,12 +196,14 @@ class FreeplayState extends FlxState {
 		FlxG.sound.play(Paths.sound('ui/confirm'));
 	}
 
-	function changeSelection(huh) {
+	function changeSelection(bleh:Int = 0) {
 		var lastSelect:Int = curSelected;
 
-		curSelected += huh;
+		curSelected += bleh;
 		curSelected = FlxMath.wrap(curSelected, 0, capsuleGrp.members.length - 1);
-		FlxG.sound.play(Paths.sound('ui/scroll'));
+
+		if (bleh != 0)
+			FlxG.sound.play(Paths.sound('ui/scroll'));
 
 		// i Do not wanna add defaultColor property
 		// edit: i had to (colorMult)
@@ -179,19 +224,51 @@ class FreeplayState extends FlxState {
 		}
 	}
 
+	function changeDiff(bleh:Int = 0) {
+		curDiffSelected = FlxMath.wrap(curDiffSelected + bleh, 0, diffArray.length - 1);
+		var newDiff:String = diffArray[curDiffSelected];
+
+		var testFrames = Paths.sparrow('menus/freeplay/diff/' + newDiff);
+		if (testFrames != null) {
+			diffSprite.frames = testFrames;
+			diffSprite.animation.addByPrefix('idle', 'idle', 24, true);
+			diffSprite.animation.play('idle');
+			diffSprite.updateHitbox();
+		} else {
+			diffSprite.loadGraphic(Paths.image('menus/freeplay/diff/' + newDiff));
+		}
+		diffSprite.offset.x = Math.floor(diffSprite.width * 0.5);
+		diffSprite.offset.y = Math.floor(diffSprite.height * 0.5);
+
+		diffSprite.offsetOffset.y = 14;
+		diffSprite.scaleMult.set(1.05, 1.05);
+		FlxTween.cancelTweensOf(diffSprite.offsetOffset);
+		FlxTween.cancelTweensOf(diffSprite.scaleMult);
+		FlxTween.tween(diffSprite.offsetOffset, {y: 0}, 0.6, {ease: FlxEase.elasticOut});
+		FlxTween.tween(diffSprite.scaleMult, {x: 1, y: 1}, 2 / 24, {
+			ease: function(t) {
+				return Math.floor(t);
+			}
+		});
+
+		if (bleh != 0)
+			FlxG.sound.play(Paths.sound('ui/scroll'));
+	}
+
 	function doCapsuleAnim(cap:FreeplayCapsule) {
 		cap.offset.x = FlxG.width * -1;
 		cap.scale.set(1, 0.6);
 		FlxTween.tween(cap.offset, {x: 30}, 0.3, {
-			startDelay: (cap.ID * 0.2),
+			startDelay: (cap.ID * 0.1),
 			ease: FlxEase.sineIn,
 			onComplete: (_) -> {
 				cap.scale.set(0.6, 1.1);
-				var bounce = FlxTween.tween(cap.offset, {x: 0}, 1, {
+				cap.offset.y = 15;
+				var bounce = FlxTween.tween(cap.offset, {x: 0, y: 0}, 1.4, {
 					startDelay: 0.01,
-					ease: FlxEase.backOut
+					ease: FlxEase.expoOut
 				});
-				var bounce = FlxTween.tween(cap.scale, {x: 0.8, y: 0.8}, 1.1, {
+				var bounce = FlxTween.tween(cap.scale, {x: 1, y: 1}, 0.5, {
 					startDelay: 0.01,
 					ease: FlxEase.expoOut
 				});

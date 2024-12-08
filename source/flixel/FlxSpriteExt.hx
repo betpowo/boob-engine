@@ -34,6 +34,8 @@ class FlxSpriteExt extends FlxSprite {
 	**/
 	public var offsetOffset:FlxPoint = new FlxPoint(0, 0);
 
+	public var unroundRect:Bool = false;
+
 	override function drawComplex(camera:FlxCamera):Void {
 		/*
 			_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
@@ -128,5 +130,15 @@ class FlxSpriteExt extends FlxSprite {
 			return newRect.getRotatedBounds(angle, _scaledOrigin, newRect);
 		}
 		return super.getScreenBounds(newRect, camera);
+	}
+
+	override function set_clipRect(rect:FlxRect):FlxRect {
+		if (rect != null)
+			clipRect = unroundRect ? rect : rect.round();
+		else
+			clipRect = null;
+		if (frames != null)
+			frame = frames.frames[animation.frameIndex];
+		return rect;
 	}
 }

@@ -7,6 +7,7 @@ import song.Chart.ChartMetadata;
 import song.Chart.ChartNote;
 import song.Chart.ChartParser;
 
+// todo: turn this into an object instead of using static vars
 class Song {
 	public static var song:String = 'test';
 	public static var difficulty:String = 'normal';
@@ -31,7 +32,7 @@ class Song {
 	};
 
 	static final DEFAULT_META:ChartMetadata = {
-		display: 'unknown',
+		display: 'Unknown',
 		icon: null,
 		stage: 'stage',
 		diff: ['normal']

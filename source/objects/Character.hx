@@ -192,7 +192,7 @@ class Character extends FlxSpriteExt {
 	}
 
 	public function playAnim(anim:String, ?force:Bool = true, ?reverse:Bool = false, ?start:Int = 0) {
-		if (scale.x < 0 || flipX) // flipped
+		if (scale.x < 0 || flipX && !anim.endsWith('-hold')) // flipped
 		{
 			if (anim.contains('LEFT'))
 				anim = anim.replace('LEFT', 'RIGHT');

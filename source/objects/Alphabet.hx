@@ -123,9 +123,9 @@ class Alphabet extends FlxTypedSpriteGroup<AlphaCharacter> {
 		this.text = text;
 	}
 
-	public function setScale(_x:Float = 1, ?_y:Float = 1) {
+	public function setScale(_x:Float = 1, ?_y:Float) {
 		scaleX = _x;
-		scaleY = _y ?? _x;
+		scaleY = _y != null ? _y : _x;
 	}
 
 	public var scaleX(default, set):Float = 1;

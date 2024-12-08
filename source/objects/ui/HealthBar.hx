@@ -1,10 +1,11 @@
 package objects.ui;
 
+import flixel.FlxSpriteExt;
 import flixel.math.FlxRect;
 
 // is this useful ????
-class HealthBar extends FlxSprite {
-	public var emptySprite:FlxSprite;
+class HealthBar extends FlxSpriteExt {
+	public var emptySprite:FlxSpriteExt = new FlxSpriteExt();
 	public var empty:FlxColor;
 	public var fill:FlxColor;
 	public var percent(default, set):Float;
@@ -19,8 +20,10 @@ class HealthBar extends FlxSprite {
 		antialiasing = true;
 		moves = false;
 
-		emptySprite = new FlxSprite().loadGraphic(Paths.image('ui/bar'));
+		emptySprite.loadGraphic(Paths.image('ui/bar'));
 		emptySprite.updateHitbox();
+
+		unroundRect = emptySprite.unroundRect = true;
 
 		setColors(0xff0000, 0x66ff33);
 	}

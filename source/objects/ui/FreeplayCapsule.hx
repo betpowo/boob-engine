@@ -144,7 +144,7 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		super.update(elapsed);
 		if (active && visible && isOnScreen(camera)) {
 			el += elapsed;
-			textObj.borderSize = FlxMath.lerp(0.5, 0.95, (FlxMath.fastSin(el * 70) + 1) * 0.5);
+			textObj.borderSize = Math.ffloor(FlxMath.lerp(0.15, 0.45, (FlxMath.fastSin(el * 70) + 1) * 0.5) * 4) / 4;
 			textObj.clipRect.width = maxWidth;
 			textObj.clipRect.height = textObj.height;
 			textObj.clipRect = textObj.clipRect;

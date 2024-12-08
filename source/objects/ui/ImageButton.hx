@@ -58,12 +58,14 @@ class ImageButton extends FlxGroupedSprite {
 			if (FlxG.mouse.justReleased) {
 				onPress.dispatch();
 			}
-		} else if (inputs != null) {
+		}
+		if (inputs != null) {
 			if (FlxG.keys.anyPressed(inputs)) {
 				cols = pressColors;
+				if (FlxG.keys.anyJustPressed(inputs))
+					onPress.dispatch();
 			} else if (FlxG.keys.anyJustReleased(inputs)) {
 				cols = colors;
-				onPress.dispatch();
 			}
 		}
 

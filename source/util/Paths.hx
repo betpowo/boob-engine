@@ -111,17 +111,14 @@ class Paths {
 		}
 		if (assetsLoaded.get(mapKey) != null)
 			return assetsLoaded.get(mapKey);
-		trace('$key not found im gonna fucking kill mysel');
+
+		Log.print('[IMAGE] $key not found...', 0xff9966);
 		return null;
 	}
 
 	public static function sparrow(f:String, ?root:String = 'images'):FlxAtlasFrames {
-		var daXML = xml(f, root);
-
-		if (exists(daXML))
-			return FlxAtlasFrames.fromSparrow(image(f, root), File.getContent(daXML));
-
-		return FlxAtlasFrames.fromSparrow(image(f, root), daXML);
+		var xmlll = xml(f, root);
+		return exists(xmlll) ? FlxAtlasFrames.fromSparrow(image(f, root), xmlll) : null;
 	}
 
 	public static function ini(f:String, ?root:String = ''):String
@@ -139,7 +136,13 @@ class Paths {
 	public static function sound(f:String, ?root:String = 'sounds'):Sound {
 		var br:String = file('$root/$f.ogg');
 		if (!assetsLoaded.exists(br)) {
-			var snd:Sound = Sound.fromFile(br);
+			var snd:Sound;
+			try {
+				snd = Sound.fromFile(br);
+			} catch (e) {
+				Log.print('[SOUND] $f not found...', 0xff9999);
+				snd = null;
+			}
 			assetsLoaded.set(br, snd);
 			Assets.cache.setSound(br, snd);
 		}
@@ -151,7 +154,7 @@ class Paths {
 			sub += '/';
 		if (exists(file('songs/$sg/audio/$sub/$f.ogg')))
 			return sound(f, 'songs/$sg/audio/$sub');
-		return sound(f, 'songs/$sg/audio');
+		return sound(f, 'songs/$sg/audio') ?? sound('chartEditorLoop', 'music');
 	}
 
 	public static function exclude(s:String) {
@@ -173,7 +176,7 @@ class Paths {
 					grah.destroyOnNoUse = true;
 					grah.destroy();
 				}
-				Assets.cache.clear(key);
+				Assets.cache.clear();
 				assetsLoaded.remove(key);
 			}
 		}

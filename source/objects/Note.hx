@@ -72,7 +72,7 @@ class Note extends FlxSpriteExt {
 	}
 
 	override function draw() {
-		if (sustain != null && sustain.length >= 10)
+		if (sustain != null && sustain.length >= Sustain.minDrawLength)
 			sustain.draw();
 		super.draw();
 	}
@@ -109,11 +109,15 @@ class Note extends FlxSpriteExt {
 
 				sustain.length -= Conductor.delta;
 				hit = HELD;
+				if (sustain.length <= Sustain.mercyThreshold)
+					hit = HELD_MERCY;
 
 				// fun anim !!! :3
+				final shake:Float = 12;
+
 				blend = ADD;
-				offset.x = originalOffsets[0] + FlxG.random.float(-1, 1) * 7;
-				offset.y = originalOffsets[1] + FlxG.random.float(-1, 1) * 7;
+				offset.x = originalOffsets[0] + FlxG.random.float(-1, 1) * shake;
+				offset.y = originalOffsets[1] + FlxG.random.float(-1, 1) * shake;
 				color = 0x808080; // ???
 			}
 		} else {
@@ -212,7 +216,7 @@ class Note extends FlxSpriteExt {
 			return 'sick';
 		if (absTiming <= 90)
 			return 'good';
-		if (absTiming <= 130)
+		if (absTiming <= 120)
 			return 'bad';
 		return 'shit';
 	}
@@ -221,6 +225,9 @@ class Note extends FlxSpriteExt {
 }
 
 class Sustain extends FlxSpriteExt {
+	public static var minDrawLength:Float = 30;
+	public static var mercyThreshold:Float = 123;
+
 	public var length:Float = 0;
 	public var parent:Note = null;
 
@@ -267,9 +274,14 @@ class Sustain extends FlxSpriteExt {
 			visible = strum.visible;
 	}
 
+	var susHeight:Float = 0;
+
 	private inline function updateVisual(l:Float, ?s:Float = 1) {
 		animation.play('hold', true);
-		setGraphicSize(width, (l * 0.48 * s) + 2);
+		var ogScale:Float = scale.x;
+		susHeight = (l * 0.48 * s) + 2;
+		setGraphicSize(width, susHeight);
+		scale.x = ogScale;
 		updateHitbox();
 		origin.y = 0;
 	}
@@ -279,13 +291,14 @@ class Sustain extends FlxSpriteExt {
 			followNote(parent);
 			shader = parent.shader;
 		}
-
+		var ogScale:Float = scale.y;
 		updateVisual(length, parent?.speed ?? 1);
 
+		// TODO: tiled sustains instead of stretched
 		var bruh = height;
 		y -= bruh * 0.5;
 		super.draw();
-		scale.y = 0.7;
+		scale.y = ogScale;
 		y += bruh * 0.5;
 		y -= 2.5;
 		animation.play('tail', true);
@@ -293,18 +306,12 @@ class Sustain extends FlxSpriteExt {
 		offset.y = origin.y = (bruh) * (-1 / scale.y);
 		super.draw();
 	}
-
-	function doRotate() {
-		if (parent != null) {
-			var gwa = FlxPoint.weak(x, y).pivotDegrees(FlxPoint.weak(parent.getMidpoint().x, parent.getMidpoint().y), parent.totalAngle);
-			setPosition(gwa.x, gwa.y);
-		}
-	}
 }
 
 // floats aren't worth it
 enum NoteHitState {
 	NONE;
 	HELD;
+	HELD_MERCY;
 	HIT;
 }
