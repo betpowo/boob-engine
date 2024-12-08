@@ -1,6 +1,10 @@
 package objects;
 
 import flixel.FlxSpriteExt;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.graphics.tile.FlxDrawQuadsItem;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import song.Chart.ChartNote;
@@ -243,9 +247,13 @@ class Sustain extends FlxSpriteExt {
 
 		antialiasing = true;
 		moves = false;
+		clipRect = new FlxRect(0, 0, frameWidth, frameHeight);
 	}
 
 	override function update(elapsed:Float) {
+		if (parent != null) {
+			followNote(parent);
+		}
 		super.update(elapsed);
 	}
 
@@ -274,37 +282,140 @@ class Sustain extends FlxSpriteExt {
 			visible = strum.visible;
 	}
 
-	var susHeight:Float = 0;
+	public var susHeight(get, null):Float = 0;
 
-	private inline function updateVisual(l:Float, ?s:Float = 1) {
+	public function get_susHeight():Float {
+		return length * 0.45 * (parent?.speed ?? 1);
+	}
+
+	/*private inline function updateVisual(l:Float, ?s:Float = 1) {
 		animation.play('hold', true);
 		var ogScale:Float = scale.x;
-		susHeight = (l * 0.48 * s) + 2;
+		susHeight = (l * 0.45 * s) + 2;
 		setGraphicSize(width, susHeight);
 		scale.x = ogScale;
 		updateHitbox();
 		origin.y = 0;
-	}
-
+	}*/
 	override public function draw() {
 		if (parent != null) {
-			followNote(parent);
 			shader = parent.shader;
 		}
-		var ogScale:Float = scale.y;
-		updateVisual(length, parent?.speed ?? 1);
 
-		// TODO: tiled sustains instead of stretched
-		var bruh = height;
-		y -= bruh * 0.5;
+		if (susHeight <= 0)
+			return;
+
+		/*var ogScale:Float = scale.y;
+			updateVisual(length, parent?.speed ?? 1);
+
+			// TODO: tiled sustains instead of stretched
+			var bruh = height;
+			y -= bruh * 0.5;
+			super.draw();
+			scale.y = ogScale;
+			y += bruh * 0.5;
+			y -= 2.5;
+			animation.play('tail', true);
+			updateHitbox();
+			offset.y = origin.y = (bruh) * (-1 / scale.y); */
 		super.draw();
-		scale.y = ogScale;
-		y += bruh * 0.5;
-		y -= 2.5;
-		animation.play('tail', true);
+	}
+
+	var tailOffset:Float = 1.2;
+
+	inline function hasCTMult():Bool {
+		var c = colorTransform;
+		if (c == null)
+			return true;
+		return c.redMultiplier == 1 && c.greenMultiplier == 1 && c.blueMultiplier == 1 && c.alphaMultiplier == 1;
+	}
+
+	inline function hasCTOff():Bool {
+		var c = colorTransform;
+		if (c == null)
+			return true;
+		return c.redOffset == 0 && c.greenOffset == 0 && c.blueOffset == 0 && c.alphaOffset == 0;
+	}
+
+	override public function drawComplex(cam:FlxCamera) {
+		// draw tail
+		animation.play('tail');
 		updateHitbox();
-		offset.y = origin.y = (bruh) * (-1 / scale.y);
-		super.draw();
+		final _tailHeight = frameHeight;
+		offset.y = origin.y = (susHeight) * (-1 / scale.y) - _tailHeight - tailOffset;
+		var startingPoint:Float = offset.y + tailOffset;
+		super.drawComplex(cam);
+
+		// draw the rest of the tiles
+		origin.y = 0;
+		animation.play('hold');
+		final _frameHeight = frameHeight;
+		var item:FlxDrawQuadsItem = cam.startQuadBatch(_frame.parent, hasCTMult(), hasCTOff(), blend, antialiasing, shader);
+		final tileFracts:Float = susHeight / _frameHeight / scale.y;
+		final tileCount:Int = Math.ceil(tileFracts);
+		var __index:Int = tileCount + 1;
+		offset.y = startingPoint - tailOffset;
+		while (__index > 0) {
+			offset.y += _frameHeight;
+			item.addQuad(_frame, doFuckingMatrixThing(__index), colorTransform);
+
+			__index -= 1;
+		}
+	}
+
+	override function isOnScreen(?camera:FlxCamera):Bool {
+		// not gonna bother with calculating length
+		return susHeight > 0;
+	}
+
+	var _______mat:FlxMatrix = new FlxMatrix();
+
+	inline function doFuckingMatrixThing(tile:Int) {
+		var _matrix = _______mat; // i aint doing all that
+
+		// brah
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0);
+		inline _matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x * scaleMult.x, scale.y * scaleMult.y);
+		if (checkFlipX()) {
+			_matrix.a *= -1;
+			_matrix.c *= -1;
+			_matrix.tx *= -1;
+		}
+		if (checkFlipY()) {
+			_matrix.b *= -1;
+			_matrix.d *= -1;
+			_matrix.ty *= -1;
+		}
+
+		var radians:Float = (angle + angleOffset) * FlxAngle.TO_RAD;
+		var _sinAngleCustom = Math.sin(radians);
+		var _cosAngleCustom = Math.cos(radians);
+
+		if (radians != 0)
+			_matrix.rotateWithTrig(_cosAngleCustom, _sinAngleCustom);
+
+		var ogoffx = offset.x;
+		var ogoffy = offset.y;
+
+		offset.addPoint(offsetOffset);
+
+		offset.x *= scale.x * scaleMult.x;
+		offset.y *= scale.y * scaleMult.y;
+		offset.degrees += angle + angleOffset;
+
+		if (additiveOffset)
+			getScreenPosition(_point, camera).addPoint(offset);
+		else
+			getScreenPosition(_point, camera).subtractPoint(offset);
+		_point.addPoint(origin);
+
+		offset.x = ogoffx;
+		offset.y = ogoffy;
+
+		inline _matrix.translate(_point.x, _point.y);
+
+		return _matrix;
 	}
 }
 

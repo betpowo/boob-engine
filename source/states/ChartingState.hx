@@ -708,6 +708,7 @@ class ChartingNoteGroup extends Note {
 		if (FlxG.keys.anyJustPressed([Q, E])) {
 			FlxG.sound.play(Paths.sound('charter/stretch${FlxG.random.int(1, 2)}_UI'));
 			chart[idx].length += Conductor.stepCrochet * (FlxG.keys.justPressed.Q ? -1 : 1);
+			chart[idx].length = Math.max(0, chart[idx].length);
 		}
 	}
 }
