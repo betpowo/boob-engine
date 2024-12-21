@@ -72,7 +72,7 @@ class StrumNote extends Note {
 						scaleMult.set(mult, mult);
 						blurSpr.visible = true;
 						blurSpr.alphaMult = 1;
-						blurSpr.setColorTransform(5, 5, 5, 1, -20, -80, -140);
+						blurSpr.setColorTransform(4, 7, 0.9, 1, -20, 10, -140);
 					case 1:
 						blurSpr.setColorTransform();
 					case 2:
@@ -213,9 +213,15 @@ class StrumNote extends Note {
 			for (note in notes) {
 				// misses
 				if (Conductor.time >= note.strumTime + missThreshold) {
-					noteMiss.dispatch(note);
-					note.kill();
-					notes.remove(note);
+					if (note.hit != MISS) {
+						noteMiss.dispatch(note);
+						note.hit = MISS;
+					} else {
+						if (Conductor.time >= (note.strumTime + note.sustain.length) + missThreshold) {
+							note.kill();
+							notes.remove(note);
+						}
+					}
 				}
 
 				// sustain mercy
@@ -279,9 +285,15 @@ class StrumNote extends Note {
 			for (note in notes) {
 				// misses
 				if (autoMiss && Conductor.time >= note.strumTime + missThreshold) {
-					noteMiss.dispatch(note);
-					note.kill();
-					notes.remove(note);
+					if (note.hit != MISS) {
+						noteMiss.dispatch(note);
+						note.hit = MISS;
+					} else {
+						if (Conductor.time >= (note.strumTime + note.sustain.length) + missThreshold) {
+							note.kill();
+							notes.remove(note);
+						}
+					}
 				}
 
 				if (note.strumTime <= Conductor.time && !blocked) {

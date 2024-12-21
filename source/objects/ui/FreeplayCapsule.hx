@@ -6,6 +6,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 import flxanimate.FlxAnimate;
+import openfl.filters.GlowFilter;
 
 class FreeplayCapsule extends FlxSpriteGroup {
 	public var text(default, set):String = '';
@@ -77,10 +78,9 @@ class FreeplayCapsule extends FlxSpriteGroup {
 			backGlow.color = c;
 		if (frontGlow != null)
 			frontGlow.color = c;
-		if (textObj != null) {
-			textObj.borderColor = c;
-			textObj.borderColor.alphaFloat = 0.4;
-		}
+
+		// I FUCKING HATE OPENFL FILTERS IMPLEMENTATION
+		textObj.textField.filters = [glowFilter = new GlowFilter(c.to24Bit(), 1.5, 7, 6, 5000)];
 		return c;
 	}
 
@@ -89,6 +89,8 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		color = color;
 		return c;
 	}
+
+	var glowFilter:GlowFilter;
 
 	public function new() {
 		super();
@@ -99,10 +101,8 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		textObj.font = Paths.font('5by7.ttf');
 		textObj.size = 40;
 		textObj.antialiasing = true;
-		textObj.borderStyle = FlxTextBorderStyle.OUTLINE;
-		textObj.borderColor = 0x55aaeeff;
-		textObj.borderSize = 2;
 		textObj.setPosition(65, 28);
+		textObj.blend = ADD;
 
 		bro('mp3 capsule');
 
@@ -144,13 +144,11 @@ class FreeplayCapsule extends FlxSpriteGroup {
 		super.update(elapsed);
 		if (active && visible && isOnScreen(camera)) {
 			el += elapsed;
-			textObj.borderSize = Math.ffloor(FlxMath.lerp(0.15, 0.45, (FlxMath.fastSin(el * 70) + 1) * 0.5) * 4) / 4;
 			textObj.clipRect.width = maxWidth;
 			textObj.clipRect.height = textObj.height;
 			textObj.clipRect = textObj.clipRect;
 
 			textObj.origin.set((x - textObj.x), (y - textObj.y)); // why
-			textObj.borderColor.alphaFloat = 0.4;
 
 			_diffGroup.origin.set((x - _diffGroup.x), (y - _diffGroup.y));
 		}

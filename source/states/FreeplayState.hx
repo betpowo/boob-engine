@@ -176,7 +176,8 @@ class FreeplayState extends FlxState {
 		if (randomCapsule != null) {
 			// bro
 			list[0].color = FlxColor.fromHSB(elapsedTime * 69, list[0].color.saturation, list[0].color.brightness);
-			randomCapsule.color = list[0].color;
+			randomCapsule.set_color(list[0].color);
+			// @:privateAccess trace(randomCapsule.glowFilter.color);
 		}
 
 		if (FlxG.keys.justPressed.ENTER)

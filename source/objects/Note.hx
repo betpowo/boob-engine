@@ -179,6 +179,13 @@ class Note extends FlxSpriteExt {
 		return note;
 	}
 
+	override function isOnScreen(?camera:FlxCamera):Bool {
+		if (sustain != null && sustain.length >= 100)
+			return true;
+
+		return super.isOnScreen(camera);
+	}
+
 	// dynamic, so you can edit scoring system cus why not
 	// should i make it static ? idk
 	public dynamic function score(diff:Float = 0):Int {
@@ -342,18 +349,18 @@ class Sustain extends FlxSpriteExt {
 		animation.play('tail');
 		updateHitbox();
 		final _tailHeight = frameHeight;
-		offset.y = origin.y = (susHeight) * (-1 / scale.y) - _tailHeight - tailOffset;
+		offset.y = origin.y = (susHeight) * (-1 / scale.y) + _tailHeight - tailOffset;
 		var startingPoint:Float = offset.y + tailOffset;
 		super.drawComplex(cam);
 
 		// draw the rest of the tiles
 		origin.y = 0;
 		animation.play('hold');
-		final _frameHeight = frameHeight;
+		final _frameHeight = frameHeight - 2;
 		var item:FlxDrawQuadsItem = cam.startQuadBatch(_frame.parent, hasCTMult(), hasCTOff(), blend, antialiasing, shader);
-		final tileFracts:Float = susHeight / _frameHeight / scale.y;
+		final tileFracts:Float = (susHeight - _tailHeight) / _frameHeight / scale.y;
 		final tileCount:Int = Math.ceil(tileFracts);
-		var __index:Int = tileCount + 1;
+		var __index:Int = tileCount;
 		offset.y = startingPoint - tailOffset;
 		while (__index > 0) {
 			offset.y += _frameHeight;
@@ -422,6 +429,7 @@ class Sustain extends FlxSpriteExt {
 // floats aren't worth it
 enum NoteHitState {
 	NONE;
+	MISS;
 	HELD;
 	HELD_MERCY;
 	HIT;
